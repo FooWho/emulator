@@ -1,0 +1,52 @@
+# Object files
+*.o
+*.obj
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Libraries
+*.lib
+*.a
+*.so
+*.dll
+
+# Build directories
+build/
+bin/
+Debug/
+Release/
+x64/
+Win32/
+
+# Precompiled headers
+*.pch
+*.gch
+
+# IDE specific files (e.g., Visual Studio, CMake)
+.vs/
+.vscode/
+*.vcxproj.user
+*.suo
+*.user
+*.ncb
+*.opensdf
+*.sdf
+CMakeCache.txt
+CMakeFiles/
+Makefile
+cmake_install.cmake
+install_manifest.txt
+CTestTestfile.cmake
+
+# Other common temporary or generated files
+*.log
+*.swp
+*~
+# Backup files
+*.bak
+
+#
+invaders.bin
