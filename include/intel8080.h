@@ -1,9 +1,10 @@
 #pragma once
 #include <array>
-#include "virtualMemory.h"
+#include "types.h"
+#include "bus.h"
 
-typedef uint8_t BYTE;
-typedef uint16_t WORD;
+
+
 
 class Intel8080 {
  private:
@@ -28,6 +29,8 @@ class Intel8080 {
         BYTE pc;        // Program Counter
     } regs;
 
+    Bus *bus;
+
     std::array<void (Intel8080::*)(), 256> p_opcode_lookup;
 
     void op_ILLEGAL();
@@ -36,6 +39,7 @@ class Intel8080 {
  public:
     Intel8080();
     void test();
-
-
+    BYTE fetch();
+    void execute(BYTE opcode);
+    Intel8080 *attachBus(Bus *bus);
 };

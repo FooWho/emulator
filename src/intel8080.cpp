@@ -1,9 +1,10 @@
 #include <cstdio>
 #include <cstdlib>
-#include <cstdint>
+
 #include <array>
 #include "intel8080.h"
-#include "virtualMemory.h"
+#include "rom.h"
+#include "bus.h"
 
 Intel8080::Intel8080()
 {
@@ -30,6 +31,24 @@ Intel8080::Intel8080()
     p_opcode_lookup.fill(&Intel8080::op_ILLEGAL);
     p_opcode_lookup[0x00] = &Intel8080::op_NOP; // NOP instruction
 
+    bus = nullptr;
+
+}
+
+Intel8080 *Intel8080::attachBus(Bus *bus)
+{
+    this->bus = bus;
+    return this;
+}
+
+BYTE Intel8080::fetch()
+{
+    return bus->read(regs.pc++);
+}
+
+void Intel8080::execute(BYTE opcode)
+{
+    (this->*p_opcode_lookup[opcode])();
 }
 
 void Intel8080::op_ILLEGAL()
@@ -41,9 +60,7 @@ void Intel8080::op_ILLEGAL()
 void Intel8080::op_NOP()
 {
     // Opcode: 0x00         Mnemonic: NOP
-    // Mnemonic: NOP
-    // Size: 1
-    // Cycles: 4
+    // Size: 1  byte        Cycles: 4
     // Description: No Operation
     // Flags: None
     printf("NOP\n");
@@ -52,6 +69,8 @@ void Intel8080::op_NOP()
 void Intel8080::test()
 {
     // Call the function pointed to by the opcode's table entry
-    (this->*p_opcode_lookup[0])();
-    (this->*p_opcode_lookup[1])();
+    BYTE opcode = fetch();
+    execute(opcode);
+    opcode = fetch();
+    execute(opcode);
 }
