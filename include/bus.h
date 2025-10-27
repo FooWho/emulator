@@ -17,5 +17,8 @@ class Bus {
   Bus();
   Bus *attachCpu(Intel8080 *cpu);
   Bus *attachMemory(VirtualMemory* memory);
-  BYTE read(WORD address);
+  BYTE readByte(WORD address);
+  WORD readWord(WORD address);
+  void writeByte(WORD address, BYTE data);
+  void writeWord(WORD address, WORD data);
 };

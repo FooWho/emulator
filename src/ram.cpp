@@ -30,7 +30,7 @@ void Ram::write(WORD address, BYTE data)
     // Write data to RAM
         // Should throw runtime_error if address is out of bounds
     if (address >= rwmem.size()) {
-        std::runtime_error ex("Attempt to read from invalid RAM address " + std::to_string(address));
+        std::runtime_error ex("Attempt to write to invalid RAM address " + std::to_string(address));
         throw ex;
     }
     rwmem[address] = data;

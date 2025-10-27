@@ -33,12 +33,20 @@ class Intel8080 {
 
     void op_ILLEGAL();
     void op_NOP();
+    void op_LXI_B_D16();
 
  public:
     Intel8080();
     void test();
-    BYTE fetch();
-    BYTE read(WORD address);
+    BYTE fetchOpcode();
+    BYTE fetchByte();
+    WORD fetchWord();
+    BYTE readOpcode(WORD address);
+    BYTE readByte(WORD address);
+    WORD readWord(WORD address);
+    void writeOpcode(WORD address, BYTE data);
+    void writeByte(WORD address, BYTE data);
+    void writeWord(WORD address, WORD data);
     void execute(BYTE opcode);
     Intel8080 *attachBus(Bus *bus);
 };
