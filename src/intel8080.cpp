@@ -138,6 +138,7 @@ void Intel8080::test()
     opcode = fetchOpcode(); // Should fetch LXI B,D16 (0x01)
     execute(opcode);
     printf("BC Register Pair after LXI B,D16: 0x%02X%02X (Should be 0x1234)\n", regs.b, regs.c);
+    printf("Program Counter: 0x%04x     (Should be: 0x0005)\n", regs.pc);
     try {
         readByte(0xFFFF); // Attempt to read from unmapped memory
 
