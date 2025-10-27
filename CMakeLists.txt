@@ -7,6 +7,7 @@ add_executable(Intel8080
     src/intel8080.cpp
     src/virtualMemory.cpp
     src/rom.cpp
+    src/ram.cpp
     src/bus.cpp)
 
 include(CTest)

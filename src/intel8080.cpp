@@ -1,9 +1,9 @@
 #include <cstdio>
 #include <cstdlib>
-
+#include <stdexcept>
 #include <array>
 #include "intel8080.h"
-#include "rom.h"
+#include "virtualMemory.h"
 #include "bus.h"
 
 Intel8080::Intel8080()
@@ -46,6 +46,11 @@ BYTE Intel8080::fetch()
     return bus->read(regs.pc++);
 }
 
+BYTE Intel8080::read(WORD address)
+{
+    return bus->read(address);
+}
+
 void Intel8080::execute(BYTE opcode)
 {
     (this->*p_opcode_lookup[opcode])();
@@ -54,7 +59,7 @@ void Intel8080::execute(BYTE opcode)
 void Intel8080::op_ILLEGAL()
 {
     printf("ILLEGAL\n");
-    exit(-1);
+    throw std::runtime_error("Illegal opcode executed");
 }
 
 void Intel8080::op_NOP()
@@ -72,5 +77,15 @@ void Intel8080::test()
     BYTE opcode = fetch();
     execute(opcode);
     opcode = fetch();
-    execute(opcode);
+    try {
+        execute(opcode);
+    } catch (const std::runtime_error &e) {
+        printf("Caught expected exception: %s\n", e.what());
+    }
+    try {
+        read(0xFFFF); // Attempt to read from unmapped memory
+
+    } catch (const std::runtime_error &e) {
+        printf("Caught expected exception: %s\n", e.what());
+    }   
 }

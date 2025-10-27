@@ -1,10 +1,8 @@
 #pragma once
 #include <array>
 #include "types.h"
-#include "bus.h"
 
-
-
+class Bus; // Forward declaration
 
 class Intel8080 {
  private:
@@ -40,6 +38,7 @@ class Intel8080 {
     Intel8080();
     void test();
     BYTE fetch();
+    BYTE read(WORD address);
     void execute(BYTE opcode);
     Intel8080 *attachBus(Bus *bus);
 };

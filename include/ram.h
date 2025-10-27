@@ -6,17 +6,17 @@
 class Bus; // Forward declaration
 
 
-class Rom : public VirtualMemory
+class Ram : public VirtualMemory
 {
  private:
-    std::vector<BYTE> romem;
+    std::vector<BYTE> rwmem;
     Bus *bus;
  
  protected:
 
  public:
-   Rom(WORD size);
-   Rom *attachBus(Bus *bus);
+   Ram(WORD size);
+   Ram *attachBus(Bus *bus);
    BYTE read(WORD address) override;
    void write(WORD address, BYTE data) override;
    WORD memSize() override;
