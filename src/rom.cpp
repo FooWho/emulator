@@ -37,6 +37,14 @@ WORD Rom::memSize()
     return static_cast<WORD>(romem.size());
 }
 
+
+void Rom::romLoad(const std::vector<BYTE>& buffer)
+{
+    for (int i = 0; i < romem.size(); i++) {
+        romem[i] = buffer[i];
+    }
+}
+
 void Rom::test()
 {
     romem[0] = 0xff;

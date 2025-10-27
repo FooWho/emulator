@@ -1,16 +1,72 @@
 {
     "version": 8,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 23,
+        "patch": 0
+    },
     "configurePresets": [
         {
-            "name": "GCC 13.3.0 x86_64-linux-gnu",
-            "displayName": "GCC 13.3.0 x86_64-linux-gnu",
-            "description": "Using compilers: C = /usr/bin/gcc, CXX = /usr/bin/g++",
+            "name": "linux-gcc-base",
+            "displayName": "Linux GCC",
+            "description": "Base settings for GCC on Linux. (Select Debug or Release)",
+            "generator": "Ninja",
             "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "hidden": true,
             "cacheVariables": {
                 "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}",
                 "CMAKE_C_COMPILER": "/usr/bin/gcc",
-                "CMAKE_CXX_COMPILER": "/usr/bin/g++",
+                "CMAKE_CXX_COMPILER": "/usr/bin/g++"
+            }
+        },
+        {
+            "name": "linux-gcc-debug",
+            "displayName": "Linux GCC (Debug)",
+            "description": "Debug build using /usr/bin/gcc",
+            "inherits": "linux-gcc-base",
+            "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug"
+            }
+        },
+        {
+            "name": "linux-gcc-release",
+            "displayName": "Linux GCC (Release)",
+            "description": "Release build using /usr/bin/gcc",
+            "inherits": "linux-gcc-base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "build-debug",
+            "displayName": "Build (Debug)",
+            "configurePreset": "linux-gcc-debug",
+            "jobs": 10
+        },
+        {
+            "name": "build-release",
+            "displayName": "Build (Release)",
+            "configurePreset": "linux-gcc-release",
+            "jobs": 10
+        }
+    ],
+    "testPresets": [
+        {
+            "name": "test-debug",
+            "displayName": "Test (Debug)",
+            "configurePreset": "linux-gcc-debug",
+            "output": {
+                "outputOnFailure": true
+            }
+        },
+        {
+            "name": "test-release",
+            "displayName": "Test (Release)",
+            "configurePreset": "linux-gcc-release",
+            "output": {
+                "outputOnFailure": true
             }
         }
     ]

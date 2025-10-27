@@ -5,6 +5,7 @@
 #include "intel8080.h"
 #include "virtualMemory.h"
 #include "bus.h"
+#include "spdlog.h"
 
 Intel8080::Intel8080()
 {
@@ -106,7 +107,7 @@ void Intel8080::op_NOP()
     // Size: 1  byte        Cycles: 4
     // Description: No Operation
     // Flags: None
-    printf("NOP\n");
+    spdlog::trace("NOP");
 }
 
 void Intel8080::op_LXI_B_D16()

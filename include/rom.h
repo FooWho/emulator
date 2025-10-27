@@ -5,7 +5,6 @@
 
 class Bus; // Forward declaration
 
-
 class Rom : public VirtualMemory
 {
  private:
@@ -20,5 +19,6 @@ class Rom : public VirtualMemory
    BYTE read(WORD address) override;
    void write(WORD address, BYTE data) override;
    WORD memSize() override;
+   void romLoad(const std::vector<BYTE>& buffer);
    void test();
 };
