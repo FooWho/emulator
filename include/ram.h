@@ -20,5 +20,4 @@ class Ram : public VirtualMemory
    BYTE read(WORD address) override;
    void write(WORD address, BYTE data) override;
    WORD memSize() override;
-   void test();
 };

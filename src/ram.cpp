@@ -41,24 +41,3 @@ WORD Ram::memSize()
     return static_cast<WORD>(rwmem.size());
 }
 
-void Ram::test()
-{
-    printf("Testing RAM...\n");
-    write(0, 0x00);
-    write(1, 0x01); // Example data
-    printf("RAM[0]: 0x%02X      (Should be 0x00)\n", read(0));
-    printf("RAM[1]: 0x%02X      (Should be 0x01)\n", read(1));
-    printf("Should throw exception on out-of-bounds read...\n");
-    try {
-        read(static_cast<WORD>(rwmem.size())); // Out of bounds
-    } catch (const std::runtime_error &e) {
-        printf("Caught expected exception: %s\n", e.what());    
-    }
-    printf("Should throw exception on out-of-bounds write...\n");
-    try {
-        write(static_cast<WORD>(rwmem.size()), 0xFF); // Out of bounds
-    } catch (const std::runtime_error &e) {
-        printf("Caught expected exception: %s\n", e.what());
-    }
-    
-}

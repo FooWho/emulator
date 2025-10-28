@@ -1,4 +1,5 @@
 #include <stdexcept>
+#include <spdlog/spdlog.h>
 #include "bus.h"
 #include "virtualMemory.h"
 #include "intel8080.h"
@@ -28,7 +29,7 @@ BYTE Bus::readByte(WORD address)
     WORD effectiveAddress = address;
     for (unsigned int i = 0; i < device_count; i++) {
         if (effectiveAddress < ((*memory_map)[i])->memSize()) {
-            printf("BUS: Address=0x%04X mapped to device %d with effectiveAddress=0x%04X\n", address, i, effectiveAddress); // DEBUG
+            spdlog::debug("BUS: Address=0x{:04X} mapped to device {:02d} with effectiveAddress=0x{:04X}", address, i, effectiveAddress);
             return ((*memory_map)[i])->read(effectiveAddress);
         } else {
             effectiveAddress -= ((*memory_map)[i])->memSize();

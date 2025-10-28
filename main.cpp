@@ -26,10 +26,6 @@ int main(int argc, char *argv[])
     const std::vector<BYTE> buffer = {0xff, 0x00, 0x34, 0x12};
     rom.romLoad(buffer);
 
-    rom.test();
-    ram.test();
-    cpu.test();
-
     printf("All tests completed.\n");
     return 0;
 }

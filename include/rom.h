@@ -20,5 +20,4 @@ class Rom : public VirtualMemory
    void write(WORD address, BYTE data) override;
    WORD memSize() override;
    void romLoad(const std::vector<BYTE>& buffer);
-   void test();
 };

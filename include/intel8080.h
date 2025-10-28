@@ -30,11 +30,14 @@ class Intel8080 {
     Bus *bus;
 
     std::array<void (Intel8080::*)(), 256> p_opcode_lookup;
-
     void op_ILLEGAL();
     void op_NOP();
     void op_LXI_B_D16();
     void op_STAX_B();
+    void op_INX_B();
+    void buildOpcodeTable();
+
+
 
  public:
     Intel8080();

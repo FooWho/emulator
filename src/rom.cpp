@@ -44,28 +44,3 @@ void Rom::romLoad(const std::vector<BYTE>& buffer)
         romem[i] = buffer[i];
     }
 }
-
-void Rom::test()
-{
-    romem[0] = 0xff;
-    romem[1] = 0x00; // Example data
-    romem[2] = 0x01;
-    romem[3] = 0x34;
-    romem[4] = 0x12;
-    printf("Testing ROM...\n");
-    printf("ROM[0]: 0x%02X      (Should be 0xFF)\n", read(0));
-    printf("ROM[1]: 0x%02X      (Should be 0x00)\n", read(1));
-    printf("ROM[2]: 0x%02X      (Should be 0x01)\n", read(2));
-    printf("Should throw exception on out-of-bounds read...\n");
-    try {
-        read(static_cast<WORD>(romem.size())); // Out of bounds
-    } catch (const std::runtime_error &e) {
-        printf("Caught expected exception: %s\n", e.what());    
-    }
-    printf("Should throw exception on write to ROM...\n");
-    try {
-        write(0, 0xFF);
-    } catch (const std::runtime_error &e) {
-        printf("Caught expected exception: %s\n", e.what());    
-    }
-}
