@@ -9,6 +9,13 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(googletest)
 
+FetchContent_Declare(
+  spdlog
+  GIT_REPOSITORY https://github.com/gabime/spdlog.git
+  GIT_TAG        v1.15.0
+)
+FetchContent_MakeAvailable(spdlog)
+
 add_executable(Intel8080 
     main.cpp
     src/intel8080.cpp
@@ -19,10 +26,10 @@ add_executable(Intel8080
 )
 target_include_directories(Intel8080 PRIVATE 
     ${CMAKE_CURRENT_SOURCE_DIR}/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/spdlog
+    spdlog
 )
 target_link_libraries(Intel8080 
-    ${CMAKE_CURRENT_SOURCE_DIR}/lib/libspdlogd.a
+    spdlog::spdlog
 )
 
 enable_testing()
@@ -38,11 +45,11 @@ add_executable(
 )
 target_include_directories(emuTest PRIVATE 
     ${CMAKE_CURRENT_SOURCE_DIR}/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/spdlog
+    spdlog
 )
 target_link_libraries(
   emuTest
-  ${CMAKE_CURRENT_SOURCE_DIR}/lib/libspdlogd.a
+  spdlog::spdlog
   GTest::gtest_main
 )
 

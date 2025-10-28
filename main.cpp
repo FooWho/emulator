@@ -2,7 +2,7 @@
 #include <cstdio>
 #include <cstdint>
 #include <vector>
-#include "spdlog.h"
+#include <spdlog/spdlog.h>
 #include "intel8080.h"
 #include "rom.h"
 #include "ram.h"

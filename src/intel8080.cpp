@@ -2,10 +2,11 @@
 #include <cstdlib>
 #include <stdexcept>
 #include <array>
+#include <spdlog/spdlog.h>
 #include "intel8080.h"
 #include "virtualMemory.h"
 #include "bus.h"
-#include "spdlog.h"
+
 
 Intel8080::Intel8080()
 {
