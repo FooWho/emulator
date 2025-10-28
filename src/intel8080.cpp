@@ -33,6 +33,7 @@ Intel8080::Intel8080()
     p_opcode_lookup.fill(&Intel8080::op_ILLEGAL);
     p_opcode_lookup[0x00] = &Intel8080::op_NOP; // NOP instruction
     p_opcode_lookup[0x01] = &Intel8080::op_LXI_B_D16; // LXI B,D16 instruction
+    p_opcode_lookup[0x02] = &Intel8080::op_STAX_B; // STAX B instruction
 
     bus = nullptr;
 
@@ -98,7 +99,7 @@ void Intel8080::execute(BYTE opcode)
 
 void Intel8080::op_ILLEGAL()
 {
-    printf("ILLEGAL\n");
+    spdlog::trace("ILLEGAL\n");
     throw std::runtime_error("Illegal opcode executed");
 }
 
@@ -121,8 +122,19 @@ void Intel8080::op_LXI_B_D16()
     BYTE high = fetchByte();
     regs.b = high;
     regs.c = low;
-    printf("LXI B, D16 -> B: 0x%02X C: 0x%02X\n", regs.b, regs.c);
+    spdlog::trace("LXI B, D16 -> B: 0x%02X C: 0x%02X\n", regs.b, regs.c);
 }
+
+void Intel8080::op_STAX_B()
+{
+    // Opcode: 0x02         Mnemonic: STAX B
+    // Size: 1  byte        Cycles: 7
+    // Description: Store Accumulator into memory location pointed by BC register pair
+    // Flags: None
+    WORD address = (static_cast<WORD>(regs.b) << 8) | static_cast<WORD>(regs.c);
+    writeByte(address, regs.a);
+    spdlog::trace("STAX B -> [0x%04X] = 0x%02X\n", address, regs.a);
+}   
 
 void Intel8080::test()
 {
