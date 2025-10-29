@@ -1,10 +1,9 @@
 #pragma once
 #include <array>
+#include "cpu.h"
 #include "types.h"
 
-class Bus; // Forward declaration
-
-class Intel8080 {
+class Intel8080 : public CPU {
  private:
     struct p_flags {
         BYTE z : 1;     // Zero
@@ -41,18 +40,19 @@ class Intel8080 {
 
  public:
     Intel8080();
-    Intel8080 *attachBus(Bus *bus);
-    void test();
-    BYTE fetchOpcode();
-    BYTE fetchByte();
-    WORD fetchWord();
-    BYTE readOpcode(WORD address);
-    BYTE readByte(WORD address);
-    WORD readWord(WORD address);
-    void writeOpcode(WORD address, BYTE data);
-    void writeByte(WORD address, BYTE data);
-    void writeWord(WORD address, WORD data);
-    void execute(BYTE opcode);
+    void reset() override {};
+    void step() override {};
+    Intel8080 *attachBus(Bus *bus) override;
+    BYTE fetchOpcode() override;
+    BYTE fetchByte() override;
+    WORD fetchWord() override;
+    BYTE readOpcode(WORD address) override;
+    BYTE readByte(WORD address) override;
+    WORD readWord(WORD address) override;
+    void writeOpcode(WORD address, BYTE data) override;
+    void writeByte(WORD address, BYTE data) override;
+    void writeWord(WORD address, WORD data) override;
+    void execute(BYTE opcode) override;
 
     BYTE examineRegisterA() { return regs.a; }
     void setRegisterA(BYTE value) { regs.a = value; }   
