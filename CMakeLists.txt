@@ -6,6 +6,7 @@ include(FetchContent)
 FetchContent_Declare(
   googletest
   URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
+  DOWNLOAD_EXTRACT_TIMESTAMP TRUE
 )
 FetchContent_MakeAvailable(googletest)
 
@@ -20,6 +21,7 @@ add_executable(Intel8080
     main.cpp
     src/intel8080.cpp
     src/intel8080_opcodes.cpp
+    src/cpu.cpp
     src/virtualMemory.cpp
     src/rom.cpp
     src/ram.cpp
@@ -36,25 +38,26 @@ target_link_libraries(Intel8080
 enable_testing()
 
 add_executable(
-    emuTest
-    emuTest.cpp
+    intel8080Test
+    intel8080Test.cpp
     src/intel8080.cpp
     src/intel8080_opcodes.cpp
+    src/cpu.cpp
     src/virtualMemory.cpp
     src/rom.cpp
     src/ram.cpp
     src/bus.cpp
 )
-target_include_directories(emuTest PRIVATE 
+target_include_directories(intel8080Test PRIVATE 
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     spdlog
 )
 target_link_libraries(
-  emuTest
+  intel8080Test
   spdlog::spdlog
   GTest::gtest_main
 )
 
 include(GoogleTest)
-gtest_discover_tests(emuTest)
+gtest_discover_tests(intel8080Test)
 

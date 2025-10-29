@@ -11,12 +11,14 @@
 Intel8080::Intel8080()
 {
     // Initialize flags
-    flags.z = 0;
     flags.s = 0;
-    flags.p = 0;
-    flags.cy = 0;
+    flags.z = 0;
+    flags.x_zero = 0;
     flags.ac = 0;
-    flags.pad = 0;
+    flags.y_zero = 0;
+    flags.p = 0;
+    flags.x_one = 1;
+    flags.cy = 0;
 
     // Initialize registers
     regs.a = 0;
@@ -40,36 +42,38 @@ Intel8080 *Intel8080::attachBus(Bus *bus)
     return this;
 }
 
-BYTE Intel8080::fetchOpcode()
+void Intel8080::fetchOpcode()
 {
-    return bus->readByte(regs.pc++);
+    opcode = bus->readByte(regs.pc++);
+    spdlog::debug("Fetched opcode: 0x{:02X}", opcode);
 }
 
-BYTE Intel8080::fetchByte()
+void Intel8080::fetchByte()
 {
-    return bus->readByte(regs.pc++);
+    byteData = bus->readByte(regs.pc++);
+    spdlog::debug("Fetched byte: 0x{:02X}", byteData);
 }
 
-WORD Intel8080::fetchWord()
+void Intel8080::fetchWord()
 {
-    BYTE low = bus->readByte(regs.pc++);
-    BYTE high = bus->readByte(regs.pc++);
-    return (static_cast<WORD>(high) << 8) | static_cast<WORD>(low);
+    wordData = (static_cast<WORD>(bus->readByte(regs.pc)) | static_cast<WORD>(bus->readByte(regs.pc+1) << 8));
+    spdlog::debug("Fetched word: 0x{:04X}", wordData);
+    regs.pc += 2;
 }
 
-BYTE Intel8080::readOpcode(WORD address)
+void Intel8080::readOpcode(WORD address)
 {
-    return bus->readByte(address);
+    opcode = bus->readByte(address);
 }
 
-BYTE Intel8080::readByte(WORD address)
+void Intel8080::readByte(WORD address)
 {
-    return bus->readByte(address);
+    byteData = bus->readByte(address);
 }
 
-WORD Intel8080::readWord(WORD address)
+void Intel8080::readWord(WORD address)
 {
-    return bus->readWord(address);
+    wordData = bus->readWord(address);
 }
 
 void Intel8080::writeOpcode(WORD address, BYTE data)
@@ -87,7 +91,9 @@ void Intel8080::writeWord(WORD address, WORD data)
     bus->writeWord(address, data);
 }
 
-void Intel8080::execute(BYTE opcode)
+void Intel8080::execute()
 {
     (this->*p_opcode_lookup[opcode])();
 }
+
+

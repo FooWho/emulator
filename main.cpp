@@ -13,7 +13,7 @@
 
 int main(int argc, char *argv[])
 {
-    spdlog::set_level(spdlog::level::trace);
+    spdlog::set_level(spdlog::level::debug);
     Intel8080 cpu;
     Bus bus;
     Rom rom(0x2000); // 8KB ROM
@@ -23,9 +23,13 @@ int main(int argc, char *argv[])
     rom.attachBus(bus.attachMemory(&rom));
     ram.attachBus(bus.attachMemory(&ram));
 
-    const std::vector<BYTE> buffer = {0xff, 0x00, 0x34, 0x12};
+    const std::vector<BYTE> buffer = {0x01, 0x34, 0x12, 0x01, 0x12, 0x34};
     rom.romLoad(buffer);
 
-    printf("All tests completed.\n");
+    cpu.fetchOpcode();
+    cpu.execute();
+    cpu.fetchOpcode();
+    cpu.execute();
+
     return 0;
 }

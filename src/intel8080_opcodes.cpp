@@ -11,6 +11,19 @@ void Intel8080::buildOpcodeTable()
     p_opcode_lookup[0x03] = &Intel8080::op_INX_B; // INX B instructrion
 }
 
+void Intel8080::regFlagsAuxCarry(BYTE original, BYTE result)
+{
+    flags.ac = ((BYTE(original & 0x0f)) <  (BYTE(result & 0x0f))); 
+} 
+
+void Intel8080::regFlagsBasic(BYTE result)
+{
+    flags.s = (result & 0x80) ? 1 : 0;
+    flags.z = (result == 0) ? 1 : 0;
+    flags.p = __builtin_popcount(result) % 2 == 0;
+}   
+    
+
 void Intel8080::op_ILLEGAL()
 {
     spdlog::debug("ILLEGAL");
@@ -32,11 +45,10 @@ void Intel8080::op_LXI_B_D16()
     // Size: 3  bytes       Cycles: 10
     // Description: Load immediate 16-bit data into BC register pair
     // Flags: None
-    BYTE low = fetchByte();
-    BYTE high = fetchByte();
-    regs.b = high;
-    regs.c = low;
-    spdlog::debug("LXI B, D16 -> B: 0x{:02X} C: 0x{:02X} D16: 0x{:04X}", regs.b, regs.c, (static_cast<WORD>((high) << 8) | static_cast<WORD>(low)));
+    fetchWord();
+    regs.b = (wordData >> 8) & 0x00FF;
+    regs.c = wordData & 0x00FF;
+    spdlog::debug("LXI B, D16 -> B: 0x{:02X} C: 0x{:02X} D16: 0x{:04X}", regs.b, regs.c, wordData);
 }
 
 void Intel8080::op_STAX_B()
@@ -47,7 +59,6 @@ void Intel8080::op_STAX_B()
     // Flags: None
     WORD address = (static_cast<WORD>(regs.b) << 8) | static_cast<WORD>(regs.c);
     writeByte(address, regs.a);
-    spdlog::debug("Register A: {0:X}", regs.a);
     spdlog::debug("STAX B -> [0x{:04X}] = 0x{:02X}", address, regs.a);
 }   
 
@@ -61,5 +72,19 @@ void Intel8080::op_INX_B()
     bc += 1;
     regs.b = (bc >> 8) & 0xFF;
     regs.c = bc & 0xFF;
-    //spdlog::trace(INX B -> )
+    spdlog::debug("INX B -> B: 0x{:02X} C: 0x{:02X} BC: 0x{:04X}", regs.b, regs.c, bc);
 }
+
+void Intel8080::op_INR_B()
+{
+    // Opcode: 0x04         Mnemonic: INR B
+    // Size: 1              Cycles: 5
+    // Description: Increment the B register
+    // Flags: Z, S, P, AC
+    BYTE result = regs.b + 1;
+    regFlagsBasic(result);
+    regFlagsAuxCarry(regs.b, result);
+    regs.b = result;
+    spdlog::debug("INR B -> B: 0x{:02X}", regs.b);
+}
+
