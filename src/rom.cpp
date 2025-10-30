@@ -1,5 +1,6 @@
 #include <cstdio>
 #include <stdexcept>
+#include <spdlog/spdlog.h>
 #include "rom.h"
 
 Rom::Rom(WORD size)
@@ -7,6 +8,26 @@ Rom::Rom(WORD size)
     romem = std::vector<BYTE>(size, 0);
     bus = nullptr;
 } 
+
+Rom::Rom(std::vector<BYTE> initData)
+{
+    romem = std::vector<BYTE>(initData.size(), 0);
+    romem.assign(initData.begin(), initData.end());
+    spdlog::debug("ROM initialized: size={}", romem.size());
+    bus = nullptr;
+}
+
+Rom::Rom(WORD size, std::vector<BYTE> initData)
+{
+    if (initData.size() > size) {
+        throw std::runtime_error("Initial data size exceeds ROM size");
+    }
+    romem = std::vector<BYTE>(size, 0);
+    for (size_t i = 0; i < initData.size() && i < size; ++i) {
+        romem[i] = initData[i];
+    }
+    bus = nullptr;
+}
 
 Rom *Rom::attachBus(Bus *bus)
 {
@@ -39,5 +60,10 @@ WORD Rom::memSize() const
 
 void Rom::romLoad(const std::vector<BYTE>& buffer)
 {
-    romem.assign(buffer.begin(), buffer.end());
+    if (buffer.size() > romem.size()) {
+        throw std::runtime_error("Buffer size exceeds ROM size");
+    }
+    for (int i = 0; i < buffer.size(); ++i) {
+        romem[i] = buffer[i];
+    }
 }

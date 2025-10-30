@@ -1,5 +1,6 @@
 #include <cstdio>
 #include <stdexcept>
+#include <spdlog/spdlog.h>
 #include "ram.h"
 
 Ram::Ram(WORD size)
@@ -7,6 +8,26 @@ Ram::Ram(WORD size)
     rwmem = std::vector<BYTE>(size, 0);
     bus = nullptr;
 } 
+
+Ram::Ram(std::vector<BYTE> initData)
+{
+    rwmem = std::vector<BYTE>(initData.size(), 0);
+    rwmem.assign(initData.begin(), initData.end());
+    bus = nullptr;
+}
+
+Ram::Ram(WORD size, std::vector<BYTE> initData)
+{
+    if (initData.size() > size) {
+        throw std::runtime_error("Initial data size exceeds RAM size");
+    }
+    rwmem = std::vector<BYTE>(size, 0);
+    for (size_t i = 0; i < initData.size(); ++i) {
+        rwmem[i] = initData[i];
+    }
+    bus = nullptr;
+}
+
 
 Ram *Ram::attachBus(Bus *bus)
 {
@@ -36,7 +57,12 @@ void Ram::write(WORD address, BYTE data)
 
 void Ram::ramLoad(const std::vector<BYTE>& buffer)
 {
-    rwmem.assign(buffer.begin(), buffer.end());
+    if (buffer.size() > rwmem.size()) {
+        throw std::runtime_error("Buffer size exceeds RAM size");
+    }
+    for (int i = 0; i < buffer.size(); ++i) {
+        rwmem[i] = buffer[i];
+    }
 }
 
 

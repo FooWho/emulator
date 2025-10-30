@@ -16,6 +16,8 @@ class Ram : public VirtualMemory
 
  public:
    Ram(WORD size);
+   Ram(std::vector<BYTE> initData);
+   Ram(WORD size, std::vector<BYTE> initData);
    Ram *attachBus(Bus *bus);
    BYTE read(WORD address) const override;
    void write(WORD address, BYTE data) override;

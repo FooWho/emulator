@@ -39,7 +39,7 @@ BYTE Bus::readByte(WORD address) const
         const auto& mapping = memory_map[i];
         if (address >= mapping.startAddress && address <= mapping.endAddress) {
             WORD effectiveAddress = address - mapping.startAddress;
-            spdlog::debug("BUS: Address=0x{:04X} mapped to device {:02d} with effectiveAddress=0x{:04X}", address, i, effectiveAddress);
+            spdlog::trace("BUS: Address=0x{:04X} mapped to device {:02d} with effectiveAddress=0x{:04X}", address, i, effectiveAddress);
             return mapping.device->read(effectiveAddress);
         }
     }

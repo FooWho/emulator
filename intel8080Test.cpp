@@ -157,28 +157,13 @@ class CPUTestHelper {
 TEST(intel8080Test, cpuTestMemoryAccess) {
     Intel8080 cpu;
     Bus bus;
-    Rom rom(0x2000); // 8KB ROM
-    Ram ram(0x2000); // 8KB RAM
 
-    std::vector<BYTE> rombuffer(0x2000, 0x00);
-    rombuffer[0] = 0x01;
-    rombuffer[1] = 0x00;
-    rombuffer[2] = 0x00;
-    rombuffer[3] = 0x02;
-    rombuffer[4] = 0x34;
-    rombuffer[5] = 0x12;
-    rombuffer[6] = 0x00;
+    spdlog::set_level(spdlog::level::debug);
+    std::vector<BYTE> rombuffer({0x01, 0x00, 0x00, 0x02, 0x34, 0x12, 0x00});
+    Rom rom(0x2000, rombuffer); // 8KB ROM
 
-    std::vector<BYTE> rambuffer(0x2000, 0x00);
-    rambuffer[0] = 0x02;
-    rambuffer[1] = 0x03;
-    rambuffer[2] = 0x89;
-    rambuffer[3] = 0x67;
-    rambuffer[4] = 0x00;
-
-    rom.romLoad(rombuffer);
-    ram.ramLoad(rambuffer);
-
+    std::vector<BYTE> rambuffer({0x02, 0x03, 0x12, 0x89, 0x67, 0x00});
+    Ram ram(0x2000, rambuffer); // 8KB RAM
 
     bus.attachCpu(&cpu)->attachMemory(&rom, 0x0000, 0x1FFF)->attachMemory(&ram, 0x2000, 0x3FFF);
     cpu.attachBus(&bus);
@@ -190,7 +175,7 @@ TEST(intel8080Test, cpuTestMemoryAccess) {
 
     EXPECT_EQ(CPUTestHelper::getByteAtAddress(cpu, 0x2000), 0x02);
     EXPECT_EQ(CPUTestHelper::getByteAtAddress(cpu, 0x2001), 0x03);
-    EXPECT_EQ(CPUTestHelper::getWordAtAddress(cpu, 0x2002), 0x6789);
+    EXPECT_EQ(CPUTestHelper::getWordAtAddress(cpu, 0x2003), 0x6789);
 }
 
 TEST(intel8080Test, cpuTestPC) {
@@ -201,6 +186,7 @@ TEST(intel8080Test, cpuTestPC) {
 
     const std::vector<BYTE> buffer = {0x00, 0x00, 0x00, 0x01, 0x34, 0x12, 0x00};
     rom.romLoad(buffer);
+
 
     bus.attachCpu(&cpu)->attachMemory(&rom, 0x0000, 0x1FFF)->attachMemory(&ram, 0x2000, 0x3FFF);
     cpu.attachBus(&bus);

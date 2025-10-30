@@ -15,6 +15,8 @@ class Rom : public VirtualMemory
 
  public:
    Rom(WORD size);
+   Rom(std::vector<BYTE> initData);
+   Rom(WORD size, std::vector<BYTE> initData);
    Rom *attachBus(Bus *bus);
    BYTE read(WORD address) const override;
    void write(WORD address, BYTE data) override;
