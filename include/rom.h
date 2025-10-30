@@ -16,8 +16,8 @@ class Rom : public VirtualMemory
  public:
    Rom(WORD size);
    Rom *attachBus(Bus *bus);
-   BYTE read(WORD address) override;
+   BYTE read(WORD address) const override;
    void write(WORD address, BYTE data) override;
-   WORD memSize() override;
+   WORD memSize() const override;
    void romLoad(const std::vector<BYTE>& buffer);
 };

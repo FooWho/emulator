@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
 
     cpu.attachBus(bus.attachCpu(&cpu));
     rom.attachBus(bus.attachMemory(&rom));
-    ram.attachBus(bus.attachMemory(&ram));
+    ram.attachBus(bus.attachMemory(&ram)); 
 
     const std::vector<BYTE> buffer = {0x01, 0x34, 0x12, 0x01, 0x12, 0x34};
     rom.romLoad(buffer);

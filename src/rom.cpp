@@ -14,13 +14,12 @@ Rom *Rom::attachBus(Bus *bus)
     return this;
 }
 
-BYTE Rom::read(WORD address)
+BYTE Rom::read(WORD address) const
 {
     // Implementation for reading from ROM
     // Should throw runtime_error if address is out of bounds
     if (address >= romem.size()) {
-        std::runtime_error ex("Attempt to read from invalid ROM address " + std::to_string(address));
-        throw ex;
+        throw std::runtime_error("Attempt to read from invalid ROM address " + std::to_string(address));
     }
     return romem[address];
 }
@@ -28,11 +27,10 @@ BYTE Rom::read(WORD address)
 void Rom::write(WORD address, BYTE data)
 {
     // ROM is read-only; writing is not allowed
-    std::runtime_error ex("Attempt to write to ROM at address " + std::to_string(address));
-    throw ex;  
+    throw std::runtime_error("Attempt to write to ROM at address " + std::to_string(address));
 }
 
-WORD Rom::memSize()
+WORD Rom::memSize() const
 {
     return static_cast<WORD>(romem.size());
 }

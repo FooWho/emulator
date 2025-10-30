@@ -17,7 +17,7 @@ class Ram : public VirtualMemory
  public:
    Ram(WORD size);
    Ram *attachBus(Bus *bus);
-   BYTE read(WORD address) override;
+   BYTE read(WORD address) const override;
    void write(WORD address, BYTE data) override;
-   WORD memSize() override;
+   WORD memSize() const override;
 };

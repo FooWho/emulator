@@ -14,13 +14,12 @@ Ram *Ram::attachBus(Bus *bus)
     return this;
 }
 
-BYTE Ram::read(WORD address)
+BYTE Ram::read(WORD address) const
 {
     // Implementation for reading from ROM
     // Should throw runtime_error if address is out of bounds
     if (address >= rwmem.size()) {
-        std::runtime_error ex("Attempt to read from invalid RAM address " + std::to_string(address));
-        throw ex;
+        throw std::runtime_error("Attempt to read from invalid RAM address " + std::to_string(address));
     }
     return rwmem[address];
 }
@@ -30,13 +29,12 @@ void Ram::write(WORD address, BYTE data)
     // Write data to RAM
         // Should throw runtime_error if address is out of bounds
     if (address >= rwmem.size()) {
-        std::runtime_error ex("Attempt to write to invalid RAM address " + std::to_string(address));
-        throw ex;
+        throw std::runtime_error("Attempt to write to invalid RAM address " + std::to_string(address));
     }
     rwmem[address] = data;
 }
 
-WORD Ram::memSize()
+WORD Ram::memSize() const
 {
     return static_cast<WORD>(rwmem.size());
 }
