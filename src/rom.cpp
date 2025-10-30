@@ -32,13 +32,12 @@ void Rom::write(WORD address, BYTE data)
 
 WORD Rom::memSize() const
 {
+    WORD mySize = romem.size();
     return static_cast<WORD>(romem.size());
 }
 
 
 void Rom::romLoad(const std::vector<BYTE>& buffer)
 {
-    for (int i = 0; i < romem.size(); i++) {
-        romem[i] = buffer[i];
-    }
+    romem.assign(buffer.begin(), buffer.end());
 }

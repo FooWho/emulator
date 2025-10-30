@@ -20,4 +20,5 @@ class Ram : public VirtualMemory
    BYTE read(WORD address) const override;
    void write(WORD address, BYTE data) override;
    WORD memSize() const override;
+   void ramLoad(const std::vector<BYTE>& buffer);
 };

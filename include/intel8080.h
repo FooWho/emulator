@@ -35,8 +35,8 @@ class Intel8080 : public CPU {
         BYTE e;         // Low byte of the DE pair
         BYTE h;         // High byte of the HL pair -> Used in indirect addressing operations
         BYTE l;         // Low byte of the HL pair -> Used in indirect addressing operations
-        BYTE sp;        // Stack Pointer
-        BYTE pc;        // Program Counter
+        WORD sp;        // Stack Pointer
+        WORD pc;        // Program Counter
     } regs;
 
     BYTE opcode;
@@ -106,6 +106,7 @@ class Intel8080 : public CPU {
     void op_INX_D();
     void buildOpcodeTable();
 
+ protected:
     void fetchByte() override;
     void fetchWord() override;
     void readOpcode(WORD address) override;
@@ -115,13 +116,11 @@ class Intel8080 : public CPU {
     void writeByte(WORD address, BYTE data) override;
     void writeWord(WORD address, WORD data) override;
 
-
-
-
  public:
     Intel8080();
-    void reset() override {};
-    void step() override {};
+    void reset() override;
+    // step() is a single fetch-decode-execute cycle.
+    void step() override;
     Intel8080 *attachBus(Bus *bus) override;
     void fetchOpcode() override;
     void execute() override;

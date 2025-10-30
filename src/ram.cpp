@@ -34,6 +34,12 @@ void Ram::write(WORD address, BYTE data)
     rwmem[address] = data;
 }
 
+void Ram::ramLoad(const std::vector<BYTE>& buffer)
+{
+    rwmem.assign(buffer.begin(), buffer.end());
+}
+
+
 WORD Ram::memSize() const
 {
     return static_cast<WORD>(rwmem.size());

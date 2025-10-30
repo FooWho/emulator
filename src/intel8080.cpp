@@ -10,17 +10,24 @@
 
 Intel8080::Intel8080()
 {
-    // Initialize flags
+    // On construction, the CPU should be in a reset state.
+    reset();
+    buildOpcodeTable();
+    bus = nullptr;
+}
+void Intel8080::reset()
+{
+    // Reset flags to their initial state.
     flags.s = 0;
     flags.z = 0;
     flags.x_zero = 0;
     flags.ac = 0;
     flags.y_zero = 0;
     flags.p = 0;
-    flags.x_one = 1;
+    flags.x_one = 1; // This bit is always 1.
     flags.cy = 0;
 
-    // Initialize registers
+    // Reset general purpose registers, stack pointer, and program counter.
     regs.a = 0;
     regs.b = 0;
     regs.c = 0;
@@ -29,11 +36,7 @@ Intel8080::Intel8080()
     regs.h = 0;
     regs.l = 0;
     regs.sp = 0;
-    regs.pc = 0;
-
-    buildOpcodeTable();
-    bus = nullptr;
-
+    regs.pc = 0; // Program execution starts at 0x0000 on reset.
 }
 
 Intel8080 *Intel8080::attachBus(Bus *bus)
@@ -56,7 +59,9 @@ void Intel8080::fetchByte()
 
 void Intel8080::fetchWord()
 {
-    wordData = (static_cast<WORD>(bus->readByte(regs.pc)) | static_cast<WORD>(bus->readByte(regs.pc+1) << 8));
+    BYTE low = bus->readByte(regs.pc);
+    BYTE high = bus->readByte(regs.pc + 1);
+    wordData = (static_cast<WORD>(high) << 8) | static_cast<WORD>(low);
     spdlog::debug("Fetched word: 0x{:04X}", wordData);
     regs.pc += 2;
 }
@@ -96,4 +101,8 @@ void Intel8080::execute()
     (this->*p_opcode_lookup[opcode])();
 }
 
-
+void Intel8080::step()
+{
+    fetchOpcode();
+    execute();
+}

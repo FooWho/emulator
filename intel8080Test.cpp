@@ -154,6 +154,45 @@ class CPUTestHelper {
     }
 };
 
+TEST(intel8080Test, cpuTestMemoryAccess) {
+    Intel8080 cpu;
+    Bus bus;
+    Rom rom(0x2000); // 8KB ROM
+    Ram ram(0x2000); // 8KB RAM
+
+    std::vector<BYTE> rombuffer(0x2000, 0x00);
+    rombuffer[0] = 0x01;
+    rombuffer[1] = 0x00;
+    rombuffer[2] = 0x00;
+    rombuffer[3] = 0x02;
+    rombuffer[4] = 0x34;
+    rombuffer[5] = 0x12;
+    rombuffer[6] = 0x00;
+
+    std::vector<BYTE> rambuffer(0x2000, 0x00);
+    rambuffer[0] = 0x02;
+    rambuffer[1] = 0x03;
+    rambuffer[2] = 0x89;
+    rambuffer[3] = 0x67;
+    rambuffer[4] = 0x00;
+
+    rom.romLoad(rombuffer);
+    ram.ramLoad(rambuffer);
+
+
+    bus.attachCpu(&cpu)->attachMemory(&rom, 0x0000, 0x1FFF)->attachMemory(&ram, 0x2000, 0x3FFF);
+    cpu.attachBus(&bus);
+    rom.attachBus(&bus);
+    ram.attachBus(&bus);
+    EXPECT_EQ(CPUTestHelper::getByteAtAddress(cpu, 0x0000), 0x01);
+    EXPECT_EQ(CPUTestHelper::getByteAtAddress(cpu, 0x0003), 0x02);
+    EXPECT_EQ(CPUTestHelper::getWordAtAddress(cpu, 0x0004), 0x1234);
+
+    EXPECT_EQ(CPUTestHelper::getByteAtAddress(cpu, 0x2000), 0x02);
+    EXPECT_EQ(CPUTestHelper::getByteAtAddress(cpu, 0x2001), 0x03);
+    EXPECT_EQ(CPUTestHelper::getWordAtAddress(cpu, 0x2002), 0x6789);
+}
+
 TEST(intel8080Test, cpuTestPC) {
     Intel8080 cpu;
     Bus bus;
@@ -163,27 +202,48 @@ TEST(intel8080Test, cpuTestPC) {
     const std::vector<BYTE> buffer = {0x00, 0x00, 0x00, 0x01, 0x34, 0x12, 0x00};
     rom.romLoad(buffer);
 
-    cpu.attachBus(bus.attachCpu(&cpu));
-    rom.attachBus(bus.attachMemory(&rom));
-    ram.attachBus(bus.attachMemory(&ram));
+    bus.attachCpu(&cpu)->attachMemory(&rom, 0x0000, 0x1FFF)->attachMemory(&ram, 0x2000, 0x3FFF);
+    cpu.attachBus(&bus);
+    rom.attachBus(&bus);
+    ram.attachBus(&bus);
 
     EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0000); // Initial PC should be 0
 
-    cpu.fetchOpcode(); // Fetch opcode (0x00)
-    cpu.execute(); // Execute opcode
+    cpu.step(); // Execute NOP (0x00)
     EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0001); // PC should increment by 1
-    cpu.fetchOpcode(); // Fetch opcode (0x00)
-    cpu.execute(); // Execute opcode
+    cpu.step(); // Execute NOP (0x00)
     EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0002); // PC should increment by 1
-    cpu.fetchOpcode(); // Fetch opcode (0x00)
-    cpu.execute();
+    cpu.step(); // Execute NOP (0x00)
     EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0003); // PC should increment by 1
-    cpu.fetchOpcode(); // Fetch opcode (0x01)
-    cpu.execute(); // Execute opcode
+    cpu.step(); // Execute LXI B,D16 (0x01)
     EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0006); // PC should increment by 3
-    cpu.fetchOpcode(); // Fetch opcode (0x00)
-    cpu.execute(); // Execute opcode
+    cpu.step(); // Execute NOP (0x00)
     EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0007); // PC should increment by 1
+}
+
+TEST(intel8080Test, cpuTestReset) {
+    Intel8080 cpu;
+
+    // Check initial state
+    EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0000);
+    EXPECT_EQ(CPUTestHelper::getFlags(cpu), 0x02); // Only the 'always 1' bit should be set
+
+    // Modify the CPU state
+    CPUTestHelper::setRegisterA(cpu, 0xFF);
+    CPUTestHelper::setRegisterBC(cpu, 0x1234);
+    CPUTestHelper::setRegisterDE(cpu, 0x5678);
+    CPUTestHelper::setRegisterHL(cpu, 0x9ABC);
+    CPUTestHelper::setRegisterSP(cpu, 0xDEF0);
+    CPUTestHelper::setRegisterPC(cpu, 0x1000);
+    CPUTestHelper::setFlags(cpu, 0xFF);
+
+    // Reset the CPU
+    cpu.reset();
+
+    // Verify the state is reset
+    EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0000);
+    EXPECT_EQ(CPUTestHelper::getFlags(cpu), 0x02);
+    EXPECT_EQ(CPUTestHelper::getRegisterBC(cpu), 0x0000);
 }
 
 TEST(intel8080Test, cpuTestFlags) {
@@ -204,17 +264,14 @@ TEST(intel8080Test, cpuTestIllegalOpcode) {
     rom.romLoad(buffer);
     
 
-    cpu.attachBus(bus.attachCpu(&cpu));
-    rom.attachBus(bus.attachMemory(&rom));
-    ram.attachBus(bus.attachMemory(&ram));
+    bus.attachCpu(&cpu)->attachMemory(&rom, 0x0000, 0x1FFF)->attachMemory(&ram, 0x2000, 0x3FFF);
+    cpu.attachBus(&bus);
+    rom.attachBus(&bus);
 
-    cpu.fetchOpcode(); // Fetch first opcode
-    EXPECT_EQ(CPUTestHelper::getOpcode(cpu), 0x00); // Should fetch NOP (0x00)
-    EXPECT_NO_THROW(cpu.execute());
+    EXPECT_NO_THROW(cpu.step()); // Execute NOP (0x00)
+    EXPECT_EQ(CPUTestHelper::getOpcode(cpu), 0x00);
     EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0001); // PC should increment by 1
-    cpu.fetchOpcode(); // Fetch second opcode
-    EXPECT_EQ(CPUTestHelper::getOpcode(cpu), 0xff);
-    EXPECT_THROW(cpu.execute(), std::runtime_error);
+    EXPECT_THROW(cpu.step(), std::runtime_error); // Execute ILLEGAL (0xff)
     EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0002); // PC should increment by 1 (because fetching the opcode already moved the PC)
 }
 
@@ -227,22 +284,20 @@ TEST(intel8080Test, cpuTestNOP) {
     const std::vector<BYTE> buffer = {0xff, 0x00, 0x01, 0x34, 0x12};
     rom.romLoad(buffer);
 
-    cpu.attachBus(bus.attachCpu(&cpu));
-    rom.attachBus(bus.attachMemory(&rom));
-    ram.attachBus(bus.attachMemory(&ram));
+    bus.attachCpu(&cpu)->attachMemory(&rom, 0x0000, 0x1FFF)->attachMemory(&ram, 0x2000, 0x3FFF);
+    cpu.attachBus(&bus);
+    rom.attachBus(&bus);
 
     BYTE opcode;
     BYTE byteData;
     WORD wordData;
 
-    cpu.fetchOpcode(); // Fetch first opcode
-    EXPECT_EQ(CPUTestHelper::getOpcode(cpu), 0xff); // Should fetch illegal instruction (0xff)
-    EXPECT_THROW(cpu.execute(), std::runtime_error);
+    EXPECT_THROW(cpu.step(), std::runtime_error); // Execute ILLEGAL (0xff)
+    EXPECT_EQ(CPUTestHelper::getOpcode(cpu), 0xff);
     EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0001); // PC should increment by 1
 
-    cpu.fetchOpcode(); // Fetch second opcode
+    EXPECT_NO_THROW(cpu.step()); // Execute NOP (0x00)
     EXPECT_EQ(CPUTestHelper::getOpcode(cpu), 0x00); // Should fetch NOP instruction (0x00)
-    EXPECT_NO_THROW(cpu.execute()); // Execute NOP instruction
     EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0002); // PC should increment by 1
 }
 
@@ -254,23 +309,20 @@ TEST(intel8080Test, cpuTestLXI_B_D16) {
     const std::vector<BYTE> buffer = {0xff, 0x00, 0x01, 0x34, 0x12};
     rom.romLoad(buffer);
 
-    cpu.attachBus(bus.attachCpu(&cpu));
-    rom.attachBus(bus.attachMemory(&rom));
-    ram.attachBus(bus.attachMemory(&ram));
+    bus.attachCpu(&cpu)->attachMemory(&rom, 0x0000, 0x1FFF)->attachMemory(&ram, 0x2000, 0x3FFF);
+    cpu.attachBus(&bus);
+    rom.attachBus(&bus);
 
-    cpu.fetchOpcode(); // Fetch first opcode
-    EXPECT_EQ(CPUTestHelper::getOpcode(cpu), 0xff); // Should fetch illegal instruction (0xff)
-    EXPECT_THROW(cpu.execute(), std::runtime_error);
+    EXPECT_THROW(cpu.step(), std::runtime_error); // Execute ILLEGAL (0xff)
+    EXPECT_EQ(CPUTestHelper::getOpcode(cpu), 0xff);
     EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0001); // PC should increment by 1
 
-    cpu.fetchOpcode(); // Fetch second opcode
+    EXPECT_NO_THROW(cpu.step()); // Execute NOP (0x00)
     EXPECT_EQ(CPUTestHelper::getOpcode(cpu), 0x00); // Should fetch NOP instruction (0x00)
-    EXPECT_NO_THROW(cpu.execute()); // Execute NOP instruction
     EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0002); // PC should increment by 1
 
-    cpu.fetchOpcode(); // Should fetch LXI B,D16 instruction (0x01)
+    cpu.step(); // Execute LXI B,D16 (0x01)
     EXPECT_EQ(CPUTestHelper::getOpcode(cpu), 0x01);
-    cpu.execute(); // Execute LXI B,D16 instruction
     EXPECT_EQ(CPUTestHelper::getRegisterBC(cpu), 0x1234); // Check that BC register pair is loaded correctly;
     EXPECT_EQ(CPUTestHelper::getRegisterB(cpu), 0x12); // High byte
     EXPECT_EQ(CPUTestHelper::getRegisterC(cpu), 0x34); // Low byte
@@ -287,36 +339,27 @@ TEST(intel8080Test, emuTest_cpuTestSTAX_B) {
     const std::vector<BYTE> buffer = {0xff, 0x00, 0x01, 0x34, 0x12, 0x02};
     rom.romLoad(buffer);
 
-    cpu.attachBus(bus.attachCpu(&cpu));
-    rom.attachBus(bus.attachMemory(&rom));
-    ram.attachBus(bus.attachMemory(&ram));
+    bus.attachCpu(&cpu)->attachMemory(&rom, 0x0000, 0x1FFF)->attachMemory(&ram, 0x2000, 0x3FFF);
+    cpu.attachBus(&bus);
+    rom.attachBus(&bus);
 
-    cpu.fetchOpcode(); // Fetch first opcode
-    EXPECT_EQ(CPUTestHelper::getOpcode(cpu), 0xff); // Should fetch illegal instruction (0xff)
-    EXPECT_THROW(cpu.execute(), std::runtime_error);
+    EXPECT_THROW(cpu.step(), std::runtime_error); // Execute ILLEGAL (0xff)
+    EXPECT_EQ(CPUTestHelper::getOpcode(cpu), 0xff);
     EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0001); // PC should increment by 1
 
-    cpu.fetchOpcode(); // Fetch second opcode
+    EXPECT_NO_THROW(cpu.step()); // Execute NOP (0x00)
     EXPECT_EQ(CPUTestHelper::getOpcode(cpu), 0x00); // Should fetch NOP instruction (0x00)
-    EXPECT_NO_THROW(cpu.execute()); // Execute NOP instruction
     EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0002); // PC should increment by 1
 
-    cpu.fetchOpcode(); // Should fetch LXI B,D16 instruction (0x01)
+    cpu.step(); // Execute LXI B,D16 (0x01)
     EXPECT_EQ(CPUTestHelper::getOpcode(cpu), 0x01);
-    cpu.execute(); // Execute LXI B,D16 instruction
     EXPECT_EQ(CPUTestHelper::getRegisterBC(cpu), 0x1234); // Check that BC register pair is loaded correctly;
-    EXPECT_EQ(CPUTestHelper::getRegisterB(cpu), 0x12); // High byte
-    EXPECT_EQ(CPUTestHelper::getRegisterC(cpu), 0x34); // Low byte
-    EXPECT_EQ(CPUTestHelper::getWordData(cpu), 0x1234); // WORD read
     EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0005); // PC should point to next instruction
 
     CPUTestHelper::setRegisterA(cpu, 0x56); // Set Accumulator to known value
-    EXPECT_EQ(CPUTestHelper::getRegisterA(cpu), 0x56); // Verify Accumulator has the correct value
     CPUTestHelper::setRegisterBC(cpu, 0x3124); // Set BC to point to test address
-    EXPECT_EQ(CPUTestHelper::getRegisterBC(cpu), 0x3124); // Verify Extended Register BC contains the correct address
-    cpu.fetchOpcode(); // Should fetch STAX B instruction (0x02)
+    cpu.step(); // Execute STAX B (0x02)
     EXPECT_EQ(CPUTestHelper::getOpcode(cpu), 0x02); // Verify we have the correct opcode
-    cpu.execute(); // Execute STAX B instruction
     EXPECT_EQ(CPUTestHelper::getByteAtAddress(cpu, CPUTestHelper::getRegisterBC(cpu)), 0x56); // Check that memory at address BC contains value of Accumulator
     EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0006); // PC should point to next instruction
 }
@@ -330,40 +373,32 @@ TEST(intel8080Test, emuTest_cpuTestINX_B) {
     const std::vector<BYTE> buffer = {0xff, 0x00, 0x01, 0x34, 0x12, 0x02, 0x03};
     rom.romLoad(buffer);
 
-    cpu.attachBus(bus.attachCpu(&cpu));
-    rom.attachBus(bus.attachMemory(&rom));
-    ram.attachBus(bus.attachMemory(&ram));
+    bus.attachCpu(&cpu)->attachMemory(&rom, 0x0000, 0x1FFF)->attachMemory(&ram, 0x2000, 0x3FFF);
+    cpu.attachBus(&bus);
+    rom.attachBus(&bus);
 
-    cpu.fetchOpcode(); // Fetch first opcode
-    EXPECT_EQ(CPUTestHelper::getOpcode(cpu), 0xff); // Should fetch illegal instruction (0xff)
-    EXPECT_THROW(cpu.execute(), std::runtime_error);
+    EXPECT_THROW(cpu.step(), std::runtime_error); // Execute ILLEGAL (0xff)
+    EXPECT_EQ(CPUTestHelper::getOpcode(cpu), 0xff);
     EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0001); // PC should increment by 1
 
-    cpu.fetchOpcode(); // Fetch second opcode
+    EXPECT_NO_THROW(cpu.step()); // Execute NOP (0x00)
     EXPECT_EQ(CPUTestHelper::getOpcode(cpu), 0x00); // Should fetch NOP instruction (0x00)
-    EXPECT_NO_THROW(cpu.execute()); // Execute NOP instruction
     EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0002); // PC should increment by 1
 
-    cpu.fetchOpcode(); // Should fetch LXI B,D16 instruction (0x01)
+    cpu.step(); // Execute LXI B,D16 (0x01)
     EXPECT_EQ(CPUTestHelper::getOpcode(cpu), 0x01);
-    cpu.execute(); // Execute LXI B,D16 instruction
     EXPECT_EQ(CPUTestHelper::getRegisterBC(cpu), 0x1234); // Check that BC register pair is loaded correctly;
-    EXPECT_EQ(CPUTestHelper::getRegisterB(cpu), 0x12); // High byte
-    EXPECT_EQ(CPUTestHelper::getRegisterC(cpu), 0x34); // Low byte
     EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0005); // PC should point to next instruction
 
-    cpu.fetchOpcode(); // Should fetch STAX B instruction (0x02)
     CPUTestHelper::setRegisterA(cpu, 0x56); // Set Accumulator to known value
     CPUTestHelper::setRegisterBC(cpu, 0x3124); // Set BC to point to test address
+    cpu.step(); // Execute STAX B (0x02)
     EXPECT_EQ(CPUTestHelper::getOpcode(cpu), 0x02);
-    cpu.execute(); // Execute STAX B instruction
     EXPECT_EQ(CPUTestHelper::getByteAtAddress(cpu, CPUTestHelper::getRegisterBC(cpu)), CPUTestHelper::getRegisterA(cpu)); // Check that memory at address BC contains value of Accumulator
     EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0006); // PC should point to next instruction
 
-    cpu.fetchOpcode(); // Should fetch INX B instruction (0x03)
-    EXPECT_EQ(CPUTestHelper::getOpcode(cpu), 0x03);
     CPUTestHelper::setRegisterBC(cpu, 0x3124); // Set BC to a test value
-    EXPECT_EQ(CPUTestHelper::getRegisterBC(cpu), 0x3124);
-    cpu.execute();
+    cpu.step(); // Execute INX B (0x03)
+    EXPECT_EQ(CPUTestHelper::getOpcode(cpu), 0x03);
     EXPECT_EQ(CPUTestHelper::getRegisterBC(cpu), 0x3125);
 }

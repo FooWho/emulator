@@ -3,21 +3,26 @@
 #include <memory>
 #include "types.h"
 
-class Intel8080; // Forward declaration
+class CPU; // Forward declaration
 class VirtualMemory; // Forward declaration
 const int MEMORY_MAP_SIZE = 32;
 
 
 class Bus {
  private:
-  Intel8080 *cpu;
+  struct MemoryMapping {
+      WORD startAddress;
+      WORD endAddress;
+      VirtualMemory* device;
+  };
+  CPU *cpu;
   unsigned int device_count;
-  std::array<VirtualMemory*, MEMORY_MAP_SIZE> memory_map;
+  std::array<MemoryMapping, MEMORY_MAP_SIZE> memory_map;
     
  public:
   Bus();
-  Bus *attachCpu(Intel8080 *cpu);
-  Bus *attachMemory(VirtualMemory* memory);
+  Bus *attachCpu(CPU *cpu);
+  Bus *attachMemory(VirtualMemory* memory, WORD startAddress, WORD endAddress);
   BYTE readByte(WORD address) const;
   WORD readWord(WORD address) const;
   void writeByte(WORD address, BYTE data);
