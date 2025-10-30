@@ -6,7 +6,6 @@
 Rom::Rom(WORD size)
 {
     romem = std::vector<BYTE>(size, 0);
-    bus = nullptr;
 } 
 
 Rom::Rom(std::vector<BYTE> initData)
@@ -14,7 +13,6 @@ Rom::Rom(std::vector<BYTE> initData)
     romem = std::vector<BYTE>(initData.size(), 0);
     romem.assign(initData.begin(), initData.end());
     spdlog::debug("ROM initialized: size={}", romem.size());
-    bus = nullptr;
 }
 
 Rom::Rom(WORD size, std::vector<BYTE> initData)
@@ -26,13 +24,6 @@ Rom::Rom(WORD size, std::vector<BYTE> initData)
     for (size_t i = 0; i < initData.size() && i < size; ++i) {
         romem[i] = initData[i];
     }
-    bus = nullptr;
-}
-
-Rom *Rom::attachBus(Bus *bus)
-{
-    this->bus = bus;
-    return this;
 }
 
 BYTE Rom::read(WORD address) const

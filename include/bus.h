@@ -1,28 +1,28 @@
 #pragma once
-#include <array>
+#include <vector>
 #include <memory>
+#include <optional>
 #include "types.h"
 
 class CPU; // Forward declaration
 class VirtualMemory; // Forward declaration
-const int MEMORY_MAP_SIZE = 32;
-
 
 class Bus {
  private:
   struct MemoryMapping {
       WORD startAddress;
       WORD endAddress;
-      VirtualMemory* device;
+      VirtualMemory *device;
+      MemoryMapping(WORD start, WORD end, VirtualMemory* vmDevice) : startAddress(start), endAddress(end), device(vmDevice) {};
+      //MemoryMapping() = default;
+      ~MemoryMapping() = default;
   };
-  CPU *cpu;
-  unsigned int device_count;
-  std::array<MemoryMapping, MEMORY_MAP_SIZE> memory_map;
+  std::vector<MemoryMapping> memory_map;
     
  public:
   Bus();
   Bus *attachCpu(CPU *cpu);
-  Bus *attachMemory(VirtualMemory* memory, WORD startAddress, WORD endAddress);
+  Bus *attachMemory(VirtualMemory *memory, WORD startAddress, WORD endAddress);
   BYTE readByte(WORD address) const;
   WORD readWord(WORD address) const;
   void writeByte(WORD address, BYTE data);

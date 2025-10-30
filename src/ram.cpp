@@ -6,14 +6,12 @@
 Ram::Ram(WORD size)
 {
     rwmem = std::vector<BYTE>(size, 0);
-    bus = nullptr;
 } 
 
 Ram::Ram(std::vector<BYTE> initData)
 {
     rwmem = std::vector<BYTE>(initData.size(), 0);
     rwmem.assign(initData.begin(), initData.end());
-    bus = nullptr;
 }
 
 Ram::Ram(WORD size, std::vector<BYTE> initData)
@@ -25,14 +23,6 @@ Ram::Ram(WORD size, std::vector<BYTE> initData)
     for (size_t i = 0; i < initData.size(); ++i) {
         rwmem[i] = initData[i];
     }
-    bus = nullptr;
-}
-
-
-Ram *Ram::attachBus(Bus *bus)
-{
-    this->bus = bus;
-    return this;
 }
 
 BYTE Ram::read(WORD address) const
@@ -54,17 +44,6 @@ void Ram::write(WORD address, BYTE data)
     }
     rwmem[address] = data;
 }
-
-void Ram::ramLoad(const std::vector<BYTE>& buffer)
-{
-    if (buffer.size() > rwmem.size()) {
-        throw std::runtime_error("Buffer size exceeds RAM size");
-    }
-    for (int i = 0; i < buffer.size(); ++i) {
-        rwmem[i] = buffer[i];
-    }
-}
-
 
 WORD Ram::memSize() const
 {

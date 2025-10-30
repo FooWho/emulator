@@ -6,41 +6,36 @@
 
 Bus::Bus()
 {
-    cpu = nullptr;
-    device_count = 0;
-    memory_map.fill({0, 0, nullptr});
+    memory_map.clear();
     return;
 }
 
 Bus *Bus::attachCpu(CPU* cpu)
 {
-    this->cpu = cpu;
     return this;
 }
 
 Bus *Bus::attachMemory(VirtualMemory *memory, WORD startAddress, WORD endAddress)
 {
-    if (device_count >= MEMORY_MAP_SIZE) {
-        throw std::runtime_error("Exceeded maximum number of memory mapped devices");
-    }
-    if (startAddress > endAddress) {
+    MemoryMapping mappedMemory(startAddress, endAddress, memory);
+    if (mappedMemory.startAddress > mappedMemory.endAddress) {
         throw std::invalid_argument("Start address cannot be greater than end address");
     }
-    if ((endAddress - startAddress + 1) != memory->memSize()) {
+    if ((mappedMemory.endAddress - mappedMemory.startAddress + 1) != mappedMemory.device->memSize()) {
         throw std::invalid_argument("Memory device size does not match mapping range");
     }
-    memory_map[device_count++] = {startAddress, endAddress, memory};
+    memory_map.push_back(mappedMemory);
     return this;
 } 
 
 BYTE Bus::readByte(WORD address) const
 {
-    for (unsigned int i = 0; i < device_count; i++) {
+    for (unsigned int i = 0; i < memory_map.size(); i++) {
         const auto& mapping = memory_map[i];
         if (address >= mapping.startAddress && address <= mapping.endAddress) {
             WORD effectiveAddress = address - mapping.startAddress;
             spdlog::trace("BUS: Address=0x{:04X} mapped to device {:02d} with effectiveAddress=0x{:04X}", address, i, effectiveAddress);
-            return mapping.device->read(effectiveAddress);
+            return (mapping.device->read(effectiveAddress));
         }
     }
     throw std::runtime_error("Attempt to read from unmapped memory address " + std::to_string(address));    
@@ -48,7 +43,7 @@ BYTE Bus::readByte(WORD address) const
 
 void Bus::writeByte(WORD address, BYTE data)
 {
-    for (unsigned int i = 0; i < device_count; i++) {
+    for (unsigned int i = 0; i < memory_map.size(); i++) {
         const auto& mapping = memory_map[i];
         if (address >= mapping.startAddress && address <= mapping.endAddress) {
             WORD effectiveAddress = address - mapping.startAddress;

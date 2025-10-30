@@ -20,8 +20,8 @@ int main(int argc, char *argv[])
     Ram ram(0x2000); // 8KB RAM
 
     cpu.attachBus(bus.attachCpu(&cpu));
-    rom.attachBus(bus.attachMemory(&rom, 0x0000, 0x1FFF));
-    ram.attachBus(bus.attachMemory(&ram, 0x2000, 0x3FFF)); 
+    bus.attachMemory(&rom, 0x0000, 0x1FFF);
+    bus.attachMemory(&ram, 0x2000, 0x3FFF); 
 
     const std::vector<BYTE> buffer = {0x01, 0x34, 0x12, 0x01, 0x12, 0x34};
     rom.romLoad(buffer);

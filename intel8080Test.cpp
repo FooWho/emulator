@@ -167,8 +167,6 @@ TEST(intel8080Test, cpuTestMemoryAccess) {
 
     bus.attachCpu(&cpu)->attachMemory(&rom, 0x0000, 0x1FFF)->attachMemory(&ram, 0x2000, 0x3FFF);
     cpu.attachBus(&bus);
-    rom.attachBus(&bus);
-    ram.attachBus(&bus);
     EXPECT_EQ(CPUTestHelper::getByteAtAddress(cpu, 0x0000), 0x01);
     EXPECT_EQ(CPUTestHelper::getByteAtAddress(cpu, 0x0003), 0x02);
     EXPECT_EQ(CPUTestHelper::getWordAtAddress(cpu, 0x0004), 0x1234);
@@ -181,17 +179,13 @@ TEST(intel8080Test, cpuTestMemoryAccess) {
 TEST(intel8080Test, cpuTestPC) {
     Intel8080 cpu;
     Bus bus;
-    Rom rom(0x2000); // 8KB ROM
-    Ram ram(0x2000); // 8KB RAM
-
     const std::vector<BYTE> buffer = {0x00, 0x00, 0x00, 0x01, 0x34, 0x12, 0x00};
-    rom.romLoad(buffer);
+    Rom rom(0x2000, buffer); // 8KB ROM
+    Ram ram(0x2000); // 8KB RAM
 
 
     bus.attachCpu(&cpu)->attachMemory(&rom, 0x0000, 0x1FFF)->attachMemory(&ram, 0x2000, 0x3FFF);
     cpu.attachBus(&bus);
-    rom.attachBus(&bus);
-    ram.attachBus(&bus);
 
     EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0000); // Initial PC should be 0
 
@@ -243,16 +237,13 @@ TEST(intel8080Test, cpuTestFlags) {
 TEST(intel8080Test, cpuTestIllegalOpcode) {
     Intel8080 cpu;
     Bus bus;
-    Rom rom(0x2000); // 8KB ROM
-    Ram ram(0x2000); // 8KB RAM
-
     const std::vector<BYTE> buffer = {0x00, 0xff};
-    rom.romLoad(buffer);
+    Rom rom(0x2000, buffer); // 8KB ROM
+    Ram ram(0x2000); // 8KB RAM
     
 
     bus.attachCpu(&cpu)->attachMemory(&rom, 0x0000, 0x1FFF)->attachMemory(&ram, 0x2000, 0x3FFF);
     cpu.attachBus(&bus);
-    rom.attachBus(&bus);
 
     EXPECT_NO_THROW(cpu.step()); // Execute NOP (0x00)
     EXPECT_EQ(CPUTestHelper::getOpcode(cpu), 0x00);
@@ -264,15 +255,12 @@ TEST(intel8080Test, cpuTestIllegalOpcode) {
 TEST(intel8080Test, cpuTestNOP) {
     Intel8080 cpu;
     Bus bus;
-    Rom rom(0x2000); // 8KB ROM
-    Ram ram(0x2000); // 8KB RAM
-
     const std::vector<BYTE> buffer = {0xff, 0x00, 0x01, 0x34, 0x12};
-    rom.romLoad(buffer);
+    Rom rom(0x2000, buffer);
+    Ram ram(0x2000);
 
     bus.attachCpu(&cpu)->attachMemory(&rom, 0x0000, 0x1FFF)->attachMemory(&ram, 0x2000, 0x3FFF);
     cpu.attachBus(&bus);
-    rom.attachBus(&bus);
 
     BYTE opcode;
     BYTE byteData;
@@ -290,14 +278,11 @@ TEST(intel8080Test, cpuTestNOP) {
 TEST(intel8080Test, cpuTestLXI_B_D16) {
     Intel8080 cpu;
     Bus bus;
-    Rom rom(0x2000); // 8KB ROM
-    Ram ram(0x2000); // 8KB RAM
     const std::vector<BYTE> buffer = {0xff, 0x00, 0x01, 0x34, 0x12};
-    rom.romLoad(buffer);
-
+    Rom rom(0x2000, buffer);
+    Ram ram(0x2000);
     bus.attachCpu(&cpu)->attachMemory(&rom, 0x0000, 0x1FFF)->attachMemory(&ram, 0x2000, 0x3FFF);
     cpu.attachBus(&bus);
-    rom.attachBus(&bus);
 
     EXPECT_THROW(cpu.step(), std::runtime_error); // Execute ILLEGAL (0xff)
     EXPECT_EQ(CPUTestHelper::getOpcode(cpu), 0xff);
@@ -320,14 +305,11 @@ TEST(intel8080Test, emuTest_cpuTestSTAX_B) {
     spdlog::set_level(spdlog::level::trace);
     Intel8080 cpu;
     Bus bus;
-    Rom rom(0x2000); // 8KB ROM
-    Ram ram(0x2000); // 8KB RAM
     const std::vector<BYTE> buffer = {0xff, 0x00, 0x01, 0x34, 0x12, 0x02};
-    rom.romLoad(buffer);
-
+    Rom rom(0x2000, buffer);
+    Ram ram(0x2000);
     bus.attachCpu(&cpu)->attachMemory(&rom, 0x0000, 0x1FFF)->attachMemory(&ram, 0x2000, 0x3FFF);
     cpu.attachBus(&bus);
-    rom.attachBus(&bus);
 
     EXPECT_THROW(cpu.step(), std::runtime_error); // Execute ILLEGAL (0xff)
     EXPECT_EQ(CPUTestHelper::getOpcode(cpu), 0xff);
@@ -354,14 +336,11 @@ TEST(intel8080Test, emuTest_cpuTestINX_B) {
     spdlog::set_level(spdlog::level::trace);
     Intel8080 cpu;
     Bus bus;
-    Rom rom(0x2000); // 8KB ROM
-    Ram ram(0x2000); // 8KB RAM
     const std::vector<BYTE> buffer = {0xff, 0x00, 0x01, 0x34, 0x12, 0x02, 0x03};
-    rom.romLoad(buffer);
-
+    Rom rom(0x2000, buffer);
+    Ram ram(0x2000);
     bus.attachCpu(&cpu)->attachMemory(&rom, 0x0000, 0x1FFF)->attachMemory(&ram, 0x2000, 0x3FFF);
     cpu.attachBus(&bus);
-    rom.attachBus(&bus);
 
     EXPECT_THROW(cpu.step(), std::runtime_error); // Execute ILLEGAL (0xff)
     EXPECT_EQ(CPUTestHelper::getOpcode(cpu), 0xff);
