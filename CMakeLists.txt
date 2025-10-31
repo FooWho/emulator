@@ -31,9 +31,11 @@ target_include_directories(Intel8080 PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     spdlog
 )
+
 target_link_libraries(Intel8080 
     spdlog::spdlog
 )
+
 
 enable_testing()
 
