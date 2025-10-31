@@ -10,7 +10,6 @@
 
 Intel8080::Intel8080()
 {
-    // On construction, the CPU should be in a reset state.
     reset();
     buildOpcodeTable();
     bus = nullptr;
@@ -48,13 +47,13 @@ Intel8080 *Intel8080::attachBus(Bus *bus)
 void Intel8080::fetchOpcode()
 {
     opcode = bus->readByte(regs.pc++);
-    spdlog::debug("Fetched opcode: 0x{:02X}", opcode);
+    spdlog::debug("Intel8080::fetchOpcode(): opcode = 0x{:02X}     PC = 0x{:04X}", opcode, regs.pc);
 }
 
 void Intel8080::fetchByte()
 {
     byteData = bus->readByte(regs.pc++);
-    spdlog::debug("Fetched byte: 0x{:02X}", byteData);
+    spdlog::debug("Intel8080::fetchByte(): byteDta = 0x{:02X}     PC = 0x{:04X}", byteData, regs.pc);
 }
 
 void Intel8080::fetchWord()
@@ -62,42 +61,49 @@ void Intel8080::fetchWord()
     BYTE low = bus->readByte(regs.pc);
     BYTE high = bus->readByte(regs.pc + 1);
     wordData = (static_cast<WORD>(high) << 8) | static_cast<WORD>(low);
-    spdlog::debug("Fetched word: 0x{:04X}", wordData);
     regs.pc += 2;
+    spdlog::debug("Intel8080::fetchWord(): wordData =  0x{:04X}     PC = 0x{:04X}", wordData, regs.pc);
 }
 
 void Intel8080::readOpcode(WORD address)
 {
     opcode = bus->readByte(address);
+    spdlog::debug("Intel8080::readOpcode(0x{:04X}): opcode = 0x{:02X}     PC = 0x{:04X}", address, opcode, regs.pc);
 }
 
 void Intel8080::readByte(WORD address)
 {
     byteData = bus->readByte(address);
+    spdlog::debug("Intel8080::readByte(0x{:04X}): byteData = 0x{:02X}     PC = 0x{:04X}", address, byteData, regs.pc);
 }
 
 void Intel8080::readWord(WORD address)
 {
     wordData = bus->readWord(address);
+    spdlog::debug("Intel8080::readWord(0x{:04X}): wordData = 0x{:04X}     PC = 0x{:04X}", address, wordData, regs.pc);
 }
 
 void Intel8080::writeOpcode(WORD address, BYTE data)
 {
     bus->writeByte(address, data);
+    spdlog::debug("Intel8080::writeOpcode(0x{:04X}, 0x{:02X})     PC = 0x{:04X}", address, data, regs.pc);
 } 
 
 void Intel8080::writeByte(WORD address, BYTE data)
 {
     bus->writeByte(address, data);
+    spdlog::debug("Intel8080::writeByte(0x{:04X}, 0x{:02X})     PC = 0x{:04X}", address, data, regs.pc);
 }
 
 void Intel8080::writeWord(WORD address, WORD data)
 {
     bus->writeWord(address, data);
+    spdlog::debug("Intel8080::writeWord(0x{:04X}, 0x{:04X})     PC = 0x{:04X}", address, data, regs.pc);
 }
 
 void Intel8080::execute()
 {
+    spdlog::debug("Intel8080::execute(): Executing opcode 0x{:02X} at PC = 0x{:04X}", opcode, regs.pc - 1);
     (this->*p_opcode_lookup[opcode])();
 }
 

@@ -158,7 +158,6 @@ TEST(intel8080Test, cpuTestMemoryAccess) {
     Intel8080 cpu;
     Bus bus;
 
-    spdlog::set_level(spdlog::level::debug);
     std::vector<BYTE> rombuffer({0x01, 0x00, 0x00, 0x02, 0x34, 0x12, 0x00});
     Rom rom(0x2000, rombuffer); // 8KB ROM
 
@@ -302,7 +301,6 @@ TEST(intel8080Test, cpuTestLXI_B_D16) {
 }
 
 TEST(intel8080Test, emuTest_cpuTestSTAX_B) {
-    spdlog::set_level(spdlog::level::trace);
     Intel8080 cpu;
     Bus bus;
     const std::vector<BYTE> buffer = {0xff, 0x00, 0x01, 0x34, 0x12, 0x02};
@@ -333,7 +331,6 @@ TEST(intel8080Test, emuTest_cpuTestSTAX_B) {
 }
 
 TEST(intel8080Test, emuTest_cpuTestINX_B) {
-    spdlog::set_level(spdlog::level::trace);
     Intel8080 cpu;
     Bus bus;
     const std::vector<BYTE> buffer = {0xff, 0x00, 0x01, 0x34, 0x12, 0x02, 0x03};

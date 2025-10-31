@@ -13,7 +13,6 @@
 
 int main(int argc, char *argv[])
 {
-    spdlog::set_level(spdlog::level::debug);
     Intel8080 cpu;
     Bus bus;
     Rom rom(0x2000); // 8KB ROM
