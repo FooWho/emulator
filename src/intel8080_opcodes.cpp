@@ -99,8 +99,8 @@ void Intel8080::op_INR_B()
     BYTE result = regs.b + 1;
     regFlagsBasic(result);
     regFlagsAuxCarry(regs.b, result);
+    spdlog::debug("INR B -> B: 0x{:02X} -> 0x{:02X}", regs.b, result);
     regs.b = result;
-    spdlog::debug("INR B -> B: 0x{:02X}", regs.b);
 }
 
 void Intel8080::op_DCR_B()
@@ -113,6 +113,6 @@ void Intel8080::op_DCR_B()
     regFlagsBasic(result);
     regFlagsAuxCarry(regs.b, result);
     regs.b = result;
-    spdlog::debug("INR B -> B: 0x{:02X}", regs.b);
+    spdlog::debug("DCR B -> B: 0x{:02X} -> 0x{:02X}", regs.b, result);
 }
 
