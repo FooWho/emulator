@@ -9,11 +9,26 @@ void Intel8080::buildOpcodeTable()
     p_opcode_lookup[0x01] = &Intel8080::op_LXI_B_D16; // LXI B,D16 instruction
     p_opcode_lookup[0x02] = &Intel8080::op_STAX_B; // STAX B instruction
     p_opcode_lookup[0x03] = &Intel8080::op_INX_B; // INX B instructrion
+    p_opcode_lookup[0x04] = &Intel8080::op_INR_B; // INR B instruction
+    p_opcode_lookup[0x05] = &Intel8080::op_DCR_B; // DCR B instruction
+
 }
 
 void Intel8080::regFlagsAuxCarry(BYTE original, BYTE result)
 {
-    flags.ac = ((BYTE(original & 0x0f)) <  (BYTE(result & 0x0f))); 
+    if (original > result) {
+        // subtraction
+        flags.ac = ((BYTE(original & 0x0f)) <  (BYTE(result & 0x0f)));
+    }
+    if (original < result) {
+        // addition
+        flags.ac = ((BYTE(original & 0x0f)) >  (BYTE(result & 0x0f)));
+    }
+    if (original == result) {
+        // Something happened with 0 as an operand
+        flags.ac = 0;
+    }
+     
 } 
 
 void Intel8080::regFlagsBasic(BYTE result)
@@ -80,8 +95,21 @@ void Intel8080::op_INR_B()
     // Opcode: 0x04         Mnemonic: INR B
     // Size: 1              Cycles: 5
     // Description: Increment the B register
-    // Flags: Z, S, P, AC
+    // Flags: S, Z, AC, P
     BYTE result = regs.b + 1;
+    regFlagsBasic(result);
+    regFlagsAuxCarry(regs.b, result);
+    regs.b = result;
+    spdlog::debug("INR B -> B: 0x{:02X}", regs.b);
+}
+
+void Intel8080::op_DCR_B()
+{
+    // Opcode: 0x04         Mnemonic: DCR B
+    // Size: 1              Cycles: 5
+    // Description: Decrement the B register
+    // Flags: S, Z, AC, P
+    BYTE result = regs.b - 1;
     regFlagsBasic(result);
     regFlagsAuxCarry(regs.b, result);
     regs.b = result;

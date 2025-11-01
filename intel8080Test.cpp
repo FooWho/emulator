@@ -338,3 +338,56 @@ TEST(intel8080Test, emuTest_cpuTestINX_B) {
     EXPECT_EQ(CPUTestHelper::getOpcode(cpu), 0x03);
     EXPECT_EQ(CPUTestHelper::getRegisterBC(cpu), 0x2113);
 }
+
+TEST(intel8080Test, emuTest_cpuTestINR_B) {
+    Intel8080 cpu;
+    Bus bus;
+    const std::vector<BYTE> buffer = {0x00, 0x01, 0x12, 0x21, 0x04, 0x00, 0x0};
+    Rom rom(0x2000, buffer);
+    Ram ram(0x2000);
+
+    bus.attachCpu(&cpu)->attachMemory(&rom, 0x0000, 0x1FFF)->attachMemory(&ram, 0x2000, 0x3FFF);
+    cpu.attachBus(&bus);
+
+    EXPECT_NO_THROW(cpu.step()); // Execute NOP (0x00)
+    EXPECT_EQ(CPUTestHelper::getOpcode(cpu), 0x00);
+    EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0001);
+
+    cpu.step(); // Execute LXI B,D16
+    EXPECT_EQ(CPUTestHelper::getOpcode(cpu), 0x01);
+    EXPECT_EQ(CPUTestHelper::getRegisterBC(cpu), 0x2112);
+    EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0004);
+
+    cpu.step(); // Execute INR B
+    EXPECT_EQ(CPUTestHelper::getOpcode(cpu), 0x04);
+    EXPECT_EQ(CPUTestHelper::getRegisterB(cpu), 0x22);
+    EXPECT_EQ(CPUTestHelper::getFlags(cpu), 0x06);
+    EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0005);
+}
+
+
+TEST(intel8080Test, emuTest_cpuTestDCR_B) {
+    Intel8080 cpu;
+    Bus bus;
+    const std::vector<BYTE> buffer = {0x00, 0x01, 0x12, 0x21, 0x05, 0x00, 0x0};
+    Rom rom(0x2000, buffer);
+    Ram ram(0x2000);
+
+    bus.attachCpu(&cpu)->attachMemory(&rom, 0x0000, 0x1FFF)->attachMemory(&ram, 0x2000, 0x3FFF);
+    cpu.attachBus(&bus);
+
+    EXPECT_NO_THROW(cpu.step()); // Execute NOP (0x00)
+    EXPECT_EQ(CPUTestHelper::getOpcode(cpu), 0x00);
+    EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0001);
+
+    cpu.step(); // Execute LXI B,D16
+    EXPECT_EQ(CPUTestHelper::getOpcode(cpu), 0x01);
+    EXPECT_EQ(CPUTestHelper::getRegisterBC(cpu), 0x2112);
+    EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0004);
+
+    cpu.step(); // Execute DCR B
+    EXPECT_EQ(CPUTestHelper::getOpcode(cpu), 0x05);
+    EXPECT_EQ(CPUTestHelper::getRegisterB(cpu), 0x20);
+    EXPECT_EQ(CPUTestHelper::getFlags(cpu), 0x02);
+    EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0005);
+}
