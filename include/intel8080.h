@@ -45,7 +45,8 @@ class Intel8080 : public CPU {
 
 
     void regFlagsBasic(BYTE result);
-    void regFlagsAuxCarry(BYTE original, BYTE result);
+    void regFlagsCarryX(WORD result);
+    void regFlagsAuxCarry(BYTE result);
 
     inline BYTE examineRegisterA() { return regs.a; }
     inline void setRegisterA(BYTE value) { regs.a = value; }   

@@ -11,33 +11,45 @@ void Intel8080::buildOpcodeTable()
     p_opcode_lookup[0x03] = &Intel8080::op_INX_B; // INX B instructrion
     p_opcode_lookup[0x04] = &Intel8080::op_INR_B; // INR B instruction
     p_opcode_lookup[0x05] = &Intel8080::op_DCR_B; // DCR B instruction
+    p_opcode_lookup[0x06] = &Intel8080::op_MVI_B_D8; // MVI B,D8 instruction
+    p_opcode_lookup[0x09] = &Intel8080::op_DAD_B; // DAD B instruction
 
 }
 
-void Intel8080::regFlagsAuxCarry(BYTE original, BYTE result)
+void Intel8080::regFlagsAuxCarry(BYTE result)
 {
-    if (original > result) {
+    if (byteData > result) {
         // subtraction
-        flags.ac = ((BYTE(original & 0x0f)) <  (BYTE(result & 0x0f)));
+        flags.ac = ((BYTE(byteData & 0x0f)) <  (BYTE(result & 0x0f)));
     }
-    if (original < result) {
+    if (byteData < result) {
         // addition
-        flags.ac = ((BYTE(original & 0x0f)) >  (BYTE(result & 0x0f)));
+        flags.ac = ((BYTE(byteData & 0x0f)) >  (BYTE(result & 0x0f)));
     }
-    if (original == result) {
+    if (byteData == result) {
         // Something happened with 0 as an operand
         flags.ac = 0;
     }
      
 } 
 
+void Intel8080::regFlagsCarryX(WORD result)
+{
+    if (result < wordData) {
+        flags.cy = 1;
+    } else {
+        flags.cy = 0;
+    }
+}
+
 void Intel8080::regFlagsBasic(BYTE result)
 {
     flags.s = (result & 0x80) ? 1 : 0;
     flags.z = (result == 0) ? 1 : 0;
     flags.p = __builtin_popcount(result) % 2 == 0;
-}   
-    
+}  
+
+
 
 void Intel8080::op_ILLEGAL()
 {
@@ -51,6 +63,7 @@ void Intel8080::op_NOP()
     // Size: 1  byte        Cycles: 4
     // Description: No Operation
     // Flags: None
+
     spdlog::debug("NOP");
 }
 
@@ -60,6 +73,7 @@ void Intel8080::op_LXI_B_D16()
     // Size: 3  bytes       Cycles: 10
     // Description: Load immediate 16-bit data into BC register pair
     // Flags: None
+
     fetchWord();
     regs.b = (wordData >> 8) & 0x00FF;
     regs.c = wordData & 0x00FF;
@@ -72,6 +86,7 @@ void Intel8080::op_STAX_B()
     // Size: 1  byte        Cycles: 7
     // Description: Store Accumulator into memory location pointed by BC register pair
     // Flags: None
+
     WORD address = (static_cast<WORD>(regs.b) << 8) | static_cast<WORD>(regs.c);
     writeByte(address, regs.a);
     spdlog::debug("STAX B -> [0x{:04X}] = 0x{:02X}", address, regs.a);
@@ -83,6 +98,7 @@ void Intel8080::op_INX_B()
     // Size: 1 byte         Cycles: 5
     // Description: Increment the BC register pair
     // Flags: None
+
     WORD bc = (static_cast<WORD>(regs.b) << 8) | static_cast<WORD>(regs.c);
     bc += 1;
     regs.b = (bc >> 8) & 0xFF;
@@ -96,23 +112,61 @@ void Intel8080::op_INR_B()
     // Size: 1              Cycles: 5
     // Description: Increment the B register
     // Flags: S, Z, AC, P
+
+    byteData = regs.b;
     BYTE result = regs.b + 1;
-    regFlagsBasic(result);
-    regFlagsAuxCarry(regs.b, result);
-    spdlog::debug("INR B -> B: 0x{:02X} -> 0x{:02X}", regs.b, result);
     regs.b = result;
+    regFlagsBasic(result);
+    regFlagsAuxCarry(result);
+    spdlog::debug("INR B -> B: 0x{:02X} -> 0x{:02X}", byteData, result);
 }
 
 void Intel8080::op_DCR_B()
 {
-    // Opcode: 0x04         Mnemonic: DCR B
+    // Opcode: 0x05         Mnemonic: DCR B
     // Size: 1              Cycles: 5
     // Description: Decrement the B register
     // Flags: S, Z, AC, P
+
+    byteData = regs.b;
     BYTE result = regs.b - 1;
-    regFlagsBasic(result);
-    regFlagsAuxCarry(regs.b, result);
     regs.b = result;
-    spdlog::debug("DCR B -> B: 0x{:02X} -> 0x{:02X}", regs.b, result);
+    regFlagsBasic(result);
+    regFlagsAuxCarry(result);
+    spdlog::debug("DCR B -> B: 0x{:02X} -> 0x{:02X}", byteData, result);
+    
 }
+
+void Intel8080::op_MVI_B_D8()
+{
+    // Opcode: 0x06          Mnemonic: MVI B, D8
+    // Size: 2  bytes       Cycles: 7
+    // Description: Move immediate 8-bit data into B
+    // Flags: None
+
+    fetchByte();
+    regs.b = byteData;
+    spdlog::debug("MVI B, D8 -> B: 0x{:02X} D8: 0x{:02X}", regs.b, byteData);
+}
+
+void Intel8080::op_DAD_B()
+{
+    // Opcode: 0x09         Mnemonic: DAD B
+    // Size: 1              Cycles: 10
+    // Description: Add the contents of the register pair BC to the register pair HL.
+    // Flags: CY
+
+    WORD hl = (static_cast<WORD>(regs.h) << 8) | static_cast<WORD>(regs.l);
+    WORD bc = (static_cast<WORD>(regs.b) << 8) | static_cast<WORD>(regs.c);
+    wordData = hl;
+    WORD result = hl + bc;
+    hl = result;
+    regs.h = (hl >> 8) & 0xFF;
+    regs.l = hl & 0xFF;
+    regFlagsCarryX(result);
+    spdlog::debug("DAD B -> HL: 0x{:04X} BC: 0x{:04X} -> 0x{:04X}", wordData, bc, result);
+}
+
+
+
 

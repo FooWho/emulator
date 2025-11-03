@@ -228,14 +228,6 @@ TEST(intel8080Test, cpuTestReset) {
     EXPECT_EQ(CPUTestHelper::getRegisterBC(cpu), 0x0000);
 }
 
-TEST(intel8080Test, cpuTestFlags) {
-    Intel8080 cpu;
-    BYTE result;
-
-    result = 0x00;
-    EXPECT_EQ(CPUTestHelper::getFlags(cpu), 0x02);
-}
-
 TEST(intel8080Test, cpuTestIllegalOpcode) {
     Intel8080 cpu;
     Bus bus;
@@ -365,6 +357,28 @@ TEST(intel8080Test, emuTest_cpuTestINR_B) {
     EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0005);
 }
 
+TEST(intel8080Test, cpuTestFlags) {
+    Intel8080 cpu;
+    const std::vector<BYTE> buffer = {0x04, 0x00};
+    Rom rom(0x2000, buffer);
+    Ram ram(0x2000);
+
+    Bus bus;
+    bus.attachCpu(&cpu)->attachMemory(&rom, 0x0000, 0x1FFF)->attachMemory(&ram, 0x2000, 0x3FFF);
+    cpu.attachBus(&bus);
+
+    EXPECT_NO_THROW(cpu.step()); // Execute NOP (0x00)
+
+    cpu.reset();
+
+    EXPECT_EQ(CPUTestHelper::getFlags(cpu), 0x02);
+
+    CPUTestHelper::setRegisterB(cpu, 0x7f);
+    cpu.step();
+    EXPECT_EQ(CPUTestHelper::getRegisterB(cpu), 0x80);
+    // Flags should be S, A = 0x92 b[1001 0010]
+    EXPECT_EQ(CPUTestHelper::getFlags(cpu), 0x92);
+}
 
 TEST(intel8080Test, emuTest_cpuTestDCR_B) {
     Intel8080 cpu;
@@ -391,3 +405,22 @@ TEST(intel8080Test, emuTest_cpuTestDCR_B) {
     EXPECT_EQ(CPUTestHelper::getFlags(cpu), 0x02);
     EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0005);
 }
+
+TEST(intel8080Test, emuTest_cpuTestMVI_B_D8) {
+    Intel8080 cpu;
+    Bus bus;
+    const std::vector<BYTE> buffer = {0x06, 0x42, 0x00};
+    Rom rom(0x2000, buffer);
+    Ram ram(0x2000);
+
+    bus.attachCpu(&cpu)->attachMemory(&rom, 0x0000, 0x1FFF)->attachMemory(&ram, 0x2000, 0x3FFF);
+    cpu.attachBus(&bus);
+
+    EXPECT_NO_THROW(cpu.step()); // Execute MVI B, D8 (0x06)
+    EXPECT_EQ(CPUTestHelper::getOpcode(cpu), 0x06);
+    EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0002);
+    EXPECT_EQ(CPUTestHelper::getByteData(cpu), 0x42);
+    EXPECT_EQ(CPUTestHelper::getRegisterB(cpu), 0x42);
+}
+
+
