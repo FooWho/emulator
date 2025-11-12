@@ -183,7 +183,7 @@ void Intel8080::op_DCR_C()
     WORD operands = 0;
 
     operands = ((WORD)regs.c << 8) & 0xFF00;
-    operands += 0x81; // 0x81 is -1 as a signed byte
+    operands += 0xFF; // 0xFF is -1 in two's complement
     regs.c--;
     regFlagsBasic(regs.c);
     regFlagsAuxCarry(operands);

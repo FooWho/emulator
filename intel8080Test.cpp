@@ -298,7 +298,7 @@ TEST(intel8080Test, emuTest_cpuTestDCR_C) {
 
     EXPECT_EQ(Intel8080TestHelper::getOpcode(cpu), 0x0D);
     EXPECT_EQ(Intel8080TestHelper::getRegisterC(cpu), 0x04);
-    EXPECT_EQ(Intel8080TestHelper::getFlags(cpu), 0x02);
+    EXPECT_EQ(Intel8080TestHelper::getFlags(cpu), 0x12);
     EXPECT_EQ(Intel8080TestHelper::getRegisterPC(cpu), 0x0002);
 
     Intel8080TestHelper::setRegisterC(cpu, 0x00); // Set C register to known value
