@@ -13,27 +13,30 @@ void Intel8080::buildOpcodeTable()
     p_opcode_lookup[0x05] = &Intel8080::op_DCR_B; // DCR B instruction
     p_opcode_lookup[0x06] = &Intel8080::op_MVI_B_D8; // MVI B,D8 instruction
     p_opcode_lookup[0x09] = &Intel8080::op_DAD_B; // DAD B instruction
+    p_opcode_lookup[0x0D] = &Intel8080::op_DCR_C; // DCR C instruction
+
+    // ... Add other opcode mappings here       
 
 }
 
-void Intel8080::regFlagsAuxCarry(BYTE result)
+void Intel8080::regFlagsAuxCarry(WORD result)
 {
-    if (byteData > result) {
-        // subtraction
-        flags.ac = ((BYTE(byteData & 0x0f)) <  (BYTE(result & 0x0f)));
-    }
-    if (byteData < result) {
-        // addition
-        flags.ac = ((BYTE(byteData & 0x0f)) >  (BYTE(result & 0x0f)));
-    }
-    if (byteData == result) {
-        // Something happened with 0 as an operand
+    BYTE operand1 = BYTE((result & 0xFF00) >> 8);
+    BYTE operand2 = (BYTE)(result & 0x00FF);
+
+    BYTE lowNibbleOp1 = (BYTE)(operand1 & 0x0F);
+    BYTE lowNibbleOp2 = (BYTE)(operand2 & 0x0F);
+
+
+
+    if (((operand1 & 0x0F) + (operand2 & 0x0F)) > 0x0F) {
+        flags.ac = 1;
+    } else {
         flags.ac = 0;
     }
-     
-} 
+}
 
-void Intel8080::regFlagsCarryX(WORD result)
+void Intel8080::regFlagsCarry(WORD result)
 {
     if (result < wordData) {
         flags.cy = 1;
@@ -113,12 +116,14 @@ void Intel8080::op_INR_B()
     // Description: Increment the B register
     // Flags: S, Z, AC, P
 
-    byteData = regs.b;
-    BYTE result = regs.b + 1;
-    regs.b = result;
-    regFlagsBasic(result);
-    regFlagsAuxCarry(result);
-    spdlog::debug("INR B -> B: 0x{:02X} -> 0x{:02X}", byteData, result);
+    WORD operands = 0;
+
+    operands = ((WORD)regs.b << 8) & 0xFF00;
+    operands += 0x01;
+    regs.b++;
+    regFlagsBasic(regs.b);
+    regFlagsAuxCarry(operands);
+    spdlog::debug("INR B -> B: 0x{:02X}", regs.b);
 }
 
 void Intel8080::op_DCR_B()
@@ -128,13 +133,14 @@ void Intel8080::op_DCR_B()
     // Description: Decrement the B register
     // Flags: S, Z, AC, P
 
-    byteData = regs.b;
-    BYTE result = regs.b - 1;
-    regs.b = result;
-    regFlagsBasic(result);
-    regFlagsAuxCarry(result);
-    spdlog::debug("DCR B -> B: 0x{:02X} -> 0x{:02X}", byteData, result);
-    
+    WORD operands = 0;
+
+    operands = ((WORD)regs.b << 8) & 0xFF00;
+    operands += 0xFF; // 0xFF is -1 two's complement
+    regs.b--;
+    regFlagsBasic(regs.b);
+    regFlagsAuxCarry(operands);
+    spdlog::debug("DCR B -> B: 0x{:02X}", regs.b);
 }
 
 void Intel8080::op_MVI_B_D8()
@@ -163,10 +169,24 @@ void Intel8080::op_DAD_B()
     hl = result;
     regs.h = (hl >> 8) & 0xFF;
     regs.l = hl & 0xFF;
-    regFlagsCarryX(result);
+    regFlagsCarry(result);
     spdlog::debug("DAD B -> HL: 0x{:04X} BC: 0x{:04X} -> 0x{:04X}", wordData, bc, result);
 }
 
+void Intel8080::op_DCR_C()
+{
+    // Opcode: 0x0D         Mnemonic: DCR C
+    // Size: 1              Cycles: 5
+    // Description: Decrement the C register
+    // Flags: S, Z, AC, P
 
+    WORD operands = 0;
 
+    operands = ((WORD)regs.c << 8) & 0xFF00;
+    operands += 0x81; // 0x81 is -1 as a signed byte
+    regs.c--;
+    regFlagsBasic(regs.c);
+    regFlagsAuxCarry(operands);
+    spdlog::debug("DCR C -> C: 0x{:02X}", regs.c);
+}
 

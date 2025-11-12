@@ -1,159 +1,12 @@
 #include <gtest/gtest.h>
 #include <spdlog/spdlog.h>
 #include "intel8080.h"
+#include "intel8080TestHelper.h"
 #include "ram.h"
 #include "rom.h"
 #include "bus.h"
 
 
-class CPUTestHelper {
- public:
-    static BYTE getRegisterA(Intel8080& cpu){
-        return cpu.examineRegisterA();
-    }
-
-    static void setRegisterA(Intel8080& cpu, BYTE value) {
-        cpu.setRegisterA(value);
-    }
-
-    static BYTE getRegisterB(Intel8080& cpu) {
-        return cpu.examineRegisterB();
-    }
-
-    static void setRegisterB(Intel8080& cpu, BYTE value) {
-        cpu.setRegisterB(value);
-    }
-
-    static BYTE getRegisterC(Intel8080& cpu) {
-        return cpu.examineRegisterC();
-    }
-
-    static void setRegisterC(Intel8080& cpu, BYTE value) {
-        cpu.setRegisterC(value);
-    }
-
-    static BYTE getRegisterD(Intel8080& cpu) {
-        return cpu.examineRegisterD();
-    }
-
-    static void setRegisterD(Intel8080& cpu, BYTE value) {
-        cpu.setRegisterD(value);
-    }
-
-    static BYTE getRegisterE(Intel8080& cpu) {
-        return cpu.examineRegisterE();
-    }
-
-    static void setRegisterE(Intel8080& cpu, BYTE value) {
-        cpu.setRegisterE(value);
-    }
-
-    static BYTE getRegisterH(Intel8080& cpu) {
-        return cpu.examineRegisterH();
-    }
-
-    static void setRegisterH(Intel8080& cpu, BYTE value) {
-        cpu.setRegisterH(value);
-    }   
-
-    static BYTE getRegisterL(Intel8080& cpu) {
-        return cpu.examineRegisterL();
-    }
-
-    static void setRegisterL(Intel8080& cpu, BYTE value) {
-        cpu.setRegisterL(value);
-    }
-
-    static WORD getRegisterBC(Intel8080& cpu) {
-        return cpu.examineRegisterBC();
-    }
-
-    static void setRegisterBC(Intel8080& cpu, WORD value) {
-        cpu.setRegisterBC(value);
-    }
-
-    static WORD getRegisterDE(Intel8080& cpu) {
-        return cpu.examineRegisterDE();
-    }
-
-    static void setRegisterDE(Intel8080& cpu, WORD value) {
-        cpu.setRegisterDE(value);
-    }
-
-    static WORD getRegisterHL(Intel8080& cpu) {
-        return cpu.examineRegisterHL();
-    }
-
-    static void setRegisterHL(Intel8080& cpu, WORD value) {
-        cpu.setRegisterHL(value);
-    }
-
-    static WORD getRegisterSP(Intel8080& cpu) {
-        return cpu.examineRegisterSP();
-    }
-
-    static void setRegisterSP(Intel8080& cpu, WORD value) {
-        cpu.setRegisterSP(value);
-    }
-
-    static WORD getRegisterPC(Intel8080& cpu) {
-        return cpu.examineRegisterPC();
-    }
-
-    static void setRegisterPC(Intel8080& cpu, WORD value) {
-        cpu.setRegisterPC(value);
-    }
-
-    static BYTE getFlags(Intel8080& cpu) {
-        return cpu.examineFlags();
-    }
-
-    static void setFlags(Intel8080& cpu, BYTE value) {
-        cpu.setFlags(value);
-    }
-
-    static BYTE getOpcode(Intel8080& cpu) {
-        return cpu.examineOpcode();
-    } 
-
-    static void setOpcode(Intel8080& cpu, BYTE value) {
-        cpu.setOpcode(value);
-    }   
-
-    static BYTE getByteData(Intel8080& cpu) {
-        return cpu.examineByteData();
-    }
-
-    static void setByteData(Intel8080& cpu, BYTE value) {
-        cpu.setByteData(value);
-    }
-
-    static WORD getWordData(Intel8080& cpu) {
-        return cpu.examineWordData();
-    }
-
-    static void setWordData(Intel8080& cpu, WORD value) {
-        cpu.setWordData(value);
-    }
-
-    static BYTE getByteAtAddress(Intel8080& cpu, WORD address) {
-        cpu.readByte(address);
-        return cpu.examineByteData();
-    }
-
-    static void setByteAtAddress(Intel8080& cpu, WORD address, BYTE value) {
-        cpu.writeByte(address, value);
-    }
-
-    static WORD getWordAtAddress(Intel8080& cpu, WORD address) {
-        cpu.readWord(address);
-        return cpu.examineWordData();
-    }
-
-    static void setWordAtAddress(Intel8080& cpu, WORD address, WORD value) {
-        cpu.writeWord(address, value);
-    }
-};
 
 TEST(intel8080Test, cpuTestMemoryAccess) {
     //spdlog::set_level(spdlog::level::debug);
@@ -169,13 +22,13 @@ TEST(intel8080Test, cpuTestMemoryAccess) {
 
     bus.attachCpu(&cpu)->attachMemory(&rom, 0x0000, 0x1FFF)->attachMemory(&ram, 0x2000, 0x3FFF);
     cpu.attachBus(&bus);
-    EXPECT_EQ(CPUTestHelper::getByteAtAddress(cpu, 0x0000), 0x01);
-    EXPECT_EQ(CPUTestHelper::getByteAtAddress(cpu, 0x0003), 0x02);
-    EXPECT_EQ(CPUTestHelper::getWordAtAddress(cpu, 0x0004), 0x1234);
+    EXPECT_EQ(Intel8080TestHelper::getByteAtAddress(cpu, 0x0000), 0x01);
+    EXPECT_EQ(Intel8080TestHelper::getByteAtAddress(cpu, 0x0003), 0x02);
+    EXPECT_EQ(Intel8080TestHelper::getWordAtAddress(cpu, 0x0004), 0x1234);
 
-    EXPECT_EQ(CPUTestHelper::getByteAtAddress(cpu, 0x2000), 0x02);
-    EXPECT_EQ(CPUTestHelper::getByteAtAddress(cpu, 0x2001), 0x03);
-    EXPECT_EQ(CPUTestHelper::getWordAtAddress(cpu, 0x2003), 0x6789);
+    EXPECT_EQ(Intel8080TestHelper::getByteAtAddress(cpu, 0x2000), 0x02);
+    EXPECT_EQ(Intel8080TestHelper::getByteAtAddress(cpu, 0x2001), 0x03);
+    EXPECT_EQ(Intel8080TestHelper::getWordAtAddress(cpu, 0x2003), 0x6789);
 }
 
 TEST(intel8080Test, cpuTestPC) {
@@ -189,43 +42,43 @@ TEST(intel8080Test, cpuTestPC) {
     bus.attachCpu(&cpu)->attachMemory(&rom, 0x0000, 0x1FFF)->attachMemory(&ram, 0x2000, 0x3FFF);
     cpu.attachBus(&bus);
 
-    EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0000); // Initial PC should be 0
+    EXPECT_EQ(Intel8080TestHelper::getRegisterPC(cpu), 0x0000); // Initial PC should be 0
 
     cpu.step(); // Execute NOP (0x00)
-    EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0001); // PC should increment by 1
+    EXPECT_EQ(Intel8080TestHelper::getRegisterPC(cpu), 0x0001); // PC should increment by 1
     cpu.step(); // Execute NOP (0x00)
-    EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0002); // PC should increment by 1
+    EXPECT_EQ(Intel8080TestHelper::getRegisterPC(cpu), 0x0002); // PC should increment by 1
     cpu.step(); // Execute NOP (0x00)
-    EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0003); // PC should increment by 1
+    EXPECT_EQ(Intel8080TestHelper::getRegisterPC(cpu), 0x0003); // PC should increment by 1
     cpu.step(); // Execute LXI B,D16 (0x01)
-    EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0006); // PC should increment by 3
+    EXPECT_EQ(Intel8080TestHelper::getRegisterPC(cpu), 0x0006); // PC should increment by 3
     cpu.step(); // Execute NOP (0x00)
-    EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0007); // PC should increment by 1
+    EXPECT_EQ(Intel8080TestHelper::getRegisterPC(cpu), 0x0007); // PC should increment by 1
 }
 
 TEST(intel8080Test, cpuTestReset) {
     Intel8080 cpu;
 
     // Check initial state
-    EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0000);
-    EXPECT_EQ(CPUTestHelper::getFlags(cpu), 0x02); // Only the 'always 1' bit should be set
+    EXPECT_EQ(Intel8080TestHelper::getRegisterPC(cpu), 0x0000);
+    EXPECT_EQ(Intel8080TestHelper::getFlags(cpu), 0x02); // Only the 'always 1' bit should be set
 
     // Modify the CPU state
-    CPUTestHelper::setRegisterA(cpu, 0xFF);
-    CPUTestHelper::setRegisterBC(cpu, 0x1234);
-    CPUTestHelper::setRegisterDE(cpu, 0x5678);
-    CPUTestHelper::setRegisterHL(cpu, 0x9ABC);
-    CPUTestHelper::setRegisterSP(cpu, 0xDEF0);
-    CPUTestHelper::setRegisterPC(cpu, 0x1000);
-    CPUTestHelper::setFlags(cpu, 0xFF);
+    Intel8080TestHelper::setRegisterA(cpu, 0xFF);
+    Intel8080TestHelper::setRegisterBC(cpu, 0x1234);
+    Intel8080TestHelper::setRegisterDE(cpu, 0x5678);
+    Intel8080TestHelper::setRegisterHL(cpu, 0x9ABC);
+    Intel8080TestHelper::setRegisterSP(cpu, 0xDEF0);
+    Intel8080TestHelper::setRegisterPC(cpu, 0x1000);
+    Intel8080TestHelper::setFlags(cpu, 0xFF);
 
     // Reset the CPU
     cpu.reset();
 
     // Verify the state is reset
-    EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0000);
-    EXPECT_EQ(CPUTestHelper::getFlags(cpu), 0x02);
-    EXPECT_EQ(CPUTestHelper::getRegisterBC(cpu), 0x0000);
+    EXPECT_EQ(Intel8080TestHelper::getRegisterPC(cpu), 0x0000);
+    EXPECT_EQ(Intel8080TestHelper::getFlags(cpu), 0x02);
+    EXPECT_EQ(Intel8080TestHelper::getRegisterBC(cpu), 0x0000);
 }
 
 TEST(intel8080Test, cpuTestIllegalOpcode) {
@@ -240,10 +93,11 @@ TEST(intel8080Test, cpuTestIllegalOpcode) {
     cpu.attachBus(&bus);
 
     EXPECT_NO_THROW(cpu.step()); // Execute NOP (0x00)
-    EXPECT_EQ(CPUTestHelper::getOpcode(cpu), 0x00);
-    EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0001); // PC should increment by 1
+    EXPECT_EQ(Intel8080TestHelper::getOpcode(cpu), 0x00);
+    EXPECT_EQ(Intel8080TestHelper::getRegisterPC(cpu), 0x0001); // PC should increment by 1
     EXPECT_THROW(cpu.step(), std::runtime_error); // Execute ILLEGAL (0xff)
-    EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0002); // PC should increment by 1 (because fetching the opcode already moved the PC)
+    EXPECT_EQ(Intel8080TestHelper::getOpcode(cpu), 0xff);
+    EXPECT_EQ(Intel8080TestHelper::getRegisterPC(cpu), 0x0002); // PC should increment by 1 (because fetching the opcode already moved the PC)
 }
 
 TEST(intel8080Test, cpuTestNOP) {
@@ -257,8 +111,8 @@ TEST(intel8080Test, cpuTestNOP) {
     cpu.attachBus(&bus);
 
     EXPECT_NO_THROW(cpu.step()); // Execute NOP (0x00)
-    EXPECT_EQ(CPUTestHelper::getOpcode(cpu), 0x00); // Should fetch NOP instruction (0x00)
-    EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0001); // PC should increment by 1
+    EXPECT_EQ(Intel8080TestHelper::getOpcode(cpu), 0x00); // Should fetch NOP instruction (0x00)
+    EXPECT_EQ(Intel8080TestHelper::getRegisterPC(cpu), 0x0001); // PC should increment by 1
 }
 
 TEST(intel8080Test, cpuTestLXI_B_D16) {
@@ -271,16 +125,16 @@ TEST(intel8080Test, cpuTestLXI_B_D16) {
     cpu.attachBus(&bus);
 
     EXPECT_NO_THROW(cpu.step()); // Execute NOP (0x00)
-    EXPECT_EQ(CPUTestHelper::getOpcode(cpu), 0x00); // Should fetch NOP instruction (0x00)
-    EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0001); // PC should increment by 1
+    EXPECT_EQ(Intel8080TestHelper::getOpcode(cpu), 0x00); // Should fetch NOP instruction (0x00)
+    EXPECT_EQ(Intel8080TestHelper::getRegisterPC(cpu), 0x0001); // PC should increment by 1
 
     cpu.step(); // Execute LXI B,D16 (0x01)
-    EXPECT_EQ(CPUTestHelper::getOpcode(cpu), 0x01);
-    EXPECT_EQ(CPUTestHelper::getRegisterBC(cpu), 0x1234); // Check that BC register pair is loaded correctly;
-    EXPECT_EQ(CPUTestHelper::getRegisterB(cpu), 0x12); // High byte
-    EXPECT_EQ(CPUTestHelper::getRegisterC(cpu), 0x34); // Low byte
-    EXPECT_EQ(CPUTestHelper::getWordData(cpu), 0x1234); // WORD read
-    EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0004); // PC should point to next instruction
+    EXPECT_EQ(Intel8080TestHelper::getOpcode(cpu), 0x01);
+    EXPECT_EQ(Intel8080TestHelper::getRegisterBC(cpu), 0x1234); // Check that BC register pair is loaded correctly;
+    EXPECT_EQ(Intel8080TestHelper::getRegisterB(cpu), 0x12); // High byte
+    EXPECT_EQ(Intel8080TestHelper::getRegisterC(cpu), 0x34); // Low byte
+    EXPECT_EQ(Intel8080TestHelper::getWordData(cpu), 0x1234); // WORD read
+    EXPECT_EQ(Intel8080TestHelper::getRegisterPC(cpu), 0x0004); // PC should point to next instruction
 }
 
 TEST(intel8080Test, emuTest_cpuTestSTAX_B) {
@@ -293,19 +147,19 @@ TEST(intel8080Test, emuTest_cpuTestSTAX_B) {
     cpu.attachBus(&bus);
 
     EXPECT_NO_THROW(cpu.step()); // Execute NOP (0x00)
-    EXPECT_EQ(CPUTestHelper::getOpcode(cpu), 0x00); // Should fetch NOP instruction (0x00)
-    EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0001); // PC should increment by 1
+    EXPECT_EQ(Intel8080TestHelper::getOpcode(cpu), 0x00); // Should fetch NOP instruction (0x00)
+    EXPECT_EQ(Intel8080TestHelper::getRegisterPC(cpu), 0x0001); // PC should increment by 1
 
     cpu.step(); // Execute LXI B,D16 (0x01)
-    EXPECT_EQ(CPUTestHelper::getOpcode(cpu), 0x01);
-    EXPECT_EQ(CPUTestHelper::getRegisterBC(cpu), 0x2112); // Check that BC register pair is loaded correctly;
-    EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0004); // PC should point to next instruction
+    EXPECT_EQ(Intel8080TestHelper::getOpcode(cpu), 0x01);
+    EXPECT_EQ(Intel8080TestHelper::getRegisterBC(cpu), 0x2112); // Check that BC register pair is loaded correctly;
+    EXPECT_EQ(Intel8080TestHelper::getRegisterPC(cpu), 0x0004); // PC should point to next instruction
 
-    CPUTestHelper::setRegisterA(cpu, 0x56); // Set Accumulator to known value
+    Intel8080TestHelper::setRegisterA(cpu, 0x56); // Set Accumulator to known value
     cpu.step(); // Execute STAX B (0x02)
-    EXPECT_EQ(CPUTestHelper::getOpcode(cpu), 0x02); // Verify we have the correct opcode
-    EXPECT_EQ(CPUTestHelper::getByteAtAddress(cpu, CPUTestHelper::getRegisterBC(cpu)), 0x56); // Check that memory at address BC contains value of Accumulator
-    EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0005); // PC should point to next instruction
+    EXPECT_EQ(Intel8080TestHelper::getOpcode(cpu), 0x02); // Verify we have the correct opcode
+    EXPECT_EQ(Intel8080TestHelper::getByteAtAddress(cpu, Intel8080TestHelper::getRegisterBC(cpu)), 0x56); // Check that memory at address BC contains value of Accumulator
+    EXPECT_EQ(Intel8080TestHelper::getRegisterPC(cpu), 0x0005); // PC should point to next instruction
 }
 
 TEST(intel8080Test, emuTest_cpuTestINX_B) {
@@ -318,17 +172,17 @@ TEST(intel8080Test, emuTest_cpuTestINX_B) {
     cpu.attachBus(&bus);
 
     EXPECT_NO_THROW(cpu.step()); // Execute NOP (0x00)
-    EXPECT_EQ(CPUTestHelper::getOpcode(cpu), 0x00); // Should fetch NOP instruction (0x00)
-    EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0001); // PC should increment by 1
+    EXPECT_EQ(Intel8080TestHelper::getOpcode(cpu), 0x00); // Should fetch NOP instruction (0x00)
+    EXPECT_EQ(Intel8080TestHelper::getRegisterPC(cpu), 0x0001); // PC should increment by 1
 
     cpu.step(); // Execute LXI B,D16 (0x01)
-    EXPECT_EQ(CPUTestHelper::getOpcode(cpu), 0x01);
-    EXPECT_EQ(CPUTestHelper::getRegisterBC(cpu), 0x2112); // Check that BC register pair is loaded correctly;
-    EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0004); // PC should point to next instruction
+    EXPECT_EQ(Intel8080TestHelper::getOpcode(cpu), 0x01);
+    EXPECT_EQ(Intel8080TestHelper::getRegisterBC(cpu), 0x2112); // Check that BC register pair is loaded correctly;
+    EXPECT_EQ(Intel8080TestHelper::getRegisterPC(cpu), 0x0004); // PC should point to next instruction
 
     cpu.step(); // Execute INX B (0x03)
-    EXPECT_EQ(CPUTestHelper::getOpcode(cpu), 0x03);
-    EXPECT_EQ(CPUTestHelper::getRegisterBC(cpu), 0x2113);
+    EXPECT_EQ(Intel8080TestHelper::getOpcode(cpu), 0x03);
+    EXPECT_EQ(Intel8080TestHelper::getRegisterBC(cpu), 0x2113);
 }
 
 TEST(intel8080Test, emuTest_cpuTestINR_B) {
@@ -342,19 +196,19 @@ TEST(intel8080Test, emuTest_cpuTestINR_B) {
     cpu.attachBus(&bus);
 
     EXPECT_NO_THROW(cpu.step()); // Execute NOP (0x00)
-    EXPECT_EQ(CPUTestHelper::getOpcode(cpu), 0x00);
-    EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0001);
+    EXPECT_EQ(Intel8080TestHelper::getOpcode(cpu), 0x00);
+    EXPECT_EQ(Intel8080TestHelper::getRegisterPC(cpu), 0x0001);
 
     cpu.step(); // Execute LXI B,D16
-    EXPECT_EQ(CPUTestHelper::getOpcode(cpu), 0x01);
-    EXPECT_EQ(CPUTestHelper::getRegisterBC(cpu), 0x2112);
-    EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0004);
+    EXPECT_EQ(Intel8080TestHelper::getOpcode(cpu), 0x01);
+    EXPECT_EQ(Intel8080TestHelper::getRegisterBC(cpu), 0x2112);
+    EXPECT_EQ(Intel8080TestHelper::getRegisterPC(cpu), 0x0004);
 
     cpu.step(); // Execute INR B
-    EXPECT_EQ(CPUTestHelper::getOpcode(cpu), 0x04);
-    EXPECT_EQ(CPUTestHelper::getRegisterB(cpu), 0x22);
-    EXPECT_EQ(CPUTestHelper::getFlags(cpu), 0x06);
-    EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0005);
+    EXPECT_EQ(Intel8080TestHelper::getOpcode(cpu), 0x04);
+    EXPECT_EQ(Intel8080TestHelper::getRegisterB(cpu), 0x22);
+    EXPECT_EQ(Intel8080TestHelper::getFlags(cpu), 0x06);
+    EXPECT_EQ(Intel8080TestHelper::getRegisterPC(cpu), 0x0005);
 }
 
 TEST(intel8080Test, cpuTestFlags) {
@@ -371,13 +225,13 @@ TEST(intel8080Test, cpuTestFlags) {
 
     cpu.reset();
 
-    EXPECT_EQ(CPUTestHelper::getFlags(cpu), 0x02);
+    EXPECT_EQ(Intel8080TestHelper::getFlags(cpu), 0x02);
 
-    CPUTestHelper::setRegisterB(cpu, 0x7f);
+    Intel8080TestHelper::setRegisterB(cpu, 0x7f);
     cpu.step();
-    EXPECT_EQ(CPUTestHelper::getRegisterB(cpu), 0x80);
+    EXPECT_EQ(Intel8080TestHelper::getRegisterB(cpu), 0x80);
     // Flags should be S, A = 0x92 b[1001 0010]
-    EXPECT_EQ(CPUTestHelper::getFlags(cpu), 0x92);
+    EXPECT_EQ(Intel8080TestHelper::getFlags(cpu), 0x92);
 }
 
 TEST(intel8080Test, emuTest_cpuTestDCR_B) {
@@ -391,19 +245,19 @@ TEST(intel8080Test, emuTest_cpuTestDCR_B) {
     cpu.attachBus(&bus);
 
     EXPECT_NO_THROW(cpu.step()); // Execute NOP (0x00)
-    EXPECT_EQ(CPUTestHelper::getOpcode(cpu), 0x00);
-    EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0001);
+    EXPECT_EQ(Intel8080TestHelper::getOpcode(cpu), 0x00);
+    EXPECT_EQ(Intel8080TestHelper::getRegisterPC(cpu), 0x0001);
 
     cpu.step(); // Execute LXI B,D16
-    EXPECT_EQ(CPUTestHelper::getOpcode(cpu), 0x01);
-    EXPECT_EQ(CPUTestHelper::getRegisterBC(cpu), 0x2112);
-    EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0004);
+    EXPECT_EQ(Intel8080TestHelper::getOpcode(cpu), 0x01);
+    EXPECT_EQ(Intel8080TestHelper::getRegisterBC(cpu), 0x2112);
+    EXPECT_EQ(Intel8080TestHelper::getRegisterPC(cpu), 0x0004);
 
     cpu.step(); // Execute DCR B
-    EXPECT_EQ(CPUTestHelper::getOpcode(cpu), 0x05);
-    EXPECT_EQ(CPUTestHelper::getRegisterB(cpu), 0x20);
-    EXPECT_EQ(CPUTestHelper::getFlags(cpu), 0x02);
-    EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0005);
+    EXPECT_EQ(Intel8080TestHelper::getOpcode(cpu), 0x05);
+    EXPECT_EQ(Intel8080TestHelper::getRegisterB(cpu), 0x20);
+    EXPECT_EQ(Intel8080TestHelper::getFlags(cpu), 0x12);
+    EXPECT_EQ(Intel8080TestHelper::getRegisterPC(cpu), 0x0005);
 }
 
 TEST(intel8080Test, emuTest_cpuTestMVI_B_D8) {
@@ -417,10 +271,48 @@ TEST(intel8080Test, emuTest_cpuTestMVI_B_D8) {
     cpu.attachBus(&bus);
 
     EXPECT_NO_THROW(cpu.step()); // Execute MVI B, D8 (0x06)
-    EXPECT_EQ(CPUTestHelper::getOpcode(cpu), 0x06);
-    EXPECT_EQ(CPUTestHelper::getRegisterPC(cpu), 0x0002);
-    EXPECT_EQ(CPUTestHelper::getByteData(cpu), 0x42);
-    EXPECT_EQ(CPUTestHelper::getRegisterB(cpu), 0x42);
+    EXPECT_EQ(Intel8080TestHelper::getOpcode(cpu), 0x06);
+    EXPECT_EQ(Intel8080TestHelper::getRegisterPC(cpu), 0x0002);
+    EXPECT_EQ(Intel8080TestHelper::getByteData(cpu), 0x42);
+    EXPECT_EQ(Intel8080TestHelper::getRegisterB(cpu), 0x42);
 }
+
+TEST(intel8080Test, emuTest_cpuTestDCR_C) {
+    Intel8080 cpu;
+    Bus bus;
+    const std::vector<BYTE> buffer = {0x00, 0x0D, 0x0D, 0x00};
+    Rom rom(0x2000, buffer);
+    Ram ram(0x2000);
+
+    bus.attachCpu(&cpu)->attachMemory(&rom, 0x0000, 0x1FFF)->attachMemory(&ram, 0x2000, 0x3FFF);
+    cpu.attachBus(&bus);
+
+    EXPECT_NO_THROW(cpu.step()); // Execute NOP (0x00)
+    EXPECT_EQ(Intel8080TestHelper::getOpcode(cpu), 0x00);
+    EXPECT_EQ(Intel8080TestHelper::getRegisterPC(cpu), 0x0001);
+
+    Intel8080TestHelper::setRegisterC(cpu, 0x05); // Set C register to known value
+    EXPECT_EQ(Intel8080TestHelper::getRegisterC(cpu), 0x05);
+
+    cpu.step(); // Execute DCR C
+
+    EXPECT_EQ(Intel8080TestHelper::getOpcode(cpu), 0x0D);
+    EXPECT_EQ(Intel8080TestHelper::getRegisterC(cpu), 0x04);
+    EXPECT_EQ(Intel8080TestHelper::getFlags(cpu), 0x02);
+    EXPECT_EQ(Intel8080TestHelper::getRegisterPC(cpu), 0x0002);
+
+    Intel8080TestHelper::setRegisterC(cpu, 0x00); // Set C register to known value
+    EXPECT_EQ(Intel8080TestHelper::getRegisterC(cpu), 0x00);
+
+    cpu.step(); // Execute DCR C
+
+    EXPECT_EQ(Intel8080TestHelper::getOpcode(cpu), 0x0D);
+    EXPECT_EQ(Intel8080TestHelper::getRegisterC(cpu), 0xFF);
+    EXPECT_EQ(Intel8080TestHelper::getFlags(cpu), 0x86);
+    EXPECT_EQ(Intel8080TestHelper::getRegisterPC(cpu), 0x0003);
+
+}
+
+
 
 

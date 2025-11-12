@@ -18,6 +18,7 @@ class Bus {
       ~MemoryMapping() = default;
   };
   std::vector<MemoryMapping> memory_map;
+  CPU *cpu;
     
  public:
   Bus();

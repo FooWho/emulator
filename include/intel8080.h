@@ -3,7 +3,9 @@
 #include "cpu.h"
 #include "types.h"
 
-class CPUTestHelper; // Forward declaration
+class Bus;
+
+class Intel8080TestHelper; // Forward declaration
 
 class Intel8080 : public CPU {
  private:
@@ -45,43 +47,10 @@ class Intel8080 : public CPU {
 
 
     void regFlagsBasic(BYTE result);
-    void regFlagsCarryX(WORD result);
-    void regFlagsAuxCarry(BYTE result);
+    void regFlagsCarry(WORD result);
+    void regFlagsAuxCarry(WORD result);
 
-    inline BYTE examineRegisterA() { return regs.a; }
-    inline void setRegisterA(BYTE value) { regs.a = value; }   
-    inline BYTE examineRegisterB() { return regs.b; }
-    inline void setRegisterB(BYTE value) { regs.b = value; }
-    inline BYTE examineRegisterC() { return regs.c; }
-    inline void setRegisterC(BYTE value) { regs.c = value; }
-    inline BYTE examineRegisterD() { return regs.d; }
-    inline void setRegisterD(BYTE value) { regs.d = value; }
-    inline BYTE examineRegisterE() { return regs.e; }
-    inline void setRegisterE(BYTE value) { regs.e = value; }
-    inline BYTE examineRegisterH() { return regs.h; }
-    inline void setRegisterH(BYTE value) { regs.h = value; }
-    inline BYTE examineRegisterL() { return regs.l; }
-    inline void setRegisterL(BYTE value) { regs.l = value; }
 
-    inline WORD examineRegisterBC() { return (static_cast<WORD>(regs.b) << 8) | static_cast<WORD>(regs.c); }
-    inline void setRegisterBC(WORD value) { regs.b = (value >> 8) & 0xFF; regs.c = value & 0xFF; }
-    inline WORD examineRegisterDE() { return (static_cast<WORD>(regs.d) << 8) | static_cast<WORD>(regs.e); }
-    inline void setRegisterDE(WORD value) { regs.d = (value >> 8) & 0xFF; regs.e = value & 0xFF; }
-    inline WORD examineRegisterHL() { return (static_cast<WORD>(regs.h) << 8) | static_cast<WORD>(regs.l); }
-    inline void setRegisterHL(WORD value) { regs.h = (value >> 8) & 0xFF; regs.l = value & 0xFF; }
-    inline WORD examineRegisterSP() { return regs.sp; }
-    inline void setRegisterSP(WORD value) { regs.sp = value; }
-    inline WORD examineRegisterPC() { return regs.pc; }
-    inline void setRegisterPC(WORD value) { regs.pc = value; }
-
-    inline BYTE examineFlags() { return (static_cast<BYTE>(flags.s) << 7) | (static_cast<BYTE>(flags.z) << 6) | (static_cast<BYTE>(flags.x_zero) << 5) | (static_cast<BYTE>(flags.ac) << 4) | (static_cast<BYTE>(flags.y_zero) << 3) | (static_cast<BYTE>(flags.p) << 2) | (static_cast<BYTE>(flags.x_one) << 1) | (static_cast<BYTE>(flags.cy)); }
-    inline void setFlags(BYTE value) { flags.s = (value >> 7) & 0x01; flags.z = (value >> 6) & 0x01; flags.x_zero = (value >> 5) & 0x01; flags.ac = (value >> 4) & 0x01; flags.y_zero = (value >> 3) & 0x01; flags.p = (value >> 2) & 0x01; flags.x_one = (value >> 1) & 0x01; flags.cy = value & 0x01; }
-    inline BYTE examineOpcode() { return opcode; }
-    inline void setOpcode(BYTE value) { opcode = value; }
-    inline BYTE examineByteData() { return byteData; }
-    inline void setByteData(BYTE value) { byteData = value; }
-    inline WORD examineWordData() { return wordData; }
-    inline void setWordData(WORD value) { wordData = value; }
 
     Bus *bus;
 
@@ -126,5 +95,5 @@ class Intel8080 : public CPU {
     void fetchOpcode() override;
     void execute() override;
 
-    friend class CPUTestHelper;
+    friend class Intel8080TestHelper;
 };
