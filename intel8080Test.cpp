@@ -313,6 +313,23 @@ TEST(intel8080Test, emuTest_cpuTestDCR_C) {
 
 }
 
+TEST(intel8080Test, emuTest_cpuTestAuxCarry) {
+
+    Intel8080 cpu;
+
+    cpu.reset();
+
+    BYTE op1 = 0xFF;
+    BYTE op2 = 0xFF;
+
+    WORD ops = (op1 << 8) | op2;
+
+    Intel8080TestHelper::auxCarry(cpu, ops);
+
+    EXPECT_EQ(Intel8080TestHelper::getFlags(cpu), 0x12);   
+
+}
+
 
 
 

@@ -19,10 +19,10 @@ void Intel8080::buildOpcodeTable()
 
 }
 
-void Intel8080::regFlagsAuxCarry(WORD result)
+void Intel8080::regFlagsAuxCarry(WORD ops)
 {
-    BYTE operand1 = BYTE((result & 0xFF00) >> 8);
-    BYTE operand2 = (BYTE)(result & 0x00FF);
+    BYTE operand1 = BYTE((ops & 0xFF00) >> 8);
+    BYTE operand2 = (BYTE)(ops & 0x00FF);
 
     BYTE lowNibbleOp1 = (BYTE)(operand1 & 0x0F);
     BYTE lowNibbleOp2 = (BYTE)(operand2 & 0x0F);
@@ -36,9 +36,9 @@ void Intel8080::regFlagsAuxCarry(WORD result)
     }
 }
 
-void Intel8080::regFlagsCarry(WORD result)
+void Intel8080::regFlagsCarry(WORD ops)
 {
-    if (result < wordData) {
+    if (ops < wordData) {
         flags.cy = 1;
     } else {
         flags.cy = 0;

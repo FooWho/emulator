@@ -47,8 +47,9 @@ class Intel8080 : public CPU {
 
 
     void regFlagsBasic(BYTE result);
-    void regFlagsCarry(WORD result);
-    void regFlagsAuxCarry(WORD result);
+    void regFlagsCarry(WORD ops);
+    void regFlagsAuxCarry(WORD ops);
+    void refFlagsAuxDoubleCarry(WORD op1, WORD op2);
 
 
 
