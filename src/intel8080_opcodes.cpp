@@ -14,6 +14,10 @@ void Intel8080::buildOpcodeTable()
     p_opcode_lookup[0x06] = &Intel8080::op_MVI_B_D8; // MVI B,D8 instruction
     p_opcode_lookup[0x09] = &Intel8080::op_DAD_B; // DAD B instruction
     p_opcode_lookup[0x0D] = &Intel8080::op_DCR_C; // DCR C instruction
+    p_opcode_lookup[0x0E] = &Intel8080::op_MVI_C_D8; // MVI C,D8 instruction
+    p_opcode_lookup[0x0F] = &Intel8080::op_RRC; // RRC instruction
+    p_opcode_lookup[0x11] = &Intel8080::op_LXI_D_D16; // LXI D,D16 instruction
+    p_opcode_lookup[0x13] = &Intel8080::op_INX_D; // INX D instruction
 
     // ... Add other opcode mappings here       
 
@@ -188,5 +192,57 @@ void Intel8080::op_DCR_C()
     regFlagsBasic(regs.c);
     regFlagsAuxCarry(operands);
     spdlog::debug("DCR C -> C: 0x{:02X}", regs.c);
+}
+
+void Intel8080::op_MVI_C_D8()
+{
+    // Opcode: 0x0E          Mnemonic: MVI C, D8
+    // Size: 2  bytes       Cycles: 7
+    // Description: Move immediate 8-bit data into C
+    // Flags: None
+
+    fetchByte();
+    regs.c = byteData;
+    spdlog::debug("MVI C, D8 -> C: 0x{:02X} D8: 0x{:02X}", regs.c, byteData);
+}
+
+void Intel8080::op_RRC()
+{
+    // Opcode: 0x0F         Mnemonic: RRC
+    // Size: 1              Cycles: 4
+    // Description: Rotate Accumulator right through carry
+    // Flags: CY
+
+    BYTE lsb = regs.a & 0x01;
+    regs.a = (regs.a >> 1) | (lsb << 7);
+    flags.cy = lsb;
+    spdlog::debug("RRC -> A: 0x{:02X}", regs.a);
+}   
+
+void Intel8080::op_LXI_D_D16()
+{
+    // Opcode: 0x11         Mnemonic: LXI D,D16
+    // Size: 3  bytes       Cycles: 10
+    // Description: Load immediate 16-bit data into DE register pair
+    // Flags: None
+
+    fetchWord();
+    regs.d = (wordData >> 8) & 0x00FF;
+    regs.e = wordData & 0x00FF;
+    spdlog::debug("LXI D, D16 -> D: 0x{:02X} E: 0x{:02X} D16: 0x{:04X}", regs.d, regs.e, wordData);
+}   
+
+void Intel8080::op_INX_D()
+{
+    // Opcode: 0x13         Mnemonic: INX D
+    // Size: 1 byte         Cycles: 5
+    // Description: Increment the DE register pair
+    // Flags: None
+
+    WORD de = (static_cast<WORD>(regs.d) << 8) | static_cast<WORD>(regs.e);
+    de += 1;
+    regs.d = (de >> 8) & 0xFF;
+    regs.e = de & 0xFF;
+    spdlog::debug("INX D -> D: 0x{:02X} E: 0x{:02X} DE: 0x{:04X}", regs.d, regs.e, de);
 }
 
