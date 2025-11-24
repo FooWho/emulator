@@ -9,7 +9,7 @@ class Intel8080TestHelper; // Forward declaration
 
 class Intel8080 : public CPU {
  private:
-    struct p_flags {
+    struct pFlags {
         // Flag Register - Bitfield representation
         // Bit 7: Sign 
         // Bit 6: Zero 
@@ -21,15 +21,15 @@ class Intel8080 : public CPU {
         // Bit 0: Carry
         BYTE s : 1;         // Sign
         BYTE z : 1;         // Zero
-        BYTE x_zero : 1;    // Not used, always 0
+        BYTE xZero : 1;    // Not used, always 0
         BYTE ac : 1;        // Auxillary Carry
-        BYTE y_zero : 1;    // Not used, always 0
+        BYTE yZero : 1;    // Not used, always 0
         BYTE p : 1;         // Parity
-        BYTE x_one : 1;     // Not used, always 1
+        BYTE xOne : 1;     // Not used, always 1
         BYTE cy : 1;        // Carry
     } flags;
 
-    struct p_regs {
+    struct pRegs {
         BYTE a;         // Accumulator
         BYTE b;         // High byte of the BC pair
         BYTE c;         // Low byte of the BC pair
@@ -49,32 +49,50 @@ class Intel8080 : public CPU {
     void regFlagsBasic(BYTE result);
     void regFlagsCarry(WORD ops);
     void regFlagsAuxCarry(WORD ops);
-    void refFlagsAuxDoubleCarry(WORD op1, WORD op2);
+    void regFlagsAuxDoubleCarry(WORD op1, WORD op2);
 
 
 
     Bus *bus;
 
-    std::array<void (Intel8080::*)(), 256> p_opcode_lookup;
-    void op_ILLEGAL();
-    void op_NOP();
-    void op_LXI_B_D16();
-    void op_STAX_B();
-    void op_INX_B();
-    void op_INR_B();
-    void op_DCR_B();
-    void op_MVI_B_D8();
-    void op_RLC();
-    void op_DAD_B();
-    void op_LDAX_B();
-    void op_DCX_B();
-    void op_INR_C();
-    void op_DCR_C();
-    void op_MVI_C_D8();
-    void op_RRC();
-    void op_LXI_D_D16();
-    void op_STAX_D();
-    void op_INX_D();
+    std::array<void (Intel8080::*)(), 256> pOpcodeLookup;
+    void opILLEGAL();       // 0x--
+    void opNOP();           // 0x00
+    void opLXI_B_D16();     // 0x01
+    void opSTAX_B();        // 0x02
+    void opINX_B();         // 0x03
+    void opINR_B();         // 0x04
+    void opDCR_B();         // 0x05
+    void opMVI_B_D8();      // 0x06
+    void opRLC();           // 0x07 
+    void opDAD_B();         // 0x09
+    void opLDAX_B();        // 0x0A
+    void opDCX_B();         // 0x0B
+    void opINR_C();         // 0x0C
+    void opDCR_C();         // 0x0D
+    void opMVI_C_D8();      // 0x0E
+    void opRRC();           // 0x0F
+    void opLXI_D_D16();     // 0x11
+    void opSTAX_D();        // 0x12
+    void opINX_D();         // 0x13
+
+    void opLDAX_D();        // 0x1A
+
+    void opLXI_H_D16();     // 0x21
+
+    void opINX_H();         // 0x23
+
+    void opLXI_SP_D16();    // 0x31
+
+    void opMOV_M_A();       // 0x77
+
+    void opJNZ();           // 0xC2
+    void opJMP();           // 0xC3
+
+    void opRET();           // 0xC9  
+
+    void opCALL();          // 0xCD
+
     void buildOpcodeTable();
 
  protected:
@@ -95,6 +113,7 @@ class Intel8080 : public CPU {
     Intel8080 *attachBus(Bus *bus) override;
     void fetchOpcode() override;
     void execute() override;
+    void printState();
 
     friend class Intel8080TestHelper;
 };

@@ -104,19 +104,19 @@ class Intel8080TestHelper {
     }
 
     static inline BYTE getFlags(Intel8080& cpu) {
-        return cpu.flags.s << 7 | cpu.flags.z << 6 | cpu.flags.x_zero << 5 | 
-            cpu.flags.ac << 4 | cpu.flags.y_zero << 3 | cpu.flags.p << 2 | 
-            cpu.flags.x_one << 1 | cpu.flags.cy;
+        return cpu.flags.s << 7 | cpu.flags.z << 6 | cpu.flags.xZero << 5 | 
+            cpu.flags.ac << 4 | cpu.flags.yZero << 3 | cpu.flags.p << 2 | 
+            cpu.flags.xOne << 1 | cpu.flags.cy;
     }
 
     static inline void setFlags(Intel8080& cpu, BYTE value) {
         cpu.flags.s = (value & 0x80) ? 1 : 0;
         cpu.flags.z = (value & 0x40) ? 1 : 0;
-        cpu.flags.x_zero = 0; // Always 0
+        cpu.flags.xZero = 0; // Always 0
         cpu.flags.ac = (value & 0x10) ? 1 : 0;
-        cpu.flags.y_zero = 0; // Always 0
+        cpu.flags.yZero = 0; // Always 0
         cpu.flags.p = (value & 0x04) ? 1 : 0;
-        cpu.flags.x_one = 1;  // Always 1
+        cpu.flags.xOne = 1;  // Always 1
         cpu.flags.cy = (value & 0x01) ? 1 : 0;
     }
 

@@ -16,14 +16,18 @@ Intel8080::Intel8080()
 }
 void Intel8080::reset()
 {
+    wordData = 0;
+    byteData = 0;
+    opcode = 0;
+
     // Reset flags to their initial state.
     flags.s = 0;
     flags.z = 0;
-    flags.x_zero = 0;
+    flags.xZero = 0;
     flags.ac = 0;
-    flags.y_zero = 0;
+    flags.yZero = 0;
     flags.p = 0;
-    flags.x_one = 1; // This bit is always 1.
+    flags.xOne = 1; // This bit is always 1.
     flags.cy = 0;
 
     // Reset general purpose registers, stack pointer, and program counter.
@@ -104,11 +108,18 @@ void Intel8080::writeWord(WORD address, WORD data)
 void Intel8080::execute()
 {
     spdlog::debug("Intel8080::execute(): Executing opcode 0x{:02X} at PC = 0x{:04X}", opcode, regs.pc - 1);
-    (this->*p_opcode_lookup[opcode])();
+    (this->*pOpcodeLookup[opcode])();
 }
 
 void Intel8080::step()
 {
     fetchOpcode();
     execute();
+}
+
+void Intel8080::printState()
+{
+    printf("Opcode: 0x%02X\n", opcode);
+    printf("Registers: A: 0x%02X B: 0x%02X C: 0x%02X D: 0x%02X E: 0x%02X H: 0x%02X L: 0x%02X SP: 0x%04X PC: 0x%04X\n",
+           regs.a, regs.b, regs.c, regs.d, regs.e, regs.h, regs.l, regs.sp, regs.pc);
 }

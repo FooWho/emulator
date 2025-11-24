@@ -18,15 +18,37 @@ int main(int argc, char *argv[])
     Rom rom(0x2000); // 8KB ROM
     Ram ram(0x2000); // 8KB RAM
 
+    cpu.reset();
+
     cpu.attachBus(bus.attachCpu(&cpu));
     bus.attachMemory(&rom, 0x0000, 0x1FFF);
     bus.attachMemory(&ram, 0x2000, 0x3FFF); 
 
-    const std::vector<BYTE> buffer = {0x01, 0x34, 0x12, 0x01, 0x12, 0x34};
-    rom.romLoad(buffer);
+    FILE *file = fopen("/home/jasonelison/Workspace/C/emulator/src/invaders.bin", "rb");
+    if (!file) {
+        spdlog::error("Failed to open ROM file.");
+        return EXIT_FAILURE;
+    }
+    std::vector<BYTE> romData(0x2000);
+    size_t bytesRead = fread(romData.data(), 1, romData.size(), file);
+    if (bytesRead != romData.size()) {
+        spdlog::error("Failed to read complete ROM file.");
+        return EXIT_FAILURE;
+    }
+    rom.romLoad(romData);
+    fclose(file);
 
-    cpu.step();
-    cpu.step();
+    char input;
+    printf("Starting Intel 8080 Emulator. Press 'q' to quit.\n");
 
-    return 0;
+    while (true) {
+        //scanf(" %c", &input);
+        //if (input == 'q') {
+            //break;
+        //}
+        cpu.step();
+        cpu.printState();
+    }
+
+    return EXIT_SUCCESS;
 }

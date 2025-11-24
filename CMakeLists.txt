@@ -20,7 +20,7 @@ FetchContent_MakeAvailable(spdlog)
 add_executable(Intel8080 
     main.cpp
     src/intel8080.cpp
-    src/intel8080_opcodes.cpp
+    src/intel8080Opcodes.cpp
     src/cpu.cpp
     src/virtualMemory.cpp
     src/rom.cpp
@@ -43,7 +43,7 @@ add_executable(
     intel8080Test
     intel8080Test.cpp
     src/intel8080.cpp
-    src/intel8080_opcodes.cpp
+    src/intel8080Opcodes.cpp
     src/cpu.cpp
     src/virtualMemory.cpp
     src/rom.cpp
