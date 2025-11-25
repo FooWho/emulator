@@ -27,7 +27,11 @@ void Intel8080::buildOpcodeTable()
 
     pOpcodeLookup[0x31] = &Intel8080::opLXI_SP_D16; // LXI SP,D16 instruction
 
+    pOpcodeLookup[0x36] = &Intel8080::opMVI_M_D8; // MVI M,D8 instruction
+
     pOpcodeLookup[0x77] = &Intel8080::opMOV_M_A; // MOV M,A instruction
+
+    pOpcodeLookup[0x7C] = &Intel8080::opMOV_A_H; // MOV A,H instruction
 
     pOpcodeLookup[0xC2] = &Intel8080::opJNZ; // JNZ instruction
     pOpcodeLookup[0xC3] = &Intel8080::opJMP; // JMP instruction
@@ -35,6 +39,15 @@ void Intel8080::buildOpcodeTable()
     pOpcodeLookup[0xCD] = &Intel8080::opCALL; // CALL instruction
 
     pOpcodeLookup[0xC9] = &Intel8080::opRET; // RET instruction
+
+    pOpcodeLookup[0xD5] = &Intel8080::opPUSH_D; // PUSH D instruction
+
+    pOpcodeLookup[0xE5] = &Intel8080::opPUSH_H; // PUSH H instruction
+
+
+
+    pOpcodeLookup[0xFE] = &Intel8080::opCPI_D8; // CPI instruction
+
 
     // ... Add other opcode mappings here       
 
@@ -59,7 +72,20 @@ void Intel8080::regFlagsAuxCarry(WORD ops)
 
 void Intel8080::regFlagsCarry(WORD ops)
 {
-    if (ops < wordData) {
+    BYTE operand1 = BYTE((ops & 0xFF00) >> 8);
+    BYTE operand2 = (BYTE)(ops & 0x00FF);
+
+    if ((operand1 + operand2) > 0xFF) {
+        flags.cy = 1;
+    } else {
+        flags.cy = 0;
+    }
+}
+
+void Intel8080::regFlagsDoubleCarry(WORD op1, WORD op2)
+{   
+    uint32_t result = op1 + op2;
+    if (result > 0xFFFF) {
         flags.cy = 1;
     } else {
         flags.cy = 0;
@@ -79,9 +105,7 @@ void Intel8080::opILLEGAL()
 {
     spdlog::debug("ILLEGAL");
     printf("Illegal opcode executed at address 0x%04X\n", regs.pc - 1);
-    printf("Opcode: 0x%02X\n", opcode);
-    printf("Registers: A: 0x%02X B: 0x%02X C: 0x%02X D: 0x%02X E: 0x%02X H: 0x%02X L: 0x%02X SP: 0x%04X PC: 0x%04X\n",
-           regs.a, regs.b, regs.c, regs.d, regs.e, regs.h, regs.l, regs.sp, regs.pc);
+    printState();
     throw std::runtime_error("Illegal opcode executed");
 }
 
@@ -189,12 +213,10 @@ void Intel8080::opDAD_B()
 
     WORD hl = (static_cast<WORD>(regs.h) << 8) | static_cast<WORD>(regs.l);
     WORD bc = (static_cast<WORD>(regs.b) << 8) | static_cast<WORD>(regs.c);
-    wordData = hl;
     WORD result = hl + bc;
-    hl = result;
-    regs.h = (hl >> 8) & 0xFF;
-    regs.l = hl & 0xFF;
-    regFlagsCarry(result); // This probably needs to be fixed to take the operands rather than the result.
+    regs.h = (result >> 8) & 0xFF;
+    regs.l = result & 0xFF;
+    regFlagsDoubleCarry(hl, bc);
     spdlog::debug("DAD B -> HL: 0x{:04X} BC: 0x{:04X} -> 0x{:04X}", wordData, bc, result);
 }
 
@@ -319,6 +341,17 @@ void Intel8080::opLXI_SP_D16()
     spdlog::debug("LXI SP, D16 -> SP: 0x{:04X} D16: 0x{:04X}", regs.sp, wordData);
 }
 
+void Intel8080::opMVI_M_D8()
+{
+    // Opcode: 0x36         Mnemonic: MVI M, D8
+    // Size: 2  bytes       Cycles: 7
+    // Description: Move immediate byte data into the memory address pointed by HL register pair
+
+    WORD hl = (static_cast<WORD>(regs.h) << 8) | static_cast<WORD>(regs.l);
+    fetchByte();
+    writeByte(hl, byteData);
+}
+
 void Intel8080::opMOV_M_A()
 {
     // Opcode: 0x77         Mnemonic: MOV M,A
@@ -330,6 +363,17 @@ void Intel8080::opMOV_M_A()
     writeByte(hl, regs.a);
     spdlog::debug("MOV M,A -> [0x{:04X}] = 0x{:02X}", hl, regs.a);
 }   
+
+void Intel8080::opMOV_A_H()
+{
+    // Opcode: 0x7C         Mnemonic: MOV A,H
+    // Size: 1  byte        Cycles: 5
+    // Description: Move contents of H register into Accumulator
+    // Flags: None
+
+    regs.a = regs.h;
+    spdlog::debug("MOV A,H -> A: 0x{:02X} H: 0x{:02X}", regs.a, regs.h);
+}
 
 void Intel8080::opJNZ()
 {
@@ -387,4 +431,50 @@ void Intel8080::opRET()
     regs.pc = wordData;
     regs.sp += 2;
     spdlog::debug("RET -> PC: 0x{:04X} SP: 0x{:04X}", regs.pc, regs.sp);
+}
+
+void Intel8080::opPUSH_D()
+{
+    // Opcode: 0xD5         Mnemonic: PUSH D
+    // Size: 1  byte        Cycles: 11
+    // Description: Push DE register pair onto the stack.
+    // Flags: None  
+
+    regs.sp--;
+    writeByte(regs.sp, regs.d);
+    regs.sp--;
+    writeByte(regs.sp, regs.e);
+    spdlog::debug("PUSH D -> SP: 0x{:04X}", regs.sp);
+}
+
+void Intel8080::opPUSH_H()
+{
+    // Opcode: 0xE5         Mnemonic: PUSH H
+    // Size: 1  byte        Cycles: 11
+    // Description: Push HL register pair onto the stack.
+    // Flags: None  
+
+    regs.sp--;
+    writeByte(regs.sp, regs.h);
+    regs.sp--;
+    writeByte(regs.sp, regs.l);
+    spdlog::debug("PUSH H -> SP: 0x{:04X}", regs.sp);
+}
+
+
+void Intel8080::opCPI_D8()
+{
+    // Opcode:  0xFE        Mnemonic: CPI D8
+    // Size: 2 bytes        Cycles: 7
+    // Description: Compare register A with the immediate mode BYTE data. Set flags.
+    // Flags: S, Z, AC, P, CY
+
+
+    fetchByte();
+    BYTE result = regs.a - byteData;
+    regFlagsBasic(result);
+    WORD operands = (static_cast<WORD>(regs.a) << 8) | static_cast<WORD>(byteData);
+    regFlagsCarry(operands);
+    regFlagsAuxCarry(operands);
+
 }

@@ -330,6 +330,25 @@ TEST(intel8080Test, emuTest_cpuTestAuxCarry) {
 
 }
 
+TEST(intel8080Test, emuTest_cpuTestDAD_B)
+{
+    Intel8080 cpu;
+    const std::vector<BYTE> buffer = {0x09, 0x00, 0x00};
+    Rom rom(0x2000, buffer);
+    Ram ram(0x2000);
+    Bus bus;
+
+    cpu.reset();
+
+    bus.attachCpu(&cpu)->attachMemory(&rom, 0x0000, 0x1FFF)->attachMemory(&ram, 0x2000, 0x3FFF);
+    cpu.attachBus(&bus);
+
+    Intel8080TestHelper::setRegisterHL(cpu, 0xFFFF);
+    Intel8080TestHelper::setRegisterBC(cpu, 0x0FFF);
+
+    EXPECT_NO_THROW(cpu.step()); // Execute DAD_B
+}
+
 
 
 

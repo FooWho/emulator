@@ -49,6 +49,7 @@ class Intel8080 : public CPU {
     void regFlagsBasic(BYTE result);
     void regFlagsCarry(WORD ops);
     void regFlagsAuxCarry(WORD ops);
+    void regFlagsDoubleCarry(WORD op1, WORD op2);
     void regFlagsAuxDoubleCarry(WORD op1, WORD op2);
 
 
@@ -84,7 +85,15 @@ class Intel8080 : public CPU {
 
     void opLXI_SP_D16();    // 0x31
 
+    void opMVI_M_D8();      // 0x36
+
+    void opMVI_A_D8();      // 0x3E
+
     void opMOV_M_A();       // 0x77
+
+    void opMOV_A_H();       // 0x7C
+
+    void opMOV_A_M();       // 0x7F
 
     void opJNZ();           // 0xC2
     void opJMP();           // 0xC3
@@ -92,6 +101,16 @@ class Intel8080 : public CPU {
     void opRET();           // 0xC9  
 
     void opCALL();          // 0xCD
+
+    void opPUSH_D();        // 0xD5
+
+    void opPUSH_H();        // 0xE5
+
+
+
+    void opCPI_D8();        // 0xFE
+
+
 
     void buildOpcodeTable();
 

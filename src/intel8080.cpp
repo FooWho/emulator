@@ -119,7 +119,8 @@ void Intel8080::step()
 
 void Intel8080::printState()
 {
-    printf("Opcode: 0x%02X\n", opcode);
-    printf("Registers: A: 0x%02X B: 0x%02X C: 0x%02X D: 0x%02X E: 0x%02X H: 0x%02X L: 0x%02X SP: 0x%04X PC: 0x%04X\n",
-           regs.a, regs.b, regs.c, regs.d, regs.e, regs.h, regs.l, regs.sp, regs.pc);
+    printf("Opcode: 0x%02X     SP: 0x%04X   PC: 0x%04X\n", opcode, regs.sp, regs.pc);
+    printf("Registers: A: 0x%02X B: 0x%02X C: 0x%02X D: 0x%02X E: 0x%02X H: 0x%02X L: 0x%02X\n",
+           regs.a, regs.b, regs.c, regs.d, regs.e, regs.h, regs.l);
+    printf("Flags: S: %d Z: %d AC: %d P: %d CY: %d\n", flags.s, flags.z, flags.ac, flags.p, flags.cy);
 }
