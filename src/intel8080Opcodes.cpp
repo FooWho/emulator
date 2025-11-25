@@ -19,32 +19,46 @@ void Intel8080::buildOpcodeTable()
     pOpcodeLookup[0x11] = &Intel8080::opLXI_D_D16; // LXI D,D16 instruction
     pOpcodeLookup[0x13] = &Intel8080::opINX_D; // INX D instruction
 
+    pOpcodeLookup[0x19] = &Intel8080::opDAD_D; // DAD D instruction
     pOpcodeLookup[0x1A] = &Intel8080::opLDAX_D; // LDAX D instruction
 
     pOpcodeLookup[0x21] = &Intel8080::opLXI_H_D16; // LXI H,D16 instruction
 
     pOpcodeLookup[0x23] = &Intel8080::opINX_H; // INX H instruction
 
+    pOpcodeLookup[0x26] = &Intel8080::opMVI_H_D8; // MVI H,D8 instruction
+
+    pOpcodeLookup[0x29] = &Intel8080::opDAD_H; // DAD H instruction
+
     pOpcodeLookup[0x31] = &Intel8080::opLXI_SP_D16; // LXI SP,D16 instruction
 
     pOpcodeLookup[0x36] = &Intel8080::opMVI_M_D8; // MVI M,D8 instruction
+
+    pOpcodeLookup[0x6F] = &Intel8080::opMOV_L_A; // MOV L,A instruction
 
     pOpcodeLookup[0x77] = &Intel8080::opMOV_M_A; // MOV M,A instruction
 
     pOpcodeLookup[0x7C] = &Intel8080::opMOV_A_H; // MOV A,H instruction
 
+    pOpcodeLookup[0xC1] = &Intel8080::opPOP_B; // POP B instruction
     pOpcodeLookup[0xC2] = &Intel8080::opJNZ; // JNZ instruction
     pOpcodeLookup[0xC3] = &Intel8080::opJMP; // JMP instruction
+
+    pOpcodeLookup[0xC5] = &Intel8080::opPUSH_B; // PUSH B instruction
 
     pOpcodeLookup[0xCD] = &Intel8080::opCALL; // CALL instruction
 
     pOpcodeLookup[0xC9] = &Intel8080::opRET; // RET instruction
 
+    pOpcodeLookup[0xD3] = &Intel8080::opOUT_D8; // OUT D8 instruction
+
     pOpcodeLookup[0xD5] = &Intel8080::opPUSH_D; // PUSH D instruction
+
+    pOpcodeLookup[0xE1] = &Intel8080::opPOP_H; // POP H instruction
 
     pOpcodeLookup[0xE5] = &Intel8080::opPUSH_H; // PUSH H instruction
 
-
+    pOpcodeLookup[0xEB] = &Intel8080::opXCHG; // XCHG instruction
 
     pOpcodeLookup[0xFE] = &Intel8080::opCPI_D8; // CPI instruction
 
@@ -217,7 +231,7 @@ void Intel8080::opDAD_B()
     regs.h = (result >> 8) & 0xFF;
     regs.l = result & 0xFF;
     regFlagsDoubleCarry(hl, bc);
-    spdlog::debug("DAD B -> HL: 0x{:04X} BC: 0x{:04X} -> 0x{:04X}", wordData, bc, result);
+    spdlog::debug("DAD B -> HL: 0x{:04X} BC: 0x{:04X} -> 0x{:04X}", hl, bc, result);
 }
 
 void Intel8080::opDCR_C()
@@ -289,6 +303,22 @@ void Intel8080::opINX_D()
     spdlog::debug("INX D -> D: 0x{:02X} E: 0x{:02X} DE: 0x{:04X}", regs.d, regs.e, wordData);
 }
 
+void Intel8080::opDAD_D()
+{
+    // Opcode: 0x19         Mnemonic: DAD D
+    // Size: 1              Cycles: 10
+    // Description: Add the contents of the register pair DE to the register pair HL.
+    // Flags: CY
+
+    WORD hl = (static_cast<WORD>(regs.h) << 8) | static_cast<WORD>(regs.l);
+    WORD de = (static_cast<WORD>(regs.d) << 8) | static_cast<WORD>(regs.e);
+    WORD result = hl + de;
+    regs.h = (result >> 8) & 0xFF;
+    regs.l = result & 0xFF;
+    regFlagsDoubleCarry(hl, de);
+    spdlog::debug("DAD D -> HL: 0x{:04X} DE: 0x{:04X} -> 0x{:04X}", hl, de, result);
+}
+
 void Intel8080::opLDAX_D()
 {
     // Opcode: 0x1A         Mnemonic: LDAX D
@@ -329,6 +359,35 @@ void Intel8080::opINX_H()
     spdlog::debug("INX H -> H: 0x{:02X} L: 0x{:02X} HL: 0x{:04X}", regs.h, regs.l, wordData);
 }
 
+void Intel8080::opMVI_H_D8()
+{
+    // Opcode: 0x26         Mnemonic: MVI H, D8
+    // Size 2 bytes         Cycles: 7
+    // Description: Move immediate 8-bit data into H
+    // Flags: None
+
+    fetchByte();
+    regs.h = byteData;
+    spdlog::debug("MVI H, D8 -> H: 0x{:02X} D8: 0x{:02X}", regs.h, byteData);
+}
+
+void Intel8080::opDAD_H()
+{
+    // Opcode: 0x29         Mnemonic: DAD H
+    // Size: 1              Cycles: 10
+    // Description: Add the contents of the register pair HL to the register pair HL.
+    // Flags: CY
+
+    WORD hl = (static_cast<WORD>(regs.h) << 8) | static_cast<WORD>(regs.l);
+    WORD result = hl + hl;
+    regs.h = (result >> 8) & 0xFF;
+    regs.l = result & 0xFF;
+    regFlagsDoubleCarry(hl, hl);
+    spdlog::debug("DAD H -> HL: 0x{:04X} HL: 0x{:04X} -> 0x{:04X}", hl, hl, result);
+}
+
+
+
 void Intel8080::opLXI_SP_D16()
 {
     // Opcode: 0x31         Mnemonic: LXI SP,D16
@@ -346,11 +405,24 @@ void Intel8080::opMVI_M_D8()
     // Opcode: 0x36         Mnemonic: MVI M, D8
     // Size: 2  bytes       Cycles: 7
     // Description: Move immediate byte data into the memory address pointed by HL register pair
+    // Flags: None
 
     WORD hl = (static_cast<WORD>(regs.h) << 8) | static_cast<WORD>(regs.l);
     fetchByte();
     writeByte(hl, byteData);
 }
+
+void Intel8080::opMOV_L_A()
+{
+    // Opcode: 0x6F         Mmnemonic: MOV L, A
+    // Size: 1  byte        Cycles: 5
+    // Description: Move contents of Accumulator into L register
+    // Flags: None
+
+    regs.l = regs.a;
+    spdlog::debug("MOV L,A -> L: 0x{:02X} A: 0x{:02X}", regs.l, regs.a);
+}
+
 
 void Intel8080::opMOV_M_A()
 {
@@ -373,6 +445,22 @@ void Intel8080::opMOV_A_H()
 
     regs.a = regs.h;
     spdlog::debug("MOV A,H -> A: 0x{:02X} H: 0x{:02X}", regs.a, regs.h);
+}
+
+void Intel8080::opPOP_B()
+{
+    // Opcode: 0xC1         Mnemonic: POP B
+    // Size: 1 byte         Cycles: 10
+    // Description: Pop BC register pair from the stack.
+    // Flags: None 
+
+    readByte(regs.sp);
+    regs.sp++;
+    regs.b = byteData;
+    readByte(regs.sp);
+    regs.c = byteData;
+    regs.sp++;
+    spdlog::debug("POP B -> SP: 0x{:04X}", regs.sp);
 }
 
 void Intel8080::opJNZ()
@@ -401,7 +489,21 @@ void Intel8080::opJMP()
     fetchWord();
     regs.pc = wordData;
     spdlog::debug("JMP -> PC: 0x{:04X}", regs.pc);
-}   
+} 
+
+void Intel8080::opPUSH_B()
+{
+    // Opcode: 0xC5         Mnemonic: PUSH B
+    // Size: 1  byte        Cycles: 11
+    // Description: Push BC register pair onto the stack.
+    // Flags: None
+
+    regs.sp--;
+    writeByte(regs.sp, regs.b);
+    regs.sp--;
+    writeByte(regs.sp, regs.c);
+    spdlog::debug("PUSH B -> SP: 0x{:04X}", regs.sp);
+}
 
 void Intel8080::opCALL()
 {
@@ -433,6 +535,18 @@ void Intel8080::opRET()
     spdlog::debug("RET -> PC: 0x{:04X} SP: 0x{:04X}", regs.pc, regs.sp);
 }
 
+void Intel8080::opOUT_D8()
+{
+    // Opcode: 0xD3         Mnemonic: OUT D8
+    // Size: 2 bytes        Cycles: 10
+    // Description: Special
+    // Flags: None  
+
+    fetchByte();
+    spdlog::debug("OUT D8 -> D8: 0x{:02X}", byteData);
+}
+
+
 void Intel8080::opPUSH_D()
 {
     // Opcode: 0xD5         Mnemonic: PUSH D
@@ -445,6 +559,22 @@ void Intel8080::opPUSH_D()
     regs.sp--;
     writeByte(regs.sp, regs.e);
     spdlog::debug("PUSH D -> SP: 0x{:04X}", regs.sp);
+}
+
+void Intel8080::opPOP_H()
+{
+    // Opcode: 0xE1         Mnemonic: POP H
+    // Size: 1  byte        Cycles: 10
+    // Description: Pop HL register pair from the stack.
+    // Flags: None  
+
+    readByte(regs.sp);
+    regs.l = byteData;
+    regs.sp++;
+    readByte(regs.sp);
+    regs.h = byteData;
+    regs.sp++;
+    spdlog::debug("POP H -> SP: 0x{:04X}", regs.sp);
 }
 
 void Intel8080::opPUSH_H()
@@ -460,6 +590,24 @@ void Intel8080::opPUSH_H()
     writeByte(regs.sp, regs.l);
     spdlog::debug("PUSH H -> SP: 0x{:04X}", regs.sp);
 }
+
+void Intel8080::opXCHG()
+{
+    // Opcode: 0xEB         Mnemonic: XCHG
+    // Size: 1  byte        Cycles: 5
+    // Description: Exchange the HL and DE register pairs
+    // Flags: None  
+
+    byteData = regs.d;
+    regs.d = regs.h;
+    regs.h = byteData;
+    byteData = regs.e;
+    regs.e = regs.l;
+    regs.l = byteData;
+
+    spdlog::debug("XCHG -> DE: 0x{:04X} HL: 0x{:04X}", (regs.d << 8) | regs.e, (regs.h << 8) | regs.l);
+}
+
 
 
 void Intel8080::opCPI_D8()

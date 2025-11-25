@@ -77,11 +77,18 @@ class Intel8080 : public CPU {
     void opSTAX_D();        // 0x12
     void opINX_D();         // 0x13
 
+    void opDAD_D();         // 0x19
     void opLDAX_D();        // 0x1A
 
     void opLXI_H_D16();     // 0x21
 
     void opINX_H();         // 0x23
+
+    void opMVI_H_D8();      // 0x26
+
+    void opDAD_H();         // 0x29
+
+    void opDCX_H();         // 0x2B
 
     void opLXI_SP_D16();    // 0x31
 
@@ -89,23 +96,34 @@ class Intel8080 : public CPU {
 
     void opMVI_A_D8();      // 0x3E
 
+    void opMOV_L_A();       // 0x6F
+
     void opMOV_M_A();       // 0x77
 
     void opMOV_A_H();       // 0x7C
 
     void opMOV_A_M();       // 0x7F
 
+    void opPOP_B();         // 0xC1
     void opJNZ();           // 0xC2
     void opJMP();           // 0xC3
+
+    void opPUSH_B();        // 0xC5
+    
 
     void opRET();           // 0xC9  
 
     void opCALL();          // 0xCD
 
+    void opOUT_D8();        // 0xD3
+
     void opPUSH_D();        // 0xD5
+
+    void opPOP_H();         // 0xE1
 
     void opPUSH_H();        // 0xE5
 
+    void  opXCHG();         // 0xEB
 
 
     void opCPI_D8();        // 0xFE
