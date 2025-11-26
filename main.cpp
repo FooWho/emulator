@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
     bus.attachMemory(&rom, 0x0000, 0x1FFF);
     bus.attachMemory(&ram, 0x2000, 0x3FFF); 
 
-    FILE *file = fopen("/home/jelison/Workspace/invaders.bin", "rb");
+    FILE *file = fopen("/home/jasonelison/Workspace/invaders.bin", "rb");
     if (!file) {
         spdlog::error("Failed to open ROM file.");
         return EXIT_FAILURE;
@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
     printf("Starting Intel 8080 Emulator. Press 'q' to quit.\n");
 
 
-    int step = 0;
+    int step = 1;
     while (true) {
         //scanf(" %c", &input);
         //if (input == 'q') {
@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
         //}
         cpu.step();
         cpu.printState();
-        printf("Step: %d\n", step++);
+        printf("Step: %d\n\n", step++);
     }
 
     return EXIT_SUCCESS;
