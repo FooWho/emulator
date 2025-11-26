@@ -19,6 +19,7 @@ void Intel8080::reset()
     wordData = 0;
     byteData = 0;
     opcode = 0;
+    interruptsEnabled = false;
 
     // Reset flags to their initial state.
     flags.s = 0;

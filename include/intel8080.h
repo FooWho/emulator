@@ -41,6 +41,7 @@ class Intel8080 : public CPU {
         WORD pc;        // Program Counter
     } regs;
 
+    bool interruptsEnabled;
     BYTE opcode;
     BYTE byteData;
     WORD wordData;
@@ -51,8 +52,6 @@ class Intel8080 : public CPU {
     void regFlagsAuxCarry(WORD ops);
     void regFlagsDoubleCarry(WORD op1, WORD op2);
     void regFlagsAuxDoubleCarry(WORD op1, WORD op2);
-
-
 
     Bus *bus;
 
@@ -91,44 +90,72 @@ class Intel8080 : public CPU {
     void opDCX_H();         // 0x2B
 
     void opLXI_SP_D16();    // 0x31
-
+    void opSTA();           // 0x32
+    void opINX_SP();        // 0x33
+    void opINR_M();         // 0x34
+    void opDCR_M();         // 0x35
     void opMVI_M_D8();      // 0x36
 
+    void opLDA();           // 0x3A
+
     void opMVI_A_D8();      // 0x3E
+
+    void opMOV_D_M();       // 0x56
+
+    void opMOV_E_M();       // 0x5E
+
+    void opMOV_H_M();       // 0x66
 
     void opMOV_L_A();       // 0x6F
 
     void opMOV_M_A();       // 0x77
 
+    void opMOV_A_D();       // 0x7A
+    void opMOV_A_E();       // 0x7B
     void opMOV_A_H();       // 0x7C
 
-    void opMOV_A_M();       // 0x7F
+    void opMOV_A_M();       // 0x7E
+
+    void opMOV_A_A();       // 0x7F
+
+    void opANA_A();         // 0xA7
+
+    void opXRA_A();         // 0xAF
 
     void opPOP_B();         // 0xC1
     void opJNZ();           // 0xC2
     void opJMP();           // 0xC3
 
     void opPUSH_B();        // 0xC5
-    
+    void opADI_D8();        // 0xC6
 
     void opRET();           // 0xC9  
 
     void opCALL();          // 0xCD
 
-    void opOUT_D8();        // 0xD3
+    void opPOP_D();         // 0xD1
 
+    void opOUT_D8();        // 0xD3
+    void opPUSH_A();        // 0xD4
     void opPUSH_D();        // 0xD5
+
 
     void opPOP_H();         // 0xE1
 
     void opPUSH_H();        // 0xE5
+    void opANI_D8();        // 0xE6
 
     void  opXCHG();         // 0xEB
 
+    void opPOP_PSW();       // 0xF1
+
+    void opPUSH_PSW();      // 0xF6
+
+    void opEI();            // 0xFB
+
+    void opDI();            // 0xFD
 
     void opCPI_D8();        // 0xFE
-
-
 
     void buildOpcodeTable();
 
@@ -145,7 +172,6 @@ class Intel8080 : public CPU {
  public:
     Intel8080();
     void reset() override;
-    // step() is a single fetch-decode-execute cycle.
     void step() override;
     Intel8080 *attachBus(Bus *bus) override;
     void fetchOpcode() override;
