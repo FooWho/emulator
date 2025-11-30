@@ -98,33 +98,6 @@ void Intel8080::buildOpcodeTable()
 
 }
 
-void Intel8080::regFlagsAuxCarry(WORD ops)
-{
-    BYTE operand1 = BYTE((ops & 0xFF00) >> 8);
-    BYTE operand2 = (BYTE)(ops & 0x00FF);
-
-    BYTE lowNibbleOp1 = (BYTE)(operand1 & 0x0F);
-    BYTE lowNibbleOp2 = (BYTE)(operand2 & 0x0F);
-
-    if (((operand1 & 0x0F) + (operand2 & 0x0F)) > 0x0F) {
-        flags.ac = 1;
-    } else {
-        flags.ac = 0;
-    }
-}
-
-void Intel8080::regFlagsCarry(WORD ops)
-{
-    BYTE operand1 = BYTE((ops & 0xFF00) >> 8);
-    BYTE operand2 = (BYTE)(ops & 0x00FF);
-
-    if ((operand1 + operand2) > 0xFF) {
-        flags.cy = 1;
-    } else {
-        flags.cy = 0;
-    }
-}
-
 void Intel8080::regFlagsDoubleCarry(WORD op1, WORD op2)
 {   
     uint32_t result = op1 + op2;
@@ -135,12 +108,40 @@ void Intel8080::regFlagsDoubleCarry(WORD op1, WORD op2)
     }
 }
 
-void Intel8080::regFlagsBasic(BYTE result)
+void Intel8080::regFlagsSZP(BYTE result)
 {
     flags.s = (result & 0x80) ? 1 : 0;
     flags.z = (result == 0) ? 1 : 0;
     flags.p = __builtin_popcount(result) % 2 == 0;
 } 
+
+void Intel8080::regFlagsAuxCarry(BYTE op1, BYTE op2, BYTE result)
+{
+    flags.ac = ((op1 ^ op2 ^ result) & 0x10) != 0;
+}
+
+void Intel8080::performAdd(BYTE operand, bool withCarry) {
+    WORD cy = withCarry ? flags.cy : 0;
+    WORD result = regs.a + operand + cy;
+
+    regFlagsSZP(result & 0xFF);
+    regFlagsAuxCarry(regs.a, operand, result);
+    flags.cy = (result > 0xFF);
+
+    regs.a = (BYTE)result;
+}
+
+void Intel8080::performSub(BYTE val, bool withBorrow) {
+
+    BYTE borrow = withBorrow ? flags.cy : 0;
+    WORD result = regs.a - val - borrow;
+
+    regFlagsSZP(result & 0xFF);
+    regFlagsAuxCarry(regs.a, val, result);
+    flags.cy = (result > 0xFF);
+
+    regs.a = result & 0xFF;
+}
 
 void Intel8080::opILLEGAL()
 {
@@ -207,11 +208,9 @@ void Intel8080::opINR_B()
     // Description: Increment the B register
     // Flags: S, Z, AC, P
 
-    wordData = ((WORD)regs.b << 8) & 0xFF00;
-    wordData += 0x01;
-    regs.b++;
-    regFlagsBasic(regs.b);
-    regFlagsAuxCarry(wordData);
+    regFlagsAuxCarry(regs.b, 1, regs.b+1);
+    regFlagsSZP(++regs.b);
+
     spdlog::debug("INR B -> B: 0x{:02X}", regs.b);
 }
 
@@ -222,11 +221,9 @@ void Intel8080::opDCR_B()
     // Description: Decrement the B register
     // Flags: S, Z, AC, P
 
-    wordData = ((WORD)regs.b << 8) & 0xFF00;
-    wordData += 0xFF; // 0xFF is -1 two's complement
-    regs.b--;
-    regFlagsBasic(regs.b);
-    regFlagsAuxCarry(wordData);
+    regFlagsAuxCarry(regs.b, 1, regs.b-1);
+    regFlagsSZP(--regs.b);
+
     spdlog::debug("DCR B -> B: 0x{:02X}", regs.b);
 }
 
@@ -265,11 +262,9 @@ void Intel8080::opDCR_C()
     // Description: Decrement the C register
     // Flags: S, Z, AC, P
 
-    wordData = ((WORD)regs.c << 8) & 0xFF00;
-    wordData += 0xFF; // 0xFF is -1 in two's complement
-    regs.c--;
-    regFlagsBasic(regs.c);
-    regFlagsAuxCarry(wordData);
+    regFlagsAuxCarry(regs.c, 1, regs.c-1);
+    regFlagsSZP(--regs.c);
+
     spdlog::debug("DCR C -> C: 0x{:02X}", regs.c);
 }
 
@@ -592,7 +587,7 @@ void Intel8080::opANA_A()
     // Description: Bitwise AND of the accumulator with itself
     // Flags: S, Z, AC, P, CY
 
-    regFlagsBasic(regs.a);
+    regFlagsSZP(regs.a & regs.a);
     flags.cy = 0;
     flags.ac = 0;
     spdlog::debug("ANA A -> A: 0x{:02X}", regs.a);
@@ -682,11 +677,8 @@ void Intel8080::opADI_D8()
     // Flags: S, Z, AC, P, CY
 
     fetchByte();
-    WORD operands = (static_cast<WORD>(regs.a) << 8) | static_cast<WORD>(byteData);
-    regFlagsCarry(operands);
-    regFlagsAuxCarry(operands);
-    regFlagsBasic(regs.a+byteData);
-    regs.a += byteData;
+    performAdd(byteData, false);
+
     spdlog::debug("ADI D8 -> A: 0x{:02X} D8: 0x{:02X}", regs.a, byteData);
 }
 
@@ -800,7 +792,7 @@ void Intel8080::opANI_D8()
 
     fetchByte();
     regs.a &= byteData;
-    regFlagsBasic(regs.a);
+    regFlagsSZP(regs.a);
     flags.cy = 0;
     flags.ac = 0;
     spdlog::debug("ANI D8 -> A: 0x{:02X} D8: 0x{:02X}", regs.a, byteData);
@@ -889,11 +881,9 @@ void Intel8080::opCPI_D8()
     // Description: Compare register A with the immediate mode BYTE data. Set flags.
     // Flags: S, Z, AC, P, CY
 
-
     fetchByte();
-    BYTE result = regs.a - byteData;
-    regFlagsBasic(result);
-    WORD operands = (static_cast<WORD>(regs.a) << 8) | static_cast<WORD>(byteData);
-    regFlagsCarry(operands);
-    regFlagsAuxCarry(operands);
+    BYTE accumulator = regs.a;
+    performSub(byteData, false);
+    regs.a = accumulator;
+    spdlog::debug("CPI D8 -> A: 0x{:02X} D8: 0x{:02X}", accumulator, byteData);
 }

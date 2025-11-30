@@ -47,11 +47,11 @@ class Intel8080 : public CPU {
     WORD wordData;
 
 
-    void regFlagsBasic(BYTE result);
-    void regFlagsCarry(WORD ops);
-    void regFlagsAuxCarry(WORD ops);
+    void regFlagsSZP(BYTE result);
+    void performAdd(BYTE operand, bool withCarry);
+    void performSub(BYTE operand, bool withCarry);
+    void regFlagsAuxCarry(BYTE op1, BYTE op2, BYTE result);
     void regFlagsDoubleCarry(WORD op1, WORD op2);
-    void regFlagsAuxDoubleCarry(WORD op1, WORD op2);
 
     Bus *bus;
 

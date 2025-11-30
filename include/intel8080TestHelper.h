@@ -120,11 +120,13 @@ class Intel8080TestHelper {
         cpu.flags.cy = (value & 0x01) ? 1 : 0;
     }
 
+    /*
     static inline void auxCarry(Intel8080& cpu, WORD ops)
     {
         cpu.regFlagsAuxCarry(ops);
     }
-
+    */
+   
     static inline BYTE getOpcode(Intel8080& cpu) {
         return cpu.opcode;
     } 

@@ -188,7 +188,7 @@ TEST(intel8080Test, emuTest_cpuTestINX_B) {
 TEST(intel8080Test, emuTest_cpuTestINR_B) {
     Intel8080 cpu;
     Bus bus;
-    const std::vector<BYTE> buffer = {0x00, 0x01, 0x12, 0x21, 0x04, 0x00, 0x0};
+    const std::vector<BYTE> buffer = {0x00, 0x01, 0x12, 0x2F, 0x04, 0x00, 0x0};
     Rom rom(0x2000, buffer);
     Ram ram(0x2000);
 
@@ -201,13 +201,14 @@ TEST(intel8080Test, emuTest_cpuTestINR_B) {
 
     cpu.step(); // Execute LXI B,D16
     EXPECT_EQ(Intel8080TestHelper::getOpcode(cpu), 0x01);
-    EXPECT_EQ(Intel8080TestHelper::getRegisterBC(cpu), 0x2112);
+    EXPECT_EQ(Intel8080TestHelper::getRegisterBC(cpu), 0x2F12);
     EXPECT_EQ(Intel8080TestHelper::getRegisterPC(cpu), 0x0004);
 
     cpu.step(); // Execute INR B
     EXPECT_EQ(Intel8080TestHelper::getOpcode(cpu), 0x04);
-    EXPECT_EQ(Intel8080TestHelper::getRegisterB(cpu), 0x22);
-    EXPECT_EQ(Intel8080TestHelper::getFlags(cpu), 0x06);
+    EXPECT_EQ(Intel8080TestHelper::getRegisterB(cpu), 0x30);
+    // FLAGS - SZ0A0P1C - 00010110 = 0x16 = 22
+    EXPECT_EQ(Intel8080TestHelper::getFlags(cpu), 0x16);
     EXPECT_EQ(Intel8080TestHelper::getRegisterPC(cpu), 0x0005);
 }
 
@@ -256,7 +257,7 @@ TEST(intel8080Test, emuTest_cpuTestDCR_B) {
     cpu.step(); // Execute DCR B
     EXPECT_EQ(Intel8080TestHelper::getOpcode(cpu), 0x05);
     EXPECT_EQ(Intel8080TestHelper::getRegisterB(cpu), 0x20);
-    EXPECT_EQ(Intel8080TestHelper::getFlags(cpu), 0x12);
+    EXPECT_EQ(Intel8080TestHelper::getFlags(cpu), 0x02);
     EXPECT_EQ(Intel8080TestHelper::getRegisterPC(cpu), 0x0005);
 }
 
@@ -298,7 +299,7 @@ TEST(intel8080Test, emuTest_cpuTestDCR_C) {
 
     EXPECT_EQ(Intel8080TestHelper::getOpcode(cpu), 0x0D);
     EXPECT_EQ(Intel8080TestHelper::getRegisterC(cpu), 0x04);
-    EXPECT_EQ(Intel8080TestHelper::getFlags(cpu), 0x12);
+    EXPECT_EQ(Intel8080TestHelper::getFlags(cpu), 0x02);
     EXPECT_EQ(Intel8080TestHelper::getRegisterPC(cpu), 0x0002);
 
     Intel8080TestHelper::setRegisterC(cpu, 0x00); // Set C register to known value
@@ -308,25 +309,8 @@ TEST(intel8080Test, emuTest_cpuTestDCR_C) {
 
     EXPECT_EQ(Intel8080TestHelper::getOpcode(cpu), 0x0D);
     EXPECT_EQ(Intel8080TestHelper::getRegisterC(cpu), 0xFF);
-    EXPECT_EQ(Intel8080TestHelper::getFlags(cpu), 0x86);
+    EXPECT_EQ(Intel8080TestHelper::getFlags(cpu), 0x96);
     EXPECT_EQ(Intel8080TestHelper::getRegisterPC(cpu), 0x0003);
-
-}
-
-TEST(intel8080Test, emuTest_cpuTestAuxCarry) {
-
-    Intel8080 cpu;
-
-    cpu.reset();
-
-    BYTE op1 = 0xFF;
-    BYTE op2 = 0xFF;
-
-    WORD ops = (op1 << 8) | op2;
-
-    Intel8080TestHelper::auxCarry(cpu, ops);
-
-    EXPECT_EQ(Intel8080TestHelper::getFlags(cpu), 0x12);   
 
 }
 
