@@ -791,10 +791,13 @@ void Intel8080::opANI_D8()
     // Flags: S, Z, AC, P, CY
 
     fetchByte();
+    // The "Quirk": AC reflects the logical OR of bit 3
+    // This is inconsistently documented. Google Gemini states that without this behavior, the emulator will fail CPUDiag.bin
+    flags.ac = ((regs.a | byteData) & 0x08) != 0;
+    flags.cy = 0;
     regs.a &= byteData;
     regFlagsSZP(regs.a);
-    flags.cy = 0;
-    flags.ac = 0;
+    
     spdlog::debug("ANI D8 -> A: 0x{:02X} D8: 0x{:02X}", regs.a, byteData);
 }
 
