@@ -72,23 +72,31 @@ void Intel8080::buildOpcodeTable()
 
     pOpcodeLookup[0xC9] = &Intel8080::opRET;            // RET instruction
 
-    pOpcodeLookup[0xD1] = &Intel8080::opPOP_D;          // POP D instruction
+    pOpcodeLookup[0xCA] = &Intel8080::opJZ;             // JZ instruction
 
+    pOpcodeLookup[0xD1] = &Intel8080::opPOP_D;          // POP D instruction
+    pOpcodeLookup[0xD2] = &Intel8080::opJNC;            // JNC instruction
     pOpcodeLookup[0xD3] = &Intel8080::opOUT_D8;         // OUT D8 instruction
 
     pOpcodeLookup[0xD5] = &Intel8080::opPUSH_D;         // PUSH D instruction
 
+    pOpcodeLookup[0xDA] = &Intel8080::opJC;             // JC instruction
+
     pOpcodeLookup[0xE1] = &Intel8080::opPOP_H;          // POP H instruction
+    pOpcodeLookup[0xE2] = &Intel8080::opJPO;            // JPO instruction
 
     pOpcodeLookup[0xE5] = &Intel8080::opPUSH_H;         // PUSH H instruction
     pOpcodeLookup[0xE6] = &Intel8080::opANI_D8;         // ANI D8 instruction
 
+    pOpcodeLookup[0xEA] = &Intel8080::opJPE;            // JPE instruction
     pOpcodeLookup[0xEB] = &Intel8080::opXCHG;           // XCHG instruction
 
     pOpcodeLookup[0xF1] = &Intel8080::opPOP_PSW;        // POP PSW instruction
+    pOpcodeLookup[0xF2] = &Intel8080::opJP;             // JP instruction
 
     pOpcodeLookup[0xF5] = &Intel8080::opPUSH_PSW;       // PUSH PSW instruction
 
+    pOpcodeLookup[0xFA] = &Intel8080::opJM;             // JM instruction
     pOpcodeLookup[0xFB] = &Intel8080::opEI;             // EI instruction
 
     pOpcodeLookup[0xFE] = &Intel8080::opCPI_D8;         // CPI instruction
@@ -681,6 +689,22 @@ void Intel8080::opRET()
     spdlog::debug("RET -> PC: 0x{:04X} SP: 0x{:04X}", regs.pc, regs.sp);
 }
 
+void Intel8080::opJZ()
+{
+    // Opcode: 0xCA         Mnemonic: JZ
+    // Size: 3  bytes       Cycles: 10
+    // Description: Jump to address if Zero flag is set
+    // Flags: None
+
+    fetchWord();
+    if (regs.f.z) {
+        regs.pc = wordData;
+        spdlog::debug("JZ taken -> PC: 0x{:04X}", regs.pc);
+    } else {
+        spdlog::debug("JZ not taken -> PC remains: 0x{:04X}", regs.pc);
+    }
+}
+
 void Intel8080::opCALL()
 {
     // Opcode: 0xCD         Mnemonic: CALL addr
@@ -714,6 +738,23 @@ void Intel8080::opPOP_D()
     spdlog::debug("POP D -> SP: 0x{:04X}", regs.sp);
 }
 
+void Intel8080::opJNC()
+{
+    // Opcode: 0xD2         Mnemonic: JNC
+    // Size: 3  bytes       Cycles: 10
+    // Description: Jump to address if Carry flag is not set
+    // Flags: None  
+
+    fetchWord();
+    if (!regs.f.cy) {
+        regs.pc = wordData;
+        spdlog::debug("JNC taken -> PC: 0x{:04X}", regs.pc);
+    } else {
+        spdlog::debug("JNC not taken -> PC remains: 0x{:04X}", regs.pc);
+    }
+}
+
+
 void Intel8080::opOUT_D8()
 {
     // Opcode: 0xD3         Mnemonic: OUT D8
@@ -742,10 +783,26 @@ void Intel8080::opPUSH_D()
     spdlog::debug("PUSH D -> SP: 0x{:04X}", regs.sp);
 }
 
+void Intel8080::opJC()
+{
+    // Opcde: 0xDA          Mnemonic: JC
+    // Size: 3  bytes       Cycles: 10
+    // Description: Jump to address if Carry flag is set
+    // Flags: None  
+
+    fetchWord();
+    if (regs.f.cy) {
+        regs.pc = wordData;
+        spdlog::debug("JC taken -> PC: 0x{:04X}", regs.pc);
+    } else {
+        spdlog::debug("JC not taken -> PC remains: 0x{:04X}", regs.pc);
+    }
+}
+
 void Intel8080::opPOP_H()
 {
     // Opcode: 0xE1         Mnemonic: POP H
-    // Size: 1  byte        Cycles: 10
+    // Size: 1 byte         Cycles: 10
     // Description: Pop HL register pair from the stack.
     // Flags: None  
 
@@ -759,6 +816,22 @@ void Intel8080::opPOP_H()
     regs.hl = wordData;
     regs.sp += 2;
     spdlog::debug("POP H -> SP: 0x{:04X}", regs.sp);
+}
+
+void Intel8080::opJPO()
+{
+    // Opcode: 0xE2         Mnemonic: JPO
+    // Size: 3 bytes        Cycles: 10
+    // Description: Jump to address if parity bit is odd (i.e. not set)
+    // Flags: None  
+    
+    fetchWord();
+    if (!regs.f.p) {
+        regs.pc = wordData;
+        spdlog::debug("JPO taken -> PC: 0x{:04X}", regs.pc);
+    } else {
+        spdlog::debug("JPO not taken -> PC remains: 0x{:04X}", regs.pc);
+    }
 }
 
 void Intel8080::opPUSH_H()
@@ -793,6 +866,22 @@ void Intel8080::opANI_D8()
     regFlagsSZP(regs.a);
     
     spdlog::debug("ANI D8 -> A: 0x{:02X} D8: 0x{:02X}", regs.a, byteData);
+}
+
+void Intel8080::opJPE()
+{
+    // Opcode: 0xEA         Mnemonic: JPE
+    // Size: 3  bytes       Cycles: 10
+    // Description: Jump to address if Parity flag is even
+    // Flags: None  
+
+    fetchWord();
+    if (regs.f.p) {
+        regs.pc = wordData;
+        spdlog::debug("JPE taken -> PC: 0x{:04X}", regs.pc);
+    } else {
+        spdlog::debug("JPE not taken -> PC remains: 0x{:04X}", regs.pc);
+    }
 }
 
 
@@ -837,6 +926,22 @@ void Intel8080::opPOP_PSW()
     spdlog::debug("POP PSW -> A: 0x{:02X} SP: 0x{:04X}", regs.a, regs.sp);
 }
 
+void Intel8080::opJP()
+{
+    // Opcode: 0xF2         Mnemonic: JP
+    // Size: 3 bytes        Cycles: 10
+    // Description: Jump to address if positive (i.e. sign bit is not set)
+    // Flags: None  
+
+    fetchWord();
+    if (!regs.f.s) {
+        regs.pc = wordData;
+        spdlog::debug("JP taken -> PC: 0x{:04X}", regs.pc);
+    } else {
+        spdlog::debug("JP not taken -> PC remains: 0x{:04X}", regs.pc);
+    }
+}
+
 
 void Intel8080::opPUSH_PSW()
 {
@@ -859,6 +964,22 @@ void Intel8080::opPUSH_PSW()
     regs.sp -= 2;
     writeWord(regs.sp, regs.af);
     spdlog::debug("PUSH PSW -> SP: 0x{:04X}", regs.sp);
+}
+
+void Intel8080::opJM()
+{
+    // Opcode: 0xFA         Mnemonic: JM
+    // Size: 3  bytes       Cycles: 10
+    // Description: Jump to address if minus (i.e. if sign bit is set)
+    // Flags: None  
+
+    fetchWord();
+    if (regs.f.s) {
+        regs.pc = wordData;
+        spdlog::debug("JM taken -> PC: 0x{:04X}", regs.pc);
+    } else {
+        spdlog::debug("JM not taken -> PC remains: 0x{:04X}", regs.pc);
+    }
 }
 
 void Intel8080::opEI()

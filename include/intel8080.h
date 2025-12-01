@@ -50,8 +50,8 @@ class Intel8080 : public CPU {
     struct pRegs {
         union {
             struct {
-                BYTE a; // Accumulator
                 pFlags f; // Flags
+                BYTE a; // Accumulator
             };
             WORD af;   // Accessed as a 16-bit pair
         };
@@ -170,26 +170,33 @@ class Intel8080 : public CPU {
 
     void opRET();           // 0xC9  
 
+    void opJZ();            // 0xCA
+
     void opCALL();          // 0xCD
 
     void opPOP_D();         // 0xD1
-
+    void opJNC();           // 0xD2
     void opOUT_D8();        // 0xD3
     void opPUSH_A();        // 0xD4
     void opPUSH_D();        // 0xD5
 
+    void opJC();            // 0xDA
 
     void opPOP_H();         // 0xE1
+    void opJPO();           // 0xE2
 
     void opPUSH_H();        // 0xE5
     void opANI_D8();        // 0xE6
-
+    
+    void opJPE();           // 0xEA
     void  opXCHG();         // 0xEB
 
     void opPOP_PSW();       // 0xF1
+    void opJP();            // 0xF2
 
     void opPUSH_PSW();      // 0xF6
 
+    void opJM();            // 0xFA
     void opEI();            // 0xFB
 
     void opDI();            // 0xFD
