@@ -164,7 +164,7 @@ class Intel8080 : public CPU {
     void opPOP_B();         // 0xC1
     void opJNZ();           // 0xC2
     void opJMP();           // 0xC3
-
+    void opCNZ();           // 0xC4
     void opPUSH_B();        // 0xC5
     void opADI_D8();        // 0xC6
 
@@ -172,33 +172,54 @@ class Intel8080 : public CPU {
 
     void opJZ();            // 0xCA
 
+    void opCZ();            // 0xCC
     void opCALL();          // 0xCD
+    void opACI_D8();        // 0xCE
 
     void opPOP_D();         // 0xD1
     void opJNC();           // 0xD2
     void opOUT_D8();        // 0xD3
-    void opPUSH_A();        // 0xD4
+    void opCNC();           // 0xD4
     void opPUSH_D();        // 0xD5
+    void opSUI_D8();        // 0xD6
+
+    void opRC();            // 0xD8
 
     void opJC();            // 0xDA
 
+    void opCC();            // 0xDC
+
+    void opSBI_D8();        // 0xDE
+
+    void opRPO();           // 0xE0
     void opPOP_H();         // 0xE1
     void opJPO();           // 0xE2
 
+    void opCPO();           // 0xE4
     void opPUSH_H();        // 0xE5
     void opANI_D8();        // 0xE6
     
-    void opJPE();           // 0xEA
-    void  opXCHG();         // 0xEB
+    void opRPE();           // 0xE8
 
+    void opJPE();           // 0xEA
+    void opXCHG();          // 0xEB
+    void opCPE();           // 0xEC
+
+    void opXRI_D8();        // 0xEE
+
+    void opRP();            // 0xF0
     void opPOP_PSW();       // 0xF1
     void opJP();            // 0xF2
 
-    void opPUSH_PSW();      // 0xF6
+    void opCP();            // 0xF4
+    void opPUSH_PSW();      // 0xF5
+    void opORI_D8();        // 0xF6
+
+    void opRM();            // 0xF8
 
     void opJM();            // 0xFA
     void opEI();            // 0xFB
-
+    void opCM();            // 0xFC
     void opDI();            // 0xFD
 
     void opCPI_D8();        // 0xFE

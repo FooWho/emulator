@@ -63,43 +63,62 @@ void Intel8080::buildOpcodeTable()
     pOpcodeLookup[0xC1] = &Intel8080::opPOP_B;          // POP B instruction
     pOpcodeLookup[0xC2] = &Intel8080::opJNZ;            // JNZ instruction
     pOpcodeLookup[0xC3] = &Intel8080::opJMP;            // JMP instruction
-
+    pOpcodeLookup[0xC4] = &Intel8080::opCNZ;            // CNZ instruction
     pOpcodeLookup[0xC5] = &Intel8080::opPUSH_B;         // PUSH B instruction
     pOpcodeLookup[0xC6] = &Intel8080::opADI_D8;         // ADI D8 instruction
 
-
+    pOpcodeLookup[0xCC] = &Intel8080::opCZ;             // Call subroutine if Zero instruction
     pOpcodeLookup[0xCD] = &Intel8080::opCALL;           // CALL instruction
+    pOpcodeLookup[0xCE] = &Intel8080::opACI_D8;         // ACI D8 instruction
 
     pOpcodeLookup[0xC9] = &Intel8080::opRET;            // RET instruction
-
     pOpcodeLookup[0xCA] = &Intel8080::opJZ;             // JZ instruction
 
     pOpcodeLookup[0xD1] = &Intel8080::opPOP_D;          // POP D instruction
     pOpcodeLookup[0xD2] = &Intel8080::opJNC;            // JNC instruction
     pOpcodeLookup[0xD3] = &Intel8080::opOUT_D8;         // OUT D8 instruction
-
+    pOpcodeLookup[0xD4] = &Intel8080::opCNC;            // CNC instruction
     pOpcodeLookup[0xD5] = &Intel8080::opPUSH_D;         // PUSH D instruction
+    pOpcodeLookup[0xD6] = &Intel8080::opSUI_D8;         // SUI D8
+
+    pOpcodeLookup[0xD8] = &Intel8080::opRC;             // Return if Carry instruction
 
     pOpcodeLookup[0xDA] = &Intel8080::opJC;             // JC instruction
 
-    pOpcodeLookup[0xE1] = &Intel8080::opPOP_H;          // POP H instruction
-    pOpcodeLookup[0xE2] = &Intel8080::opJPO;            // JPO instruction
+    pOpcodeLookup[0xDC] = &Intel8080::opCC;             // CC instruction
 
+    pOpcodeLookup[0xDE] = &Intel8080::opSBI_D8;         // SBI D8
+
+    pOpcodeLookup[0xE0] = &Intel8080::opRPO;            // Return if Parity Odd instruction
+    pOpcodeLookup[0xE1] = &Intel8080::opPOP_H;          // POP H instruction
+    pOpcodeLookup[0xE2] = &Intel8080::opJPO;            // Jump if Parity Odd instruction
+
+    pOpcodeLookup[0XE4] = &Intel8080::opCPO;            // Call if Parity Odd instruction
     pOpcodeLookup[0xE5] = &Intel8080::opPUSH_H;         // PUSH H instruction
     pOpcodeLookup[0xE6] = &Intel8080::opANI_D8;         // ANI D8 instruction
 
-    pOpcodeLookup[0xEA] = &Intel8080::opJPE;            // JPE instruction
-    pOpcodeLookup[0xEB] = &Intel8080::opXCHG;           // XCHG instruction
+    pOpcodeLookup[0xE8] = &Intel8080::opRPE;            // Return if Parity Even instruction
 
+    pOpcodeLookup[0xEA] = &Intel8080::opJPE;            // JPE instruction
+    pOpcodeLookup[0xEB] = &Intel8080::opXCHG;           // eXCHanGe instruction
+    pOpcodeLookup[0xEC] = &Intel8080::opCPE;            // Call if Parity Even instruction
+    pOpcodeLookup[0xEE] = &Intel8080::opXRI_D8;         // eXclusive oR Immediate D8
+
+    pOpcodeLookup[0xF0] = &Intel8080::opRP;             // Return if Positive instruction
     pOpcodeLookup[0xF1] = &Intel8080::opPOP_PSW;        // POP PSW instruction
     pOpcodeLookup[0xF2] = &Intel8080::opJP;             // JP instruction
 
+    pOpcodeLookup[0xF4] = &Intel8080::opCP;             // Call if Positive instruction
     pOpcodeLookup[0xF5] = &Intel8080::opPUSH_PSW;       // PUSH PSW instruction
+    pOpcodeLookup[0xF6] = &Intel8080::opORI_D8;         // OR Immediate data
 
-    pOpcodeLookup[0xFA] = &Intel8080::opJM;             // JM instruction
-    pOpcodeLookup[0xFB] = &Intel8080::opEI;             // EI instruction
+    pOpcodeLookup[0xF8] = &Intel8080::opRM;             // Return if Minus instruction
 
-    pOpcodeLookup[0xFE] = &Intel8080::opCPI_D8;         // CPI instruction
+    pOpcodeLookup[0xFA] = &Intel8080::opJM;             // Jump if Minus instruction
+    pOpcodeLookup[0xFB] = &Intel8080::opEI;             // Enable Interrupts instruction
+    pOpcodeLookup[0xFC] = &Intel8080::opCM;             // Call if Minus instruction
+
+    pOpcodeLookup[0xFE] = &Intel8080::opCPI_D8;         // ComPare Immediate instruction
 
 
     // ... Add other opcode mappings here       
@@ -645,6 +664,24 @@ void Intel8080::opJMP()
     spdlog::debug("JMP -> PC: 0x{:04X}", regs.pc);
 } 
 
+void Intel8080::opCNZ()
+{
+    // Opcode: 0xC4         Mnemonic: CNZ addr
+    // Size: 3  bytes       Cycles: 17/11
+    // Description: Call subroutine if Zero flag is not set
+    // Flags: None
+
+    fetchWord();
+    if (!regs.f.z) {
+        regs.sp -= 2;
+        writeWord(regs.sp, regs.pc);
+        regs.pc = wordData;
+        spdlog::debug("CNZ -> PC: 0x{:04X} SP: 0x{:04X}", regs.pc, regs.sp);
+    } else {
+        spdlog::debug("CNZ not taken -> PC remains: 0x{:04X}", regs.pc);
+    }
+}
+
 void Intel8080::opPUSH_B()
 {
     // Opcode: 0xC5         Mnemonic: PUSH B
@@ -705,6 +742,24 @@ void Intel8080::opJZ()
     }
 }
 
+void Intel8080::opCZ()
+{
+    // Opcode: 0xCC         Mnemonic: CZ addr
+    // Size: 3  bytes       Cycles: 17/11
+    // Description: Call subroutine if zero bit is set
+    // Flags: None
+
+    fetchWord();
+    if (regs.f.z) {
+        regs.sp -= 2;
+        writeWord(regs.sp, regs.pc);
+        regs.pc = wordData;
+        spdlog::debug("CZ -> PC: 0x{:04X} SP: 0x{:04X}", regs.pc, regs.sp);
+        } else {
+        spdlog::debug("CZ not taken -> PC remains: 0x{:04X}", regs.pc);
+    }
+}
+
 void Intel8080::opCALL()
 {
     // Opcode: 0xCD         Mnemonic: CALL addr
@@ -720,6 +775,20 @@ void Intel8080::opCALL()
     regs.pc = wordData;
     spdlog::debug("CALL -> PC: 0x{:04X} SP: 0x{:04X}", regs.pc, regs.sp);
 }  
+
+void Intel8080::opACI_D8()
+{
+    // Opcode: 0xCE         Mnemonic: ACI D8
+    // Size: 2  bytes       Cycles: 7
+    // Description: Add immediate data to Accumulator with carry
+    // Flags: S, Z, AC, P, CY
+
+    fetchByte();
+    performAdd(byteData, true);
+
+    spdlog::debug("ACI D8 -> A: 0x{:02X} D8: 0x{:02X}", regs.a, byteData);
+}
+
 
 void Intel8080::opPOP_D()
 {
@@ -740,7 +809,7 @@ void Intel8080::opPOP_D()
 
 void Intel8080::opJNC()
 {
-    // Opcode: 0xD2         Mnemonic: JNC
+    // Opcode: 0xD2         Mnemonic: JNC addr
     // Size: 3  bytes       Cycles: 10
     // Description: Jump to address if Carry flag is not set
     // Flags: None  
@@ -766,6 +835,23 @@ void Intel8080::opOUT_D8()
     spdlog::debug("OUT D8 -> D8: 0x{:02X}", byteData);
 }
 
+void Intel8080::opCNC()
+{
+    // Opcode: 0xD4         Mnemonic: CNC addr
+    // Size: 3  bytes       Cycles: 17/11
+    // Description: Call subroutine if Carry flag is not set
+    // Flags: None  
+
+    fetchWord();
+    if (!regs.f.cy) {
+        regs.sp -= 2;
+        writeWord(regs.sp, regs.pc);
+        regs.pc = wordData;
+        spdlog::debug("CNC -> PC: 0x{:04X} SP: 0x{:04X}", regs.pc, regs.sp);
+        } else {
+        spdlog::debug("CNC not taken -> PC remains: 0x{:04X}", regs.pc);
+    }
+}
 
 void Intel8080::opPUSH_D()
 {
@@ -783,9 +869,39 @@ void Intel8080::opPUSH_D()
     spdlog::debug("PUSH D -> SP: 0x{:04X}", regs.sp);
 }
 
+void Intel8080::opSUI_D8()
+{
+    // Opcode: 0xD6         Mnemonic: SUI D8
+    // Size: 2  bytes       Cycles: 7
+    // Description: Subtract immediate data from Accumulator
+
+    fetchByte();
+    performSub(byteData, false);
+
+    spdlog::debug("SUI D8 -> A: 0x{:02X} D8: 0x{:02X}", regs.a, byteData);
+}
+
+void Intel8080::opRC()
+{
+    // Opcode: 0xD8         Mnemonic: RC
+    // Size: 1  byte        Cycles: 11/5
+    // Description: Return from subroutine if carry bit is set
+    // Flags: None  
+
+    if (regs.f.cy) {
+        readWord(regs.sp);
+        regs.pc = wordData;
+        regs.sp += 2;
+        spdlog::debug("RC taken -> PC: 0x{:04X} SP: 0x{:04X}", regs.pc, regs.sp);
+        } else {
+        spdlog::debug("RC not taken -> PC remains: 0x{:04X}", regs.pc);
+    }
+}
+
+
 void Intel8080::opJC()
 {
-    // Opcde: 0xDA          Mnemonic: JC
+    // Opcde: 0xDA          Mnemonic: JC addr
     // Size: 3  bytes       Cycles: 10
     // Description: Jump to address if Carry flag is set
     // Flags: None  
@@ -799,6 +915,55 @@ void Intel8080::opJC()
     }
 }
 
+void Intel8080::opCC()
+{
+    // Opcode: 0xDC         Mnemonic: CC addr
+    // Size: 3  bytes       Cycles: 17/11
+    // Description: Call subroutine if Carry flag is set
+    // Flags: None  
+
+    fetchWord();
+    if (regs.f.cy) {
+        regs.sp -= 2;
+        writeWord(regs.sp, regs.pc);
+        regs.pc = wordData;
+        spdlog::debug("CC -> PC: 0x{:04X} SP: 0x{:04X}", regs.pc, regs.sp);
+        } else {
+        spdlog::debug("CC not taken -> PC remains: 0x{:04X}", regs.pc);
+    }
+}
+
+void Intel8080::opSBI_D8()
+{
+    // Opcode: 0xDE         Mnemonic: SBI D8
+    // Size: 2 bytes        Cycles: 7
+    // Description: Subtract immediate data from Accumulator with carry
+    // Flags: S, Z, AC, P, CY
+
+    fetchByte();
+    performSub(byteData, true);
+
+    spdlog::debug("SBI D8 -> A: 0x{:02X} D8: 0x{:02X}", regs.a, byteData);
+}
+
+void Intel8080::opRPO()
+{
+    // Opcode: 0xE0         Mnemonic: RPO
+    // Size: 1  byte        Cycles: 11/5
+    // Description: Return from subroutine if parity bit is not set
+    // Flags: None  
+
+    if (!regs.f.p) {
+        readWord(regs.sp);
+        regs.pc = wordData;
+        regs.sp += 2;
+        spdlog::debug("RPO taken -> PC: 0x{:04X} SP: 0x{:04X}", regs.pc, regs.sp);
+    } else {
+        spdlog::debug("RPO not taken -> PC remains: 0x{:04X}", regs.pc);
+    }
+}
+
+
 void Intel8080::opPOP_H()
 {
     // Opcode: 0xE1         Mnemonic: POP H
@@ -806,12 +971,6 @@ void Intel8080::opPOP_H()
     // Description: Pop HL register pair from the stack.
     // Flags: None  
 
-    /*readByte(regs.sp);
-    regs.l = byteData;
-    regs.sp++;
-    readByte(regs.sp);
-    regs.h = byteData;
-    regs.sp++;*/
     readWord(regs.sp);
     regs.hl = wordData;
     regs.sp += 2;
@@ -820,7 +979,7 @@ void Intel8080::opPOP_H()
 
 void Intel8080::opJPO()
 {
-    // Opcode: 0xE2         Mnemonic: JPO
+    // Opcode: 0xE2         Mnemonic: JPO addr
     // Size: 3 bytes        Cycles: 10
     // Description: Jump to address if parity bit is odd (i.e. not set)
     // Flags: None  
@@ -834,6 +993,23 @@ void Intel8080::opJPO()
     }
 }
 
+void Intel8080::opCPO()
+{
+    // Opcode: 0xE4         Mnemonic: CPO addr
+    // Size: 3  bytes       Cycles: 17/11
+    // Description: Call subroutine if parity bit is odd 
+
+    fetchWord();
+    if (!regs.f.p) {
+        regs.sp -= 2;
+        writeWord(regs.sp, regs.pc);
+        regs.pc = wordData;
+        spdlog::debug("CPO -> PC: 0x{:04X} SP: 0x{:04X}", regs.pc, regs.sp);
+    } else {
+        spdlog::debug("CPO not taken -> PC remains: 0x{:04X}", regs.pc);
+    }
+}
+
 void Intel8080::opPUSH_H()
 {
     // Opcode: 0xE5         Mnemonic: PUSH H
@@ -841,10 +1017,6 @@ void Intel8080::opPUSH_H()
     // Description: Push HL register pair onto the stack.
     // Flags: None  
 
-    /*regs.sp--;
-    writeByte(regs.sp, regs.h);
-    regs.sp--;
-    writeByte(regs.sp, regs.l);*/
     regs.sp -= 2;
     writeWord(regs.sp, regs.hl);
     spdlog::debug("PUSH H -> SP: 0x{:04X}", regs.sp);
@@ -868,9 +1040,26 @@ void Intel8080::opANI_D8()
     spdlog::debug("ANI D8 -> A: 0x{:02X} D8: 0x{:02X}", regs.a, byteData);
 }
 
+void Intel8080::opRPE()
+{
+    // Opcode: 0xE8         Mnemonic: RPE
+    // Size: 1  byte        Cycles: 11/5
+    // Description: Return from subroutine if parity bit is set
+    // Flags: None  
+
+    if (regs.f.p) {
+        readWord(regs.sp);
+        regs.pc = wordData;
+        regs.sp += 2;
+        spdlog::debug("RPE taken -> PC: 0x{:04X} SP: 0x{:04X}", regs.pc, regs.sp); 
+    } else {
+        spdlog::debug("RPE not taken -> PC remains: 0x{:04X}", regs.pc);
+    }
+}
+
 void Intel8080::opJPE()
 {
-    // Opcode: 0xEA         Mnemonic: JPE
+    // Opcode: 0xEA         Mnemonic: JPE addr
     // Size: 3  bytes       Cycles: 10
     // Description: Jump to address if Parity flag is even
     // Flags: None  
@@ -899,6 +1088,58 @@ void Intel8080::opXCHG()
     spdlog::debug("XCHG -> DE: 0x{:04X} HL: 0x{:04X}", regs.de, regs.hl);
 }
 
+void Intel8080::opCPE()
+{
+    // Opcode: 0xEC         Mnemonic: CPE addr
+    // Size: 3 bytes        Cycles 17/11
+    // Description: Call subroutine if Parity flag is even
+    // Flags: None  
+
+    fetchWord();
+    if (regs.f.p) {
+        regs.sp -= 2;
+        writeWord(regs.sp, regs.pc);
+        regs.pc = wordData;
+        spdlog::debug("CPE -> PC: 0x{:04X} SP: 0x{:04X}", regs.pc, regs.sp);
+    } else {
+        spdlog::debug("CPE not taken -> PC remains: 0x{:04X}", regs.pc);
+    }
+}
+
+void Intel8080::opXRI_D8()
+{
+    // Opcode: 0xEE         Mnemonic: XRI D8
+    // Size: 2  bytes       Cycles: 7
+    // Description: Bitwise XOR operation of Accumulator with immediated data
+    // Flags: S, Z, AC, P, CY
+
+    fetchByte();
+    regs.a ^= byteData;
+    regFlagsSZP(regs.a);
+    regs.f.cy = 0;
+    regs.f.ac = 0;
+
+    spdlog::debug("XRI D8 -> A: 0x{:02X} D8: 0x{:02X}", regs.a, byteData);
+}
+
+void Intel8080::opRP()
+{
+    // Opcode: 0xF0         Mnemonic: RP
+    // Size: 1  byte        Cycles: 11/5
+    // Description: Return from subroutine if sign bit is not set
+    // Flags: None  
+
+    if (!regs.f.s) {
+        readWord(regs.sp);
+        regs.pc = wordData;
+        regs.sp += 2;
+        spdlog::debug("RP taken -> PC: 0x{:04X} SP: 0x{:04X}", regs.pc, regs.sp);
+    } else {
+        spdlog::debug("RP not taken -> PC remains: 0x{:04X}", regs.pc);
+    }
+}
+
+
 void Intel8080::opPOP_PSW()
 {
     // Opcode: 0xF1         Mnemonic: POP PSW
@@ -906,19 +1147,6 @@ void Intel8080::opPOP_PSW()
     // Description: Pop stack to PSW
     // Flags: S, Z, AC, P, CY
 
-    /*readByte(regs.sp++);
-    regs.f.flags = byteData;
-    readByte(regs.sp++);
-    regs.a = byteData;
-
-    flags.s = (flagbyte & 0x80) ? 1 : 0;
-    flags.z = (flagbyte & 0x40) ? 1 : 0;
-    flags.xZero = (flagbyte & 0x20) ? 1 : 0;
-    flags.ac = (flagbyte & 0x10) ? 1 : 0;
-    flags.yZero = (flagbyte & 0x08) ? 1 : 0;
-    flags.p = (flagbyte & 0x04) ? 1 : 0;
-    flags.xOne = (flagbyte & 0x02) ? 1 : 0;
-    flags.cy = (flagbyte & 0x01) ? 1 : 0;*/
     readWord(regs.sp);
     regs.af = wordData;
     regs.sp += 2;
@@ -928,7 +1156,7 @@ void Intel8080::opPOP_PSW()
 
 void Intel8080::opJP()
 {
-    // Opcode: 0xF2         Mnemonic: JP
+    // Opcode: 0xF2         Mnemonic: JP addr
     // Size: 3 bytes        Cycles: 10
     // Description: Jump to address if positive (i.e. sign bit is not set)
     // Flags: None  
@@ -942,6 +1170,22 @@ void Intel8080::opJP()
     }
 }
 
+void Intel8080::opCP()
+{
+    // Opcode: 0xF4         Mnemonic: CP addr
+    // Size: 3  bytes       Cycles: 17/11
+    // Description: Call subroutine if positive (sign bit is not set)
+
+    fetchWord();
+    if (!regs.f.s) {
+        regs.sp -= 2;
+        writeWord(regs.sp, regs.pc);
+        regs.pc = wordData;
+        spdlog::debug("CP -> PC: 0x{:04X} SP: 0x{:04X}", regs.pc, regs.sp);
+    } else {
+        spdlog::debug("CP not taken -> PC remains: 0x{:04X}", regs.pc);
+    }
+}
 
 void Intel8080::opPUSH_PSW()
 {
@@ -950,21 +1194,44 @@ void Intel8080::opPUSH_PSW()
     // Description: Push PSW onto the stack.
     // Flags: None  
 
-    /*writeByte(--regs.sp, regs.a);
-    BYTE flagbyte = 0x00;
-    flagbyte |= (flags.s << 7);
-    flagbyte |= (flags.z << 6);
-    flagbyte |= (flags.xZero << 5);
-    flagbyte |= (flags.ac << 4);
-    flagbyte |= (flags.yZero << 3);
-    flagbyte |= (flags.p << 2);
-    flagbyte |= (flags.xOne << 1);
-    flagbyte |= (flags.cy << 0);
-    writeByte(--regs.sp, regs.f.flags);*/
     regs.sp -= 2;
     writeWord(regs.sp, regs.af);
     spdlog::debug("PUSH PSW -> SP: 0x{:04X}", regs.sp);
 }
+
+void Intel8080::opORI_D8()
+{
+    // Opcode: 0xF6         Mnemonic: ORI D8
+    // Size: 2  bytes       Cycles: 7
+    // Description OR immediated data with Accumulator, store result in Accumulator
+    // Flags: S, Z, AC, P, CY
+
+    fetchByte();
+    regs.a |= byteData;
+    regFlagsSZP(regs.a);
+    regs.f.cy = 0;
+    regs.f.ac = 0;
+
+    spdlog::debug("ORI D8 -> A: 0x{:02X} D8: 0x{:02X}", regs.a, byteData);
+}
+
+void Intel8080::opRM()
+{
+    // Opcode: 0xF8         Mnemonic: RM
+    // Size: 1  byte        Cycles: 11/5
+    // Description: Return from subroutine if sign bit is set
+    // Flags: None  
+
+    if (regs.f.s) {
+        readWord(regs.sp);
+        regs.pc = wordData;
+        regs.sp += 2;
+        spdlog::debug("RM taken -> PC: 0x{:04X} SP: 0x{:04X}", regs.pc, regs.sp);
+    } else {
+        spdlog::debug("RM not taken -> PC remains: 0x{:04X}", regs.pc);
+    }
+}
+
 
 void Intel8080::opJM()
 {
@@ -992,6 +1259,24 @@ void Intel8080::opEI()
 
     interruptsEnabled = true;
     spdlog::debug("EI");
+}
+
+void Intel8080::opCM()
+{
+    // Opcode: 0cFC         Mnemonic: CM addr
+    // Size: 3  bytes       Cycles: 17/11
+    // Description: Call subroutine at addr if minus (sign bit is set)
+    // Flags: None  
+
+    fetchWord();
+    if (regs.f.s) {
+        regs.sp -= 2;
+        writeWord(regs.sp, regs.pc);
+        regs.pc = wordData;
+        spdlog::debug("CM -> PC: 0x{:04X} SP: 0x{:04X}", regs.pc, regs.sp);
+    } else {
+        spdlog::debug("CM not taken -> PC remains: 0x{:04X}", regs.pc);
+    }
 }
 
 
