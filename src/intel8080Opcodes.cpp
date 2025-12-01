@@ -102,43 +102,43 @@ void Intel8080::regFlagsDoubleCarry(WORD op1, WORD op2)
 {   
     uint32_t result = op1 + op2;
     if (result > 0xFFFF) {
-        flags.cy = 1;
+        regs.f.cy = 1;
     } else {
-        flags.cy = 0;
+        regs.f.cy = 0;
     }
 }
 
 void Intel8080::regFlagsSZP(BYTE result)
 {
-    flags.s = (result & 0x80) ? 1 : 0;
-    flags.z = (result == 0) ? 1 : 0;
-    flags.p = __builtin_popcount(result) % 2 == 0;
+    regs.f.s = (result & 0x80) ? 1 : 0;
+    regs.f.z = (result == 0) ? 1 : 0;
+    regs.f.p = __builtin_popcount(result) % 2 == 0;
 } 
 
 void Intel8080::regFlagsAuxCarry(BYTE op1, BYTE op2, BYTE result)
 {
-    flags.ac = ((op1 ^ op2 ^ result) & 0x10) != 0;
+    regs.f.ac = ((op1 ^ op2 ^ result) & 0x10) != 0;
 }
 
 void Intel8080::performAdd(BYTE operand, bool withCarry) {
-    WORD cy = withCarry ? flags.cy : 0;
+    WORD cy = withCarry ? regs.f.cy : 0;
     WORD result = regs.a + operand + cy;
 
     regFlagsSZP(result & 0xFF);
     regFlagsAuxCarry(regs.a, operand, result);
-    flags.cy = (result > 0xFF);
+    regs.f.cy = (result > 0xFF);
 
     regs.a = (BYTE)result;
 }
 
 void Intel8080::performSub(BYTE val, bool withBorrow) {
 
-    BYTE borrow = withBorrow ? flags.cy : 0;
+    BYTE borrow = withBorrow ? regs.f.cy : 0;
     WORD result = regs.a - val - borrow;
 
     regFlagsSZP(result & 0xFF);
     regFlagsAuxCarry(regs.a, val, result);
-    flags.cy = (result > 0xFF);
+    regs.f.cy = (result > 0xFF);
 
     regs.a = result & 0xFF;
 }
@@ -170,8 +170,7 @@ void Intel8080::opLXI_B_D16()
     // Flags: None
 
     fetchWord();
-    regs.b = (wordData >> 8) & 0x00FF;
-    regs.c = wordData & 0x00FF;
+    regs.bc = wordData;
     spdlog::debug("LXI B, D16 -> B: 0x{:02X} C: 0x{:02X} D16: 0x{:04X}", regs.b, regs.c, wordData);
 }
 
@@ -182,7 +181,7 @@ void Intel8080::opSTAX_B()
     // Description: Store Accumulator into memory location pointed by BC register pair
     // Flags: None
 
-    wordData = (static_cast<WORD>(regs.b) << 8) | static_cast<WORD>(regs.c);
+    wordData = regs.bc;
     writeByte(wordData, regs.a);
     spdlog::debug("STAX B -> [0x{:04X}] = 0x{:02X}", wordData, regs.a);
 }   
@@ -194,11 +193,8 @@ void Intel8080::opINX_B()
     // Description: Increment the BC register pair
     // Flags: None
 
-    wordData = (static_cast<WORD>(regs.b) << 8) | static_cast<WORD>(regs.c);
-    wordData += 1;
-    regs.b = (wordData >> 8) & 0xFF;
-    regs.c = wordData & 0xFF;
-    spdlog::debug("INX B -> B: 0x{:02X} C: 0x{:02X} BC: 0x{:04X}", regs.b, regs.c, wordData);
+    regs.bc++;
+    spdlog::debug("INX B -> B: 0x{:02X} C: 0x{:02X} BC: 0x{:04X}", regs.b, regs.c, regs.bc);
 }
 
 void Intel8080::opINR_B()
@@ -208,8 +204,10 @@ void Intel8080::opINR_B()
     // Description: Increment the B register
     // Flags: S, Z, AC, P
 
-    regFlagsAuxCarry(regs.b, 1, regs.b+1);
-    regFlagsSZP(++regs.b);
+    BYTE result = regs.b + 1;
+    regFlagsAuxCarry(regs.b, 1, result);
+    regFlagsSZP(result);
+    regs.b = result;
 
     spdlog::debug("INR B -> B: 0x{:02X}", regs.b);
 }
@@ -221,8 +219,10 @@ void Intel8080::opDCR_B()
     // Description: Decrement the B register
     // Flags: S, Z, AC, P
 
-    regFlagsAuxCarry(regs.b, 1, regs.b-1);
-    regFlagsSZP(--regs.b);
+    BYTE result = regs.b - 1;
+    regFlagsAuxCarry(regs.b, 1, result);
+    regFlagsSZP(result);
+    regs.b = result;
 
     spdlog::debug("DCR B -> B: 0x{:02X}", regs.b);
 }
@@ -246,13 +246,9 @@ void Intel8080::opDAD_B()
     // Description: Add the contents of the register pair BC to the register pair HL.
     // Flags: CY
 
-    WORD hl = (static_cast<WORD>(regs.h) << 8) | static_cast<WORD>(regs.l);
-    WORD bc = (static_cast<WORD>(regs.b) << 8) | static_cast<WORD>(regs.c);
-    WORD result = hl + bc;
-    regs.h = (result >> 8) & 0xFF;
-    regs.l = result & 0xFF;
-    regFlagsDoubleCarry(hl, bc);
-    spdlog::debug("DAD B -> HL: 0x{:04X} BC: 0x{:04X} -> 0x{:04X}", hl, bc, result);
+    WORD result = regs.hl + regs.bc;
+    regFlagsDoubleCarry(regs.hl, regs.bc);
+    spdlog::debug("DAD B -> HL: 0x{:04X} BC: 0x{:04X} -> 0x{:04X}", regs.hl, regs.bc, result);
 }
 
 void Intel8080::opDCR_C()
@@ -262,8 +258,10 @@ void Intel8080::opDCR_C()
     // Description: Decrement the C register
     // Flags: S, Z, AC, P
 
-    regFlagsAuxCarry(regs.c, 1, regs.c-1);
-    regFlagsSZP(--regs.c);
+    BYTE result = regs.c - 1;
+    regFlagsAuxCarry(regs.c, 1, result);
+    regFlagsSZP(result);
+    regs.c = result;
 
     spdlog::debug("DCR C -> C: 0x{:02X}", regs.c);
 }
@@ -289,7 +287,7 @@ void Intel8080::opRRC()
 
     byteData = regs.a & 0x01;
     regs.a = (regs.a >> 1) | (byteData << 7);
-    flags.cy = byteData & 0xFF ? 1 : 0;
+    regs.f.cy = byteData & 0xFF ? 1 : 0;
     spdlog::debug("RRC -> A: 0x{:02X}", regs.a);
 }   
 
@@ -301,8 +299,7 @@ void Intel8080::opLXI_D_D16()
     // Flags: None
 
     fetchWord();
-    regs.d = (wordData >> 8) & 0x00FF;
-    regs.e = wordData & 0x00FF;
+    regs.de = wordData;
     spdlog::debug("LXI D, D16 -> D: 0x{:02X} E: 0x{:02X} D16: 0x{:04X}", regs.d, regs.e, wordData);
 }   
 
@@ -313,11 +310,8 @@ void Intel8080::opINX_D()
     // Description: Increment the DE register pair
     // Flags: None
 
-    wordData = (static_cast<WORD>(regs.d) << 8) | static_cast<WORD>(regs.e);
-    wordData += 1;
-    regs.d = (wordData >> 8) & 0xFF;
-    regs.e = wordData & 0xFF;
-    spdlog::debug("INX D -> D: 0x{:02X} E: 0x{:02X} DE: 0x{:04X}", regs.d, regs.e, wordData);
+    regs.de++;
+    spdlog::debug("INX D -> D: 0x{:02X} E: 0x{:02X} DE: 0x{:04X}", regs.d, regs.e, regs.de);
 }
 
 void Intel8080::opDAD_D()
@@ -327,13 +321,10 @@ void Intel8080::opDAD_D()
     // Description: Add the contents of the register pair DE to the register pair HL.
     // Flags: CY
 
-    WORD hl = (static_cast<WORD>(regs.h) << 8) | static_cast<WORD>(regs.l);
-    WORD de = (static_cast<WORD>(regs.d) << 8) | static_cast<WORD>(regs.e);
-    WORD result = hl + de;
-    regs.h = (result >> 8) & 0xFF;
-    regs.l = result & 0xFF;
-    regFlagsDoubleCarry(hl, de);
-    spdlog::debug("DAD D -> HL: 0x{:04X} DE: 0x{:04X} -> 0x{:04X}", hl, de, result);
+    WORD result = regs.hl + regs.de;
+    regFlagsDoubleCarry(regs.hl, regs.de);
+    regs.hl = result;
+    spdlog::debug("DAD D -> HL: 0x{:04X} DE: 0x{:04X} -> 0x{:04X}", regs.hl, regs.de, result);
 }
 
 void Intel8080::opLDAX_D()
@@ -343,7 +334,7 @@ void Intel8080::opLDAX_D()
     // Description: Load Accumulator from memory location pointed by DE register pair
     // Flags: None
 
-    wordData = (static_cast<WORD>(regs.d) << 8) | static_cast<WORD>(regs.e);
+    wordData = regs.de;
     readByte(wordData);
     regs.a = byteData;
     spdlog::debug("LDAX D -> A: 0x{:02X} [0x{:04X}] = 0x{:02X}", regs.a, wordData, byteData);
@@ -357,8 +348,7 @@ void Intel8080::opLXI_H_D16()
     // Flags: None
 
     fetchWord();
-    regs.h = (wordData >> 8) & 0x00FF;
-    regs.l = wordData & 0x00FF;
+    regs.hl = wordData;
     spdlog::debug("LXI H, D16 -> H: 0x{:02X} L: 0x{:02X} D16: 0x{:04X}", regs.h, regs.l, wordData);
 }
 
@@ -369,11 +359,8 @@ void Intel8080::opINX_H()
     // Description: Increment the HL register pair
     // Flags: None
 
-    wordData = (static_cast<WORD>(regs.h) << 8) | static_cast<WORD>(regs.l);
-    wordData += 1;
-    regs.h = (wordData >> 8) & 0xFF;
-    regs.l = wordData & 0xFF;
-    spdlog::debug("INX H -> H: 0x{:02X} L: 0x{:02X} HL: 0x{:04X}", regs.h, regs.l, wordData);
+    regs.hl++;
+    spdlog::debug("INX H -> H: 0x{:02X} L: 0x{:02X} HL: 0x{:04X}", regs.h, regs.l, regs.hl);
 }
 
 void Intel8080::opMVI_H_D8()
@@ -395,12 +382,10 @@ void Intel8080::opDAD_H()
     // Description: Add the contents of the register pair HL to the register pair HL.
     // Flags: CY
 
-    WORD hl = (static_cast<WORD>(regs.h) << 8) | static_cast<WORD>(regs.l);
-    WORD result = hl + hl;
-    regs.h = (result >> 8) & 0xFF;
-    regs.l = result & 0xFF;
-    regFlagsDoubleCarry(hl, hl);
-    spdlog::debug("DAD H -> HL: 0x{:04X} HL: 0x{:04X} -> 0x{:04X}", hl, hl, result);
+    WORD result = regs.hl + regs.hl;
+    regFlagsDoubleCarry(regs.hl, regs.hl);
+    regs.hl = result;
+    spdlog::debug("DAD H -> HL: 0x{:04X} HL: 0x{:04X} -> 0x{:04X}", regs.hl, regs.hl, result);
 }
 
 
@@ -437,9 +422,8 @@ void Intel8080::opMVI_M_D8()
     // Description: Move immediate byte data into the memory address pointed by HL register pair
     // Flags: None
 
-    WORD hl = (static_cast<WORD>(regs.h) << 8) | static_cast<WORD>(regs.l);
     fetchByte();
-    writeByte(hl, byteData);
+    writeByte(regs.hl, byteData);
 }
 
 void Intel8080::opLDA()
@@ -476,10 +460,9 @@ void Intel8080::opMOV_D_M()
     // Description: Move the conents of memory location pointed by HL register paie into D
     // Flags: None
 
-    WORD hl = (static_cast<WORD>(regs.h) << 8) | static_cast<WORD>(regs.l);
-    readByte(hl);
+    readByte(regs.hl);
     regs.d = byteData;
-    spdlog::debug("MOV D, M -> D: 0x{:02X} [0x{:04X}] = 0x{:02X}", regs.d, hl, byteData);
+    spdlog::debug("MOV D, M -> D: 0x{:02X} [0x{:04X}] = 0x{:02X}", regs.d, regs.hl, byteData);
 }
 
 void Intel8080::opMOV_E_M()
@@ -489,10 +472,9 @@ void Intel8080::opMOV_E_M()
     // Description: Move contents of memory location pointed by HL register pair into E
     // Flags: None
 
-    WORD hl = (static_cast<WORD>(regs.h) << 8) | static_cast<WORD>(regs.l);
-    readByte(hl);
+    readByte(regs.hl);
     regs.e = byteData;
-    spdlog::debug("MOV E, M -> E: 0x{:02X} [0x{:04X}] = 0x{:02X}", regs.e, hl, byteData);
+    spdlog::debug("MOV E, M -> E: 0x{:02X} [0x{:04X}] = 0x{:02X}", regs.e, regs.hl, byteData);
 }
 
 void Intel8080::opMOV_H_M()
@@ -502,10 +484,9 @@ void Intel8080::opMOV_H_M()
     // Description: Move contents of memory location point by HL register pair into H
     // Flags: None
 
-    WORD hl = (static_cast<WORD>(regs.h) << 8) | static_cast<WORD>(regs.l);
-    readByte(hl);
+    readByte(regs.hl);
     regs.h = byteData;
-    spdlog::debug("MOV H, M -> H: 0x{:02X} [0x{:04X}] = 0x{:02X}", regs.h, hl, byteData);
+    spdlog::debug("MOV H, M -> H: 0x{:02X} [0x{:04X}] = 0x{:02X}", regs.h, regs.hl, byteData);
 }
 
 
@@ -528,9 +509,8 @@ void Intel8080::opMOV_M_A()
     // Description: Move contents of Accumulator into memory location pointed by HL register pair
     // Flags: None
 
-    WORD hl = (static_cast<WORD>(regs.h) << 8) | static_cast<WORD>(regs.l);
-    writeByte(hl, regs.a);
-    spdlog::debug("MOV M,A -> [0x{:04X}] = 0x{:02X}", hl, regs.a);
+    writeByte(regs.hl, regs.a);
+    spdlog::debug("MOV M,A -> [0x{:04X}] = 0x{:02X}", regs.hl, regs.a);
 }   
 
 void Intel8080::opMOV_A_D()
@@ -574,10 +554,9 @@ void Intel8080::opMOV_A_M()
     // Description: Move contents of memory location pointed by HL into register A
     // Flags: None
 
-    WORD hl = (static_cast<WORD>(regs.h) << 8) | static_cast<WORD>(regs.l);
-    readByte(hl);
+    readByte(regs.hl);
     regs.a = byteData;
-    spdlog::debug("MOV A,M -> A: 0x{:02X} [0x{:04X}] = 0x{:02X}", regs.a, hl, byteData);
+    spdlog::debug("MOV A,M -> A: 0x{:02X} [0x{:04X}] = 0x{:02X}", regs.a, regs.hl, byteData);
 }
 
 void Intel8080::opANA_A()
@@ -588,8 +567,8 @@ void Intel8080::opANA_A()
     // Flags: S, Z, AC, P, CY
 
     regFlagsSZP(regs.a & regs.a);
-    flags.cy = 0;
-    flags.ac = 0;
+    regs.f.cy = 0;
+    regs.f.ac = 0;
     spdlog::debug("ANA A -> A: 0x{:02X}", regs.a);
 }
 
@@ -601,11 +580,11 @@ void Intel8080::opXRA_A()
     // Flags: S, Z, AC, P, CY
 
     regs.a = 0;
-    flags.s = 0;
-    flags.z = 1;
-    flags.ac = 0;
-    flags.p = 1;
-    flags.cy = 0;
+    regs.f.s = 0;
+    regs.f.z = 1;
+    regs.f.ac = 0;
+    regs.f.p = 1;
+    regs.f.cy = 0;
     spdlog::debug("XRA A -> A: 0x{:02X}", regs.a);
 }
 
@@ -618,12 +597,15 @@ void Intel8080::opPOP_B()
     // Description: Pop BC register pair from the stack.
     // Flags: None 
 
-    readByte(regs.sp);
+    /*readByte(regs.sp);
     regs.sp++;
     regs.c = byteData;
     readByte(regs.sp);
     regs.b = byteData;
-    regs.sp++;
+    regs.sp++;*/
+    readWord(regs.sp);
+    regs.bc = wordData;
+    regs.sp += 2;
     spdlog::debug("POP B -> SP: 0x{:04X}", regs.sp);
 }
 
@@ -635,7 +617,7 @@ void Intel8080::opJNZ()
     // Flags: None
 
     fetchWord();
-    if (flags.z == 0) {
+    if (regs.f.z == 0) {
         regs.pc = wordData;
         spdlog::debug("JNZ taken -> PC: 0x{:04X}", regs.pc);
     } else {
@@ -662,10 +644,12 @@ void Intel8080::opPUSH_B()
     // Description: Push BC register pair onto the stack.
     // Flags: None
 
-    regs.sp--;
+    /*regs.sp--;
     writeByte(regs.sp, regs.b);
     regs.sp--;
-    writeByte(regs.sp, regs.c);
+    writeByte(regs.sp, regs.c);*/
+    regs.sp -= 2;
+    writeWord(regs.sp, regs.bc);
     spdlog::debug("PUSH B -> SP: 0x{:04X}", regs.sp);
 }
 
@@ -720,10 +704,13 @@ void Intel8080::opPOP_D()
     // Description: Pop DE register pair from the stack.
     // Flags: None  
 
-    readByte(regs.sp++);
+    /*readByte(regs.sp++);
     regs.e = byteData;
     readByte(regs.sp++);
-    regs.d = byteData;
+    regs.d = byteData;*/
+    readWord(regs.sp);
+    regs.de = wordData;
+    regs.sp += 2;
     spdlog::debug("POP D -> SP: 0x{:04X}", regs.sp);
 }
 
@@ -746,10 +733,12 @@ void Intel8080::opPUSH_D()
     // Description: Push DE register pair onto the stack.
     // Flags: None  
 
-    regs.sp--;
+    /*regs.sp--;
     writeByte(regs.sp, regs.d);
     regs.sp--;
-    writeByte(regs.sp, regs.e);
+    writeByte(regs.sp, regs.e);*/
+    regs.sp -= 2;
+    writeWord(regs.sp, regs.de);
     spdlog::debug("PUSH D -> SP: 0x{:04X}", regs.sp);
 }
 
@@ -760,12 +749,15 @@ void Intel8080::opPOP_H()
     // Description: Pop HL register pair from the stack.
     // Flags: None  
 
-    readByte(regs.sp);
+    /*readByte(regs.sp);
     regs.l = byteData;
     regs.sp++;
     readByte(regs.sp);
     regs.h = byteData;
-    regs.sp++;
+    regs.sp++;*/
+    readWord(regs.sp);
+    regs.hl = wordData;
+    regs.sp += 2;
     spdlog::debug("POP H -> SP: 0x{:04X}", regs.sp);
 }
 
@@ -776,10 +768,12 @@ void Intel8080::opPUSH_H()
     // Description: Push HL register pair onto the stack.
     // Flags: None  
 
-    regs.sp--;
+    /*regs.sp--;
     writeByte(regs.sp, regs.h);
     regs.sp--;
-    writeByte(regs.sp, regs.l);
+    writeByte(regs.sp, regs.l);*/
+    regs.sp -= 2;
+    writeWord(regs.sp, regs.hl);
     spdlog::debug("PUSH H -> SP: 0x{:04X}", regs.sp);
 }
 
@@ -793,8 +787,8 @@ void Intel8080::opANI_D8()
     fetchByte();
     // The "Quirk": AC reflects the logical OR of bit 3
     // This is inconsistently documented. Google Gemini states that without this behavior, the emulator will fail CPUDiag.bin
-    flags.ac = ((regs.a | byteData) & 0x08) != 0;
-    flags.cy = 0;
+    regs.f.ac = ((regs.a | byteData) & 0x08) != 0;
+    regs.f.cy = 0;
     regs.a &= byteData;
     regFlagsSZP(regs.a);
     
@@ -809,14 +803,11 @@ void Intel8080::opXCHG()
     // Description: Exchange the HL and DE register pairs
     // Flags: None  
 
-    byteData = regs.d;
-    regs.d = regs.h;
-    regs.h = byteData;
-    byteData = regs.e;
-    regs.e = regs.l;
-    regs.l = byteData;
+    wordData = regs.de;
+    regs.de = regs.hl;
+    regs.hl = wordData;
 
-    spdlog::debug("XCHG -> DE: 0x{:04X} HL: 0x{:04X}", (regs.d << 8) | regs.e, (regs.h << 8) | regs.l);
+    spdlog::debug("XCHG -> DE: 0x{:04X} HL: 0x{:04X}", regs.de, regs.hl);
 }
 
 void Intel8080::opPOP_PSW()
@@ -826,11 +817,11 @@ void Intel8080::opPOP_PSW()
     // Description: Pop stack to PSW
     // Flags: S, Z, AC, P, CY
 
-    BYTE flagbyte;
-    readByte(regs.sp++);
-    flagbyte = byteData;
+    /*readByte(regs.sp++);
+    regs.f.flags = byteData;
     readByte(regs.sp++);
     regs.a = byteData;
+
     flags.s = (flagbyte & 0x80) ? 1 : 0;
     flags.z = (flagbyte & 0x40) ? 1 : 0;
     flags.xZero = (flagbyte & 0x20) ? 1 : 0;
@@ -838,7 +829,11 @@ void Intel8080::opPOP_PSW()
     flags.yZero = (flagbyte & 0x08) ? 1 : 0;
     flags.p = (flagbyte & 0x04) ? 1 : 0;
     flags.xOne = (flagbyte & 0x02) ? 1 : 0;
-    flags.cy = (flagbyte & 0x01) ? 1 : 0;
+    flags.cy = (flagbyte & 0x01) ? 1 : 0;*/
+    readWord(regs.sp);
+    regs.af = wordData;
+    regs.sp += 2;
+
     spdlog::debug("POP PSW -> A: 0x{:02X} SP: 0x{:04X}", regs.a, regs.sp);
 }
 
@@ -850,7 +845,7 @@ void Intel8080::opPUSH_PSW()
     // Description: Push PSW onto the stack.
     // Flags: None  
 
-    writeByte(--regs.sp, regs.a);
+    /*writeByte(--regs.sp, regs.a);
     BYTE flagbyte = 0x00;
     flagbyte |= (flags.s << 7);
     flagbyte |= (flags.z << 6);
@@ -860,7 +855,9 @@ void Intel8080::opPUSH_PSW()
     flagbyte |= (flags.p << 2);
     flagbyte |= (flags.xOne << 1);
     flagbyte |= (flags.cy << 0);
-    writeByte(--regs.sp, flagbyte);
+    writeByte(--regs.sp, regs.f.flags);*/
+    regs.sp -= 2;
+    writeWord(regs.sp, regs.af);
     spdlog::debug("PUSH PSW -> SP: 0x{:04X}", regs.sp);
 }
 
@@ -889,4 +886,8 @@ void Intel8080::opCPI_D8()
     performSub(byteData, false);
     regs.a = accumulator;
     spdlog::debug("CPI D8 -> A: 0x{:02X} D8: 0x{:02X}", accumulator, byteData);
+
+    regs.f.ac = 0x00;
+
+
 }

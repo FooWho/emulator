@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
     bus.attachMemory(&rom, 0x0000, 0x1FFF);
     bus.attachMemory(&ram, 0x2000, 0x3FFF); 
 
-    FILE *file = fopen("/home/jelison/Workspace/invaders.bin", "rb");
+    FILE *file = fopen("/home/jasonelison/Workspace/invaders.bin", "rb");
     if (!file) {
         spdlog::error("Failed to open ROM file.");
         return EXIT_FAILURE;
@@ -44,10 +44,12 @@ int main(int argc, char *argv[])
 
     int step = 1;
     while (true) {
-        //scanf(" %c", &input);
-        //if (input == 'q') {
-            //break;
-        //}
+        if (step % 5000 == 0) {
+            scanf(" %c", &input);
+            if (input == 'q') {
+                break;
+            }
+        }
         cpu.step();
         cpu.printState();
         printf("Step: %d\n\n", step++);

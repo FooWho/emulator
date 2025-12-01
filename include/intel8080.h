@@ -9,6 +9,23 @@ class Intel8080TestHelper; // Forward declaration
 
 class Intel8080 : public CPU {
  private:
+
+    union pFlags {
+        struct {
+            // LSB (Bit 0) first for Little Endian machines
+            BYTE cy : 1;     // Bit 0: Carry
+            BYTE one : 1;    // Bit 1: Always 1 (8080 specific)
+            BYTE p : 1;      // Bit 2: Parity
+            BYTE zero : 1;   // Bit 3: Always 0
+            BYTE ac : 1;     // Bit 4: Auxiliary Carry
+            BYTE zero2 : 1;  // Bit 5: Always 0
+            BYTE z : 1;      // Bit 6: Zero
+            BYTE s : 1;      // Bit 7: Sign
+        };
+        BYTE flags; // Access everything as a single byte
+    };
+
+    /*
     struct pFlags {
         // Flag Register - Bitfield representation
         // Bit 7: Sign 
@@ -28,15 +45,37 @@ class Intel8080 : public CPU {
         BYTE xOne : 1;     // Not used, always 1
         BYTE cy : 1;        // Carry
     } flags;
+    */
 
     struct pRegs {
-        BYTE a;         // Accumulator
-        BYTE b;         // High byte of the BC pair
-        BYTE c;         // Low byte of the BC pair
-        BYTE d;         // High byte of the DE pair
-        BYTE e;         // Low byte of the DE pair
-        BYTE h;         // High byte of the HL pair -> Used in indirect addressing operations
-        BYTE l;         // Low byte of the HL pair -> Used in indirect addressing operations
+        union {
+            struct {
+                BYTE a; // Accumulator
+                pFlags f; // Flags
+            };
+            WORD af;   // Accessed as a 16-bit pair
+        };
+        union {
+            struct {
+                BYTE c; // Low byte (Little Endian first)
+                BYTE b; // High byte
+            };
+            WORD bc;    // Accessed as a 16-bit pair
+        };
+        union {
+            struct {
+                BYTE e; // Low byte
+                BYTE d; // High byte
+            };
+            WORD de;
+        };
+        union {
+            struct {
+                BYTE l; // Low byte
+                BYTE h; // High byte
+            };
+            WORD hl;
+        };
         WORD sp;        // Stack Pointer
         WORD pc;        // Program Counter
     } regs;

@@ -22,14 +22,7 @@ void Intel8080::reset()
     interruptsEnabled = false;
 
     // Reset flags to their initial state.
-    flags.s = 0;
-    flags.z = 0;
-    flags.xZero = 0;
-    flags.ac = 0;
-    flags.yZero = 0;
-    flags.p = 0;
-    flags.xOne = 1; // This bit is always 1.
-    flags.cy = 0;
+    regs.f.flags = 0x02; // Set the always-on bit (bit 1) to 1
 
     // Reset general purpose registers, stack pointer, and program counter.
     regs.a = 0;
@@ -121,7 +114,7 @@ void Intel8080::step()
 void Intel8080::printState()
 {
     printf("Opcode: 0x%02X     SP: 0x%04X   PC: 0x%04X\n", opcode, regs.sp, regs.pc);
-    printf("Registers: A: 0x%02X B: 0x%02X C: 0x%02X D: 0x%02X E: 0x%02X H: 0x%02X L: 0x%02X\n",
-           regs.a, regs.b, regs.c, regs.d, regs.e, regs.h, regs.l);
-    printf("Flags: S: %d Z: %d AC: %d P: %d CY: %d\n", flags.s, flags.z, flags.ac, flags.p, flags.cy);
+    printf("Registers: AF: 0x%04X BC: 0x%04X DE: 0x%04X HL: 0x%04X\n",
+           regs.af, regs.bc, regs.de, regs.hl);
+    printf("Flags: S: %d Z: %d AC: %d P: %d CY: %d\n", regs.f.s, regs.f.z, regs.f.ac, regs.f.p, regs.f.cy);
 }
