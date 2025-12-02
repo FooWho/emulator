@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
     //bus.attachMemory(&rom, 0x0000, 0x1FFF);
     bus.attachMemory(&ram, 0x0000, 0xFFFE); 
 
-    std::ifstream file("/home/jelison/Workspace/cpudiag.bin", std::ios::binary | std::ios::ate);
+    std::ifstream file("/home/jasonelison/Workspace/cpudiag.bin", std::ios::binary | std::ios::ate);
 
     std::streamsize size = file.tellg();
     file.seekg(0, std::ios::beg);

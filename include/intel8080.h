@@ -25,28 +25,6 @@ class Intel8080 : public CPU {
         BYTE flags; // Access everything as a single byte
     };
 
-    /*
-    struct pFlags {
-        // Flag Register - Bitfield representation
-        // Bit 7: Sign 
-        // Bit 6: Zero 
-        // Bit 5: Not used, always 0 
-        // Bit 4: Auxillary Carry 
-        // Bit 3: Not used, always 0
-        // Bit 2: Parity 
-        // Bit 1: Not used, always 1 
-        // Bit 0: Carry
-        BYTE s : 1;         // Sign
-        BYTE z : 1;         // Zero
-        BYTE xZero : 1;    // Not used, always 0
-        BYTE ac : 1;        // Auxillary Carry
-        BYTE yZero : 1;    // Not used, always 0
-        BYTE p : 1;         // Parity
-        BYTE xOne : 1;     // Not used, always 1
-        BYTE cy : 1;        // Carry
-    } flags;
-    */
-
     struct pRegs {
         union {
             struct {
@@ -114,6 +92,7 @@ class Intel8080 : public CPU {
     void opLXI_D_D16();     // 0x11
     void opSTAX_D();        // 0x12
     void opINX_D();         // 0x13
+    void opINR_D();         // 0x14
 
     void opDAD_D();         // 0x19
     void opLDAX_D();        // 0x1A
@@ -137,13 +116,43 @@ class Intel8080 : public CPU {
 
     void opLDA();           // 0x3A
 
+    void opINR_A();         // 0x3C
+    void opDCR_A();         // 0x3D
+
     void opMVI_A_D8();      // 0x3E
 
+    void opMOV_B_H();       // 0x44
+    void opMOV_B_L();       // 0x45
+
+    void opMOV_B_A();       // 0x47
+    void opMOV_C_B();       // 0x48
+
+    void opMOV_C_L();       // 0x4D
+
+    void opMOV_C_A();       // 0x4F
+
+    void opMOV_D_B();       // 0x50
+    void opMOV_D_C();       // 0x51
+
     void opMOV_D_M();       // 0x56
+    void opMOV_D_A();       // 0x57
+    void opMOV_E_B();       // 0x58
+
+    void opMOV_E_C();       // 0x59
+
+    void opMOV_E_D();       // 0x5E
 
     void opMOV_E_M();       // 0x5E
 
+    void opMOV_H_C();       // 0x61
+    void opMOV_H_D();       // 0x62
+    void opMOV_H_E();       // 0x63
+
     void opMOV_H_M();       // 0x66
+
+    void opMOV_L_D();       // 0x6A
+    void opMOV_L_E();       // 0x6B
+    void opMOV_L_H();       // 0x6C
 
     void opMOV_L_A();       // 0x6F
 
@@ -152,7 +161,7 @@ class Intel8080 : public CPU {
     void opMOV_A_D();       // 0x7A
     void opMOV_A_E();       // 0x7B
     void opMOV_A_H();       // 0x7C
-
+    void opMOV_A_L();       // 0x7D
     void opMOV_A_M();       // 0x7E
 
     void opMOV_A_A();       // 0x7F
@@ -161,6 +170,7 @@ class Intel8080 : public CPU {
 
     void opXRA_A();         // 0xAF
 
+    void opRNZ();           // 0xC0
     void opPOP_B();         // 0xC1
     void opJNZ();           // 0xC2
     void opJMP();           // 0xC3
@@ -168,6 +178,7 @@ class Intel8080 : public CPU {
     void opPUSH_B();        // 0xC5
     void opADI_D8();        // 0xC6
 
+    void opRZ();            // 0xC8
     void opRET();           // 0xC9  
 
     void opJZ();            // 0xCA
@@ -176,6 +187,7 @@ class Intel8080 : public CPU {
     void opCALL();          // 0xCD
     void opACI_D8();        // 0xCE
 
+    void opRNC();           // 0xD0
     void opPOP_D();         // 0xD1
     void opJNC();           // 0xD2
     void opOUT_D8();        // 0xD3
