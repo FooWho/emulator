@@ -82,6 +82,7 @@ class Intel8080 : public CPU {
     void opDCR_B();         // 0x05
     void opMVI_B_D8();      // 0x06
     void opRLC();           // 0x07 
+//  NOP                     // 0x08
     void opDAD_B();         // 0x09
     void opLDAX_B();        // 0x0A
     void opDCX_B();         // 0x0B
@@ -113,6 +114,8 @@ class Intel8080 : public CPU {
     void opDAD_H();         // 0x29
 
     void opDCX_H();         // 0x2B
+    void opINR_L();         // 0x2C
+    void opDCR_L();         // 0x2D
 
     void opLXI_SP_D16();    // 0x31
     void opSTA();           // 0x32
@@ -128,30 +131,39 @@ class Intel8080 : public CPU {
 
     void opMVI_A_D8();      // 0x3E
 
+    void opMOV_B_B();       // 0x40
+    void opMOV_B_C();       // 0x41
+    void opMOV_B_D();       // 0x42
     void opMOV_B_E();       // 0x43
     void opMOV_B_H();       // 0x44
     void opMOV_B_L();       // 0x45
-
+    void opMOV_B_M();       // 0x46
     void opMOV_B_A();       // 0x47
-    void opMOV_C_B();       // 0x48
 
+    void opMOV_C_B();       // 0x48
+    void opMOV_C_C();       // 0x49
+    void opMOV_C_D();       // 0x4A
+    void opMOV_C_E();       // 0x4B
     void opMOV_C_H();       // 0x4C
     void opMOV_C_L();       // 0x4D
-
+    void opMOV_C_M();       // 0x4E
     void opMOV_C_A();       // 0x4F
 
     void opMOV_D_B();       // 0x50
     void opMOV_D_C();       // 0x51
-
+    void opMOV_D_D();       // 0x52
+    void opMOV_D_E();       // 0x53
+    void opMOV_D_H();       // 0x54
     void opMOV_D_L();       // 0x55
     void opMOV_D_M();       // 0x56
     void opMOV_D_A();       // 0x57
+
     void opMOV_E_B();       // 0x58
-
     void opMOV_E_C();       // 0x59
-
-    void opMOV_E_D();       // 0x5E
-
+    void opMOV_E_D();       // 0x5A
+    void opMOV_E_E();       // 0x5B
+    void opMOV_E_H();       // 0x5C
+    void opMOV_E_L();       // 0x5D
     void opMOV_E_M();       // 0x5E
     void opMOV_E_A();       // 0x5F
 
@@ -161,7 +173,8 @@ class Intel8080 : public CPU {
     void opMOV_H_E();       // 0x63
 
     void opMOV_H_M();       // 0x66
-
+    void opMOV_H_A();       // 0x67
+    void opMOV_L_B();       // 0x68
     void opMOV_L_C();       // 0x69
     void opMOV_L_D();       // 0x6A
     void opMOV_L_E();       // 0x6B
@@ -169,14 +182,23 @@ class Intel8080 : public CPU {
 
     void opMOV_L_A();       // 0x6F
 
-    void opMOV_M_A();       // 0x77
+    void opMOV_M_B();       // 0x70
+    void opMOV_M_C();       // 0x71
+    void opMOV_M_D();       // 0x72
+    void opMOV_M_E();       // 0x73
+    void opMOV_M_H();       // 0x74
+    void opMOV_M_L();       // 0x75
 
+    void opHLT();           // 0x76
+
+    void opMOV_M_A();       // 0x77
+    void opMOV_A_B();       // 0x78
+    void opMOV_A_C();       // 0x79
     void opMOV_A_D();       // 0x7A
     void opMOV_A_E();       // 0x7B
     void opMOV_A_H();       // 0x7C
     void opMOV_A_L();       // 0x7D
     void opMOV_A_M();       // 0x7E
-
     void opMOV_A_A();       // 0x7F
 
     void opANA_A();         // 0xA7

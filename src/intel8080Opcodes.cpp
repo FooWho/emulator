@@ -5,20 +5,21 @@
 void Intel8080::buildOpcodeTable()
 {
     pOpcodeLookup.fill(&Intel8080::opILLEGAL);          // Initialize with a dummy opcode
-    pOpcodeLookup[0x00] = &Intel8080::opNOP;            // NOP instruction
-    pOpcodeLookup[0x01] = &Intel8080::opLXI_B_D16;      // LXI B,D16 instruction
-    pOpcodeLookup[0x02] = &Intel8080::opSTAX_B;         // STAX B instruction
-    pOpcodeLookup[0x03] = &Intel8080::opINX_B;          // INX B instructrion
-    pOpcodeLookup[0x04] = &Intel8080::opINR_B;          // INR B instruction
-    pOpcodeLookup[0x05] = &Intel8080::opDCR_B;          // DCR B instruction
-    pOpcodeLookup[0x06] = &Intel8080::opMVI_B_D8;       // MVI B,D8 instruction
+    pOpcodeLookup[0x00] = &Intel8080::opNOP;            // No OPeration
+    pOpcodeLookup[0x01] = &Intel8080::opLXI_B_D16;      // Load eXtended register BC with Immediate value
+    pOpcodeLookup[0x02] = &Intel8080::opSTAX_B;         // STore Accumulator at memory location conatined in eXtended register BC
+    pOpcodeLookup[0x03] = &Intel8080::opINX_B;          // INcrement eXtended register BC
+    pOpcodeLookup[0x04] = &Intel8080::opINR_B;          // INcrement Register B
+    pOpcodeLookup[0x05] = &Intel8080::opDCR_B;          // DeCrement Register B
+    pOpcodeLookup[0x06] = &Intel8080::opMVI_B_D8;       // MoVe Immediate byte data into register B
+    pOpcodeLookup[0x07] = &Intel8080::opRLC;            // Rotate accumulator Left with Carry
+    pOpcodeLookup[0x08] = &Intel8080::opNOP;            // *NOP instruction
+    pOpcodeLookup[0x09] = &Intel8080::opDAD_B;          // Double Add register HL and BC, store result in HL
 
-    pOpcodeLookup[0x09] = &Intel8080::opDAD_B;          // DAD B instruction
-
-    pOpcodeLookup[0x0C] = &Intel8080::opINR_C;          // INR C instruction
-    pOpcodeLookup[0x0D] = &Intel8080::opDCR_C;          // DCR C instruction
-    pOpcodeLookup[0x0E] = &Intel8080::opMVI_C_D8;       // MVI C,D8 instruction
-    pOpcodeLookup[0x0F] = &Intel8080::opRRC;            // RRC instruction
+    pOpcodeLookup[0x0C] = &Intel8080::opINR_C;          // INcrement Register C
+    pOpcodeLookup[0x0D] = &Intel8080::opDCR_C;          // DeCrement Register C
+    pOpcodeLookup[0x0E] = &Intel8080::opMVI_C_D8;       // MoVe Immediate byte data into register C
+    pOpcodeLookup[0x0F] = &Intel8080::opRRC;            // Rotate accumulator Right with Carry
 
     pOpcodeLookup[0x11] = &Intel8080::opLXI_D_D16;      // LXI D,D16 instruction
     pOpcodeLookup[0x13] = &Intel8080::opINX_D;          // INX D instruction
@@ -29,15 +30,19 @@ void Intel8080::buildOpcodeTable()
     pOpcodeLookup[0x1A] = &Intel8080::opLDAX_D;         // LDAX D instruction
 
     pOpcodeLookup[0x1C] = &Intel8080::opINR_E;          // INR E instruction
+    pOpcodeLookup[0x1D] = &Intel8080::opDCR_E;          // DCR E instruction
 
     pOpcodeLookup[0x21] = &Intel8080::opLXI_H_D16;      // LXI H,D16 instruction
 
     pOpcodeLookup[0x23] = &Intel8080::opINX_H;          // INX H instruction
     pOpcodeLookup[0x24] = &Intel8080::opINR_H;          // INR H instruction
-
+    pOpcodeLookup[0x25] = &Intel8080::opDCR_H;          // DCR H instruction
     pOpcodeLookup[0x26] = &Intel8080::opMVI_H_D8;       // MVI H,D8 instruction
 
     pOpcodeLookup[0x29] = &Intel8080::opDAD_H;          // DAD H instruction
+
+    pOpcodeLookup[0x2C] = &Intel8080::opINR_L;          // Increment L instruction
+    pOpcodeLookup[0x2D] = &Intel8080::opDCR_L;          // Decrement L instruction
 
     pOpcodeLookup[0x31] = &Intel8080::opLXI_SP_D16;     // LXI SP,D16 instruction
     pOpcodeLookup[0x32] = &Intel8080::opSTA;            // STA instruction
@@ -49,32 +54,41 @@ void Intel8080::buildOpcodeTable()
     pOpcodeLookup[0x3C] = &Intel8080::opINR_A;          // INR A instruction
     pOpcodeLookup[0x3D] = &Intel8080::opDCR_A;          // DCR A instruction
 
-    pOpcodeLookup[0x3E] = &Intel8080::opMVI_A_D8;       // MOV M,A instruction
+    pOpcodeLookup[0x3E] = &Intel8080::opMVI_A_D8;       // MOV M, A instruction
 
+    pOpcodeLookup[0x40] = &Intel8080::opMOV_B_B;        // MOV B, B instruction
+    pOpcodeLookup[0x41] = &Intel8080::opMOV_B_C;        // MOV B, C instruction
+    pOpcodeLookup[0x42] = &Intel8080::opMOV_B_D;        // MOV B, D instruction
     pOpcodeLookup[0x43] = &Intel8080::opMOV_B_E;        // MOV B, C instruction
     pOpcodeLookup[0x44] = &Intel8080::opMOV_B_H;        // MOV B, H instruction
     pOpcodeLookup[0x45] = &Intel8080::opMOV_B_L;        // MOV B, L instruction
-
+    pOpcodeLookup[0x46] = &Intel8080::opMOV_B_M;        // MOV B, M instruction
     pOpcodeLookup[0x47] = &Intel8080::opMOV_B_A;        // MOV B, A instruction
+    
     pOpcodeLookup[0x48] = &Intel8080::opMOV_C_B;        // MOV C, B instruction
-
+    pOpcodeLookup[0x49] = &Intel8080::opMOV_C_C;        // MOV C, C instruction
+    pOpcodeLookup[0x4A] = &Intel8080::opMOV_C_D;        // MOV C, D instruction
+    pOpcodeLookup[0x4B] = &Intel8080::opMOV_C_E;        // MOV C, E instruction
     pOpcodeLookup[0x4C] = &Intel8080::opMOV_C_H;        // MOV C, H instruction
     pOpcodeLookup[0x4D] = &Intel8080::opMOV_C_L;        // MOV C, L instruction
-
+    pOpcodeLookup[0x4E] = &Intel8080::opMOV_C_M;        // MOV C, M instruction
     pOpcodeLookup[0x4F] = &Intel8080::opMOV_C_A;        // MOV C, A instruction
 
     pOpcodeLookup[0x50] = &Intel8080::opMOV_D_B;        // MOV D, B instruction
     pOpcodeLookup[0x51] = &Intel8080::opMOV_D_C;        // MOV D, C instruction
-
+    pOpcodeLookup[0x52] = &Intel8080::opMOV_D_D;        // MOV D, D instruction
+    pOpcodeLookup[0x53] = &Intel8080::opMOV_D_E;        // MOV D, E instruction
+    pOpcodeLookup[0x54] = &Intel8080::opMOV_D_H;        // MOV D, H instruction
     pOpcodeLookup[0x55] = &Intel8080::opMOV_D_L;        // MOV D, L instruction
     pOpcodeLookup[0x56] = &Intel8080::opMOV_D_M;        // MOV D, M instruction
     pOpcodeLookup[0x57] = &Intel8080::opMOV_D_A;        // MOV D, A instruction
+
     pOpcodeLookup[0x58] = &Intel8080::opMOV_E_B;        // MOV E, B instruction
-
     pOpcodeLookup[0x59] = &Intel8080::opMOV_E_C;        // MOV E, C instruction
-
     pOpcodeLookup[0x5A] = &Intel8080::opMOV_E_D;        // MOV E, D instruction
-
+    pOpcodeLookup[0x5B] = &Intel8080::opMOV_E_E;        // MOV E, E instruction
+    pOpcodeLookup[0x5C] = &Intel8080::opMOV_E_H;        // MOV E, L instruction
+    pOpcodeLookup[0x5D] = &Intel8080::opMOV_E_L;        // MOV E, M instruction
     pOpcodeLookup[0x5E] = &Intel8080::opMOV_E_M;        // MOV E, M instruction
     pOpcodeLookup[0x5F] = &Intel8080::opMOV_E_A;        // MOV E, A instruction
 
@@ -84,7 +98,8 @@ void Intel8080::buildOpcodeTable()
     pOpcodeLookup[0x63] = &Intel8080::opMOV_H_E;        // MOV H, E instruction
     
     pOpcodeLookup[0x66] = &Intel8080::opMOV_H_M;        // MOV H, M instruction
-
+    pOpcodeLookup[0x67] = &Intel8080::opMOV_H_A;        // MOV H, A instruction
+    pOpcodeLookup[0x68] = &Intel8080::opMOV_L_B;        // MOV L, B instruction
     pOpcodeLookup[0x69] = &Intel8080::opMOV_L_C;        // MOV H, L instruction
     pOpcodeLookup[0x6A] = &Intel8080::opMOV_L_D;        // MOV L, D instruction
     pOpcodeLookup[0x6B] = &Intel8080::opMOV_L_E;        // MOV L, E instruction
@@ -92,8 +107,18 @@ void Intel8080::buildOpcodeTable()
 
     pOpcodeLookup[0x6F] = &Intel8080::opMOV_L_A;        // MOV L, A instruction
 
-    pOpcodeLookup[0x77] = &Intel8080::opMOV_M_A;        // MOV M, A instruction
+    pOpcodeLookup[0x70] = &Intel8080::opMOV_M_B;        // MOV M, B instruction
+    pOpcodeLookup[0x71] = &Intel8080::opMOV_M_C;        // MOV M, C instruction
+    pOpcodeLookup[0x72] = &Intel8080::opMOV_M_D;        // MOV M, D instruction
+    pOpcodeLookup[0x73] = &Intel8080::opMOV_M_E;        // MOV M, E instruction
+    pOpcodeLookup[0x74] = &Intel8080::opMOV_M_H;        // MOV M, H instruction
+    pOpcodeLookup[0x75] = &Intel8080::opMOV_M_L;        // MOV M, L instruction
 
+    pOpcodeLookup[0x76] = &Intel8080::opHLT;            // HLT instruction
+
+    pOpcodeLookup[0x77] = &Intel8080::opMOV_M_A;        // MOV M, A instruction
+    pOpcodeLookup[0x78] = &Intel8080::opMOV_A_B;        // MOV A, B instruction
+    pOpcodeLookup[0x79] = &Intel8080::opMOV_A_C;        // MOV A, C instruction
     pOpcodeLookup[0x7A] = &Intel8080::opMOV_A_D;        // MOV A, D instruction
     pOpcodeLookup[0x7B] = &Intel8080::opMOV_A_E;        // MOV A, E instruction
     pOpcodeLookup[0x7C] = &Intel8080::opMOV_A_H;        // MOV A, H instruction
@@ -312,6 +337,19 @@ void Intel8080::opMVI_B_D8()
     spdlog::debug("MVI B, D8 -> B: 0x{:02X} D8: 0x{:02X}", regs.b, byteData);
 }
 
+void Intel8080::opRLC()
+{
+    // Opcode: 0x07         Mnemonic: RLC
+    // Size: 1              Cycles: 4
+    // Description: Rotate Accumulator Left with Carry
+    // Flags: CY
+
+    BYTE result = regs.a & 0x01;
+    regs.a = (regs.a << 1) | (result >> 7);
+    regs.f.cy = result & 0xFF ? 1 : 0;
+    spdlog::debug("RRC -> A: 0x{:02X}", regs.a);
+}
+
 void Intel8080::opDAD_B()
 {
     // Opcode: 0x09         Mnemonic: DAD B
@@ -373,9 +411,9 @@ void Intel8080::opRRC()
     // Description: Rotate Accumulator right through carry
     // Flags: CY
 
-    byteData = regs.a & 0x01;
-    regs.a = (regs.a >> 1) | (byteData << 7);
-    regs.f.cy = byteData & 0xFF ? 1 : 0;
+    BYTE result = regs.a & 0x01;
+    regs.a = (regs.a >> 1) | (result << 7);
+    regs.f.cy = result & 0xFF ? 1 : 0;
     spdlog::debug("RRC -> A: 0x{:02X}", regs.a);
 }   
 
@@ -473,6 +511,21 @@ void Intel8080::opINR_E()
     spdlog::debug("INR E -> E: 0x{:02X}", regs.e);
 }
 
+void Intel8080::opDCR_E()
+{
+    // Opcode: 0x1D         Mnemonic: DCR E
+    // Size: 1              Cycles: 5
+    // Description: Decrement the E register
+    // Flags: S, Z, AC, P
+
+    BYTE result = regs.e - 1;
+    regFlagsAuxCarry(regs.e, 1, result);
+    regFlagsSZP(result);
+    regs.e = result;
+
+    spdlog::debug("DCR E -> E: 0x{:02X}", regs.e);
+}
+
 void Intel8080::opLXI_H_D16()
 {
     // Opcode: 0x21         Mnemonic: LXI H,D16
@@ -511,6 +564,22 @@ void Intel8080::opINR_H()
     spdlog::debug("INR H -> H: 0x{:02X}", regs.h);
 }
 
+void Intel8080::opDCR_H()
+{
+    // Opcode: 0x25         Mnemonic: DCR H
+    // Size: 1              Cycles: 5
+    // Description: Decrement the H register
+    // Flags: S, Z, AC, P
+
+    BYTE result = regs.h - 1;
+    regFlagsAuxCarry(regs.h, 1, result);
+    regFlagsSZP(result);
+    regs.h = result;
+
+    spdlog::debug("DCR H -> H: 0x{:02X}", regs.h);
+}
+
+
 void Intel8080::opMVI_H_D8()
 {
     // Opcode: 0x26         Mnemonic: MVI H, D8
@@ -535,6 +604,37 @@ void Intel8080::opDAD_H()
     regs.hl = result;
     spdlog::debug("DAD H -> HL: 0x{:04X} HL: 0x{:04X} -> 0x{:04X}", regs.hl, regs.hl, result);
 }
+
+void Intel8080::opINR_L()
+{
+    // Opcode: 0x2C         Mnemonic: INR L
+    // Size: 1              Cycles: 5
+    // Description: Increment the L register
+    // Flags: S, Z, AC, P
+
+    BYTE result = regs.l + 1;
+    regFlagsAuxCarry(regs.l, 1, result);
+    regFlagsSZP(result);
+    regs.l = result;
+
+    spdlog::debug("INR L -> L: 0x{:02X}", regs.l);
+}
+
+void Intel8080::opDCR_L()
+{
+    // Opcode: 0x2D         Mnemonic: DRC L
+    // Size: 1              Cycles: 5
+    // Description: Decrement the L register
+    // Flags: S, Z, AC, P
+
+    BYTE result = regs.l - 1;
+    regFlagsAuxCarry(regs.l, 1, result);
+    regFlagsSZP(result);
+    regs.l = result;
+
+    spdlog::debug("DCR L -> L: 0x{:02X}", regs.l);
+}
+
 
 
 
@@ -629,6 +729,39 @@ void Intel8080::opMVI_A_D8()
     spdlog::debug("MVI A, D8 -> A: 0x{:02X} D8: 0x{:02X}", regs.a, byteData);
 }
 
+void Intel8080::opMOV_B_B()
+{
+    // Opcode: 0x40         Mnemonic: MOV B, B
+    // Size: 1 byte         Cycles: 5
+    // Description: Move contents of B register into B register
+    // Flags: None
+
+    regs.b = regs.b;
+    spdlog::debug("MOV B,B -> B: 0x{:02X} B: 0x{:02X}", regs.b, regs.b);
+}
+
+void Intel8080::opMOV_B_C()
+{
+    // Opcode: 0x41         Mnemonic: MOV B, C
+    // Size: 1 byte         Cycles: 5
+    // Description: Move contents of C register into B register
+    // Flags: None
+
+    regs.b = regs.c;
+    spdlog::debug("MOV B,C -> B: 0x{:02X} C: 0x{:02X}", regs.b, regs.c);
+}
+
+void Intel8080::opMOV_B_D()
+{
+    // Opcode: 0x42         Mnemonic: MOV B, D
+    // Size: 1 byte         Cycles: 5
+    // Description: Move contents of D register into B register
+    // Flags: None
+
+    regs.b = regs.d;
+    spdlog::debug("MOV B,D -> B: 0x{:02X} D: 0x{:02X}", regs.b, regs.d);
+}
+
 void Intel8080::opMOV_B_E()
 {
     // Opcode: 0x43         Mnemonic: MOV B, E
@@ -662,6 +795,21 @@ void Intel8080::opMOV_B_L()
     spdlog::debug("MOV B,L -> B: 0x{:02X} L: 0x{:02X}", regs.b, regs.l);
 }
 
+void Intel8080::opMOV_B_M()
+{
+    // Opcode: 0x46         Mnemonic: MOV B, M
+    // Size: 1 byte         Cycles: 7
+    // Description: Move contents of memory address stored in HL to B
+    // Flags: None
+
+    readByte(regs.hl);
+    regs.b = byteData;
+
+    spdlog::debug("MOV B, M -> B: 0x{:02X} [0x{:04X}] = 0x{:02X}", regs.b, regs.hl, byteData);
+}
+
+
+
 void Intel8080::opMOV_B_A()
 {
     // Opcode: 0x47         Mnemonic: MOV B, A
@@ -684,6 +832,39 @@ void Intel8080::opMOV_C_B()
     spdlog::debug("MOV C,B -> C: 0x{:02X} B: 0x{:02X}", regs.c, regs.b);
 }
 
+void Intel8080::opMOV_C_C()
+{
+    // Opcode: 0x49         Mnemonic: MOV C, C
+    // Size: 1              Cycles: 5
+    // Description: Move contents of C register into C register
+    // Flags: None
+
+    regs.c = regs.c;
+    spdlog::debug("MOV C,C -> C: 0x{:02X} C: 0x{:02X}", regs.c, regs.c);
+}
+
+void Intel8080::opMOV_C_D()
+{
+    // Opcode: 0x4A         Mnemonic: MOV C, D
+    // Size: 1 byte         Cycles: 5
+    // Description: Move contents of D register into C register
+    // Flags: None
+
+    regs.c = regs.d;
+    spdlog::debug("MOV C,D -> C: 0x{:02X} D: 0x{:02X}", regs.c, regs.d);
+}
+
+void Intel8080::opMOV_C_E()
+{
+    // Opcode: 0x4B         Mnemonic: MOV C, E
+    // Size: 1 byte         Cycles: 5
+    // Description: Move contents of E register into C register
+    // Flags: None
+
+    regs.c = regs.e;
+    spdlog::debug("MOV C,E -> C: 0x{:02X} E: 0x{:02X}", regs.c, regs.e);
+}
+
 void Intel8080::opMOV_C_H()
 {
     // Opcode: 0x4C         Mnemonic: MOV C, H
@@ -704,6 +885,18 @@ void Intel8080::opMOV_C_L()
 
     regs.c = regs.l;
     spdlog::debug("MOV C,L -> C: 0x{:02X} L: 0x{:02X}", regs.c, regs.l);
+}
+
+void Intel8080::opMOV_C_M()
+{
+    // Opcode: 0x4E         Mnemonic: MOV C, M
+    // Size: 1              Cycles: 7
+    // Description: Move contents of memory address contained in HL to C
+    // Flags: None
+
+    readByte(regs.hl);
+    regs.c = byteData;
+    spdlog::debug("MOV C, M -> C: 0x{:02X} [0x{:04X}] = 0x{:02X}", regs.c, regs.hl, byteData);
 }
 
 void Intel8080::opMOV_C_A()
@@ -737,6 +930,39 @@ void Intel8080::opMOV_D_C()
 
     regs.d = regs.c;
     spdlog::debug("MOV D,C -> D: 0x{:02X} C: 0x{:02X}", regs.d, regs.c);
+}
+
+void Intel8080::opMOV_D_D()
+{
+    // Opcode: 0x52         Mnemonic: MOV D, D
+    // Size: 1 byte         Cycles: 5
+    // Description: Move contents of D register into D register
+    // Flags: None
+
+    regs.d = regs.d;
+    spdlog::debug("MOV D,D -> D: 0x{:02X} D: 0x{:02X}", regs.d, regs.d);
+}
+
+void Intel8080::opMOV_D_E()
+{
+    // Opcode: 0x53         Mnemonic: MOV D, E
+    // Size: 1              Cycles: 5
+    // Description: Move contents of E register into D register
+    // Flags: None
+
+    regs.d = regs.e;
+    spdlog::debug("MOV D,E -> D: 0x{:02X} E: 0x{:02X}", regs.d, regs.e);
+}
+
+void Intel8080::opMOV_D_H()
+{
+    // Opcode: 0x54         Mnemonic: MOV D, H
+    // Size: 1 byte         Cycles: 5
+    // Description: Move contents of H register into D register
+    // Flags: None
+
+    regs.d = regs.h;
+    spdlog::debug("MOV D,H -> D: 0x{:02X} H: 0x{:02X}", regs.d, regs.h);
 }
 
 void Intel8080::opMOV_D_L()
@@ -804,6 +1030,39 @@ void Intel8080::opMOV_E_D()
 
     regs.e = regs.d;
     spdlog::debug("MOV E,D -> E: 0x{:02X} D: 0x{:02X}", regs.e, regs.d);
+}
+
+void Intel8080::opMOV_E_E()
+{
+    // Opcode: 0x5B         Mnemonic: MOV E, E
+    // Size: 1 byte         Cycles: 5
+    // Description: Move contents of E register into E register
+    // Flags: None
+
+    regs.e = regs.e;
+    spdlog::debug("MOV E,E -> E: 0x{:02X} E: 0x{:02X}", regs.e, regs.e);
+}
+
+void Intel8080::opMOV_E_H()
+{
+    // Opcode: 0x5C         Mnemonic: MOV E, H
+    // Size: 1 byte         Cycles: 5
+    // Description: Move contents of H register into E register
+    // Flags: None
+
+    regs.e = regs.h;
+    spdlog::debug("MOV E,H -> E: 0x{:02X} H: 0x{:02X}", regs.e, regs.h);
+}
+
+void Intel8080::opMOV_E_L()
+{
+    // Opcode: 0x5D         Mnemonic: MOV E, L
+    // Size: 1              Cycles: 5
+    // Description: Move contents of L register into E register
+    // Flags: None
+
+    regs.e = regs.l;
+    spdlog::debug("MOV E,L -> E: 0x{:02X} L: 0x{:02X}", regs.e, regs.l);
 }
 
 void Intel8080::opMOV_E_M()
@@ -885,6 +1144,28 @@ void Intel8080::opMOV_H_M()
     spdlog::debug("MOV H, M -> H: 0x{:02X} [0x{:04X}] = 0x{:02X}", regs.h, regs.hl, byteData);
 }
 
+void Intel8080::opMOV_H_A()
+{
+    // Opcode: 0x67         Mnemonic: MOV H, A
+    // Size: 1              Cycles: 5
+    // Description: Move contents of Accumulator into H register
+    // Flags: None
+
+    regs.h = regs.a;
+    spdlog::debug("MOV H,A -> H: 0x{:02X} A: 0x{:02X}", regs.h, regs.a);
+}
+
+void Intel8080::opMOV_L_B()
+{
+    // Opcode: 0x68         Mnemonic: MOV L, B
+    // Size: 1 byte         Cycles: 5
+    // Description: Move contents of B register into L register
+    // Flags: None
+
+    regs.l = regs.b;
+    spdlog::debug("MOV L,B -> L: 0x{:02X} B: 0x{:02X}", regs.l, regs.b);
+}
+
 void Intel8080::opMOV_L_C()
 {
     // Opcode: 0x69         Mnemonic: MOV L, C
@@ -940,6 +1221,87 @@ void Intel8080::opMOV_L_A()
     spdlog::debug("MOV L,A -> L: 0x{:02X} A: 0x{:02X}", regs.l, regs.a);
 }
 
+void Intel8080::opMOV_M_B()
+{
+    // Opcode: 0x70         Mnemonic: MOV M, B
+    // Size: 1 byte         Cycles: 7
+    // Description: Move contents of B register to the memory location contained in HL
+    // Flags: None
+
+    writeByte(regs.hl, regs.b);
+
+    spdlog::debug("MOV M,B -> [0x{:04X}] = 0x{:02X}", regs.hl, regs.b);
+}
+
+void Intel8080::opMOV_M_C()
+{
+    // Opcode: 0x71         Mnemonic: MOV M, C
+    // Size: 1 byte         Cycles: 7
+    // Description: Move contents of C register to the memory location contained in HL
+    // Flags: None
+
+    writeByte(regs.hl, regs.c);
+
+    spdlog::debug("MOV M,C -> [0x{:04X}] = 0x{:02X}", regs.hl, regs.c);
+}
+
+void Intel8080::opMOV_M_D()
+{
+    // Opcode: 0x72         Mnemonic: MOV M, D
+    // Size: 1 byte         Cycles: 7
+    // Description: Move contens of D register to the memory location contained in HL
+    // Flags: None
+
+    writeByte(regs.hl, regs.d);
+
+    spdlog::debug("MOV M,D -> [0x{:04X}] = 0x{:02X}", regs.hl, regs.d);
+}
+
+void Intel8080::opMOV_M_E()
+{
+    // Opcode: 0x73         Mnemonic: MOV M, E
+    // Size: 1 byte         Cycles: 7
+    // Description: Move contents of E register to the memory location contained in HL
+    // Flags: None
+
+    writeByte(regs.hl, regs.e);
+
+    spdlog::debug("MOV M,E -> [0x{:04X}] = 0x{:02X}", regs.hl, regs.e);
+}
+
+void Intel8080::opMOV_M_H()
+{
+    // Opcode: 0x74         Mnemonic: MOV M, H
+    // Size: 1 byte         Cycles: 7
+    // Description: Move contents of H register to the memory location contained in HL
+    // Flags: None
+
+    writeByte(regs.hl, regs.h);
+
+    spdlog::debug("MOV M,H -> [0x{:04X}] = 0x{:02X}", regs.hl, regs.h);
+}
+
+void Intel8080::opMOV_M_L()
+{
+    // Opcode: 0x75         Mnemonic: MOV M, L
+    // Size: 1 byte         Cycles: 7
+    // Description: Move contents of register L to the memory location contained in HL
+    // Flags: None
+
+    writeByte(regs.hl, regs.l);
+
+    spdlog::debug("MOV M,L -> [0x{:04X}] = 0x{:02X}", regs.hl, regs.l);
+}
+
+void Intel8080::opHLT()
+{
+    // Opcode: 0x76         Mnemonic: HLT
+    // Size: 1 byte         Cycles: 7
+    // Description: Advance PC to the next address. CPU enters stopped state and executes no more instructions until an interrupt ocurrs.
+    // Flags: None
+
+    spdlog::debug("HLT");
+}
 
 void Intel8080::opMOV_M_A()
 {
@@ -951,6 +1313,29 @@ void Intel8080::opMOV_M_A()
     writeByte(regs.hl, regs.a);
     spdlog::debug("MOV M,A -> [0x{:04X}] = 0x{:02X}", regs.hl, regs.a);
 }   
+
+void Intel8080::opMOV_A_B()
+{
+    // Opcode: 0x78         Mnemonic: MOV A, B
+    // Size: 1 byte         Cycles: 5
+    // Description: Move contents of B register into Accumulator
+    // Flags: None
+
+    regs.a = regs.b;
+
+    spdlog::debug("MOV A,B -> A: 0x{:02X} B: 0x{:02X}", regs.a, regs.b);
+}
+
+void Intel8080::opMOV_A_C()
+{
+    // Opcode: 0x79         Mnemonic: MOV A, C
+    // Size: 1 byte         Cycles: 5
+    // Description: Move contents of C register into Accumulator
+    // Flags: None
+
+    regs.a = regs.c;
+    spdlog::debug("MOV A,C -> A: 0x{:02X} C: 0x{:02X}", regs.a, regs.c);
+}
 
 void Intel8080::opMOV_A_D()
 {
@@ -973,7 +1358,6 @@ void Intel8080::opMOV_A_E()
     regs.a = regs.e;
     spdlog::debug("MOV A,E -> A: 0x{:02X} E: 0x{:02X}", regs.a, regs.e);
 }
-
 
 void Intel8080::opMOV_A_H()
 {
@@ -1007,6 +1391,17 @@ void Intel8080::opMOV_A_M()
     readByte(regs.hl);
     regs.a = byteData;
     spdlog::debug("MOV A,M -> A: 0x{:02X} [0x{:04X}] = 0x{:02X}", regs.a, regs.hl, byteData);
+}
+
+void Intel8080::opMOV_A_A()
+{
+    // Opcode: 0x7F         Mnemonic: MOV A, A
+    // Size: 1 byte         Cycles: 5
+    // Description: Move contents of Accumulator into Accumulator
+    // Flags: None
+
+    regs.a = regs.a;
+    spdlog::debug("MOV A,A -> A: 0x{:02X} A: 0x{:02X}", regs.a, regs.a);
 }
 
 void Intel8080::opANA_A()
