@@ -206,8 +206,58 @@ class Intel8080 : public CPU {
     void opMOV_A_M();       // 0x7E
     void opMOV_A_A();       // 0x7F
 
+    void opADD_B();         // 0x80
+    void opADD_C();         // 0x81
+    void opADD_D();         // 0x82
+    void opADD_E();         // 0x83
+    void opADD_H();         // 0x84
+    void opADD_L();         // 0x85
+    void opADD_M();         // 0x86
+    void opADD_A();         // 0x87
+
+    void opADC_B();         // 0x88
+    void opADC_C();         // 0x89
+    void opADC_D();         // 0x8A
+    void opADC_E();         // 0x8B
+    void opADC_H();         // 0x8C
+    void opADC_L();         // 0x8D
+    void opADC_M();         // 0x8E
+    void opADC_A();         // 0x8F
+
+    void opSUB_B();         // 0x90
+    void opSUB_C();         // 0x91
+    void opSUB_D();         // 0x92
+    void opSUB_E();         // 0x93
+    void opSUB_H();         // 0x94
+    void opSUB_L();         // 0x95
+    void opSUB_M();         // 0x96
+    void opSUB_A();         // 0x97
+
+    void opSBB_B();         // 0x98
+    void opSBB_C();         // 0x99
+    void opSBB_D();         // 0x9A
+    void opSBB_E();         // 0x9B
+    void opSBB_H();         // 0x9C
+    void opSBB_L();         // 0x9
+    void opSBB_M();         // 0x9E
+    void opSBB_A();         // 0x9F
+
+    void opANA_B();         // 0xA0
+    void opANA_C();         // 0xA1
+    void opANA_D();         // 0xA2
+    void opANA_E();         // 0xA3
+    void opANA_H();         // 0xA4
+    void opANA_L();         // 0xA5
+    void opANA_M();         // 0xA6
     void opANA_A();         // 0xA7
 
+    void opXRA_B();         // 0xA8
+    void opXRA_C();         // 0xA9
+    void opXRA_D();         // 0xAA
+    void opXRA_E();         // 0xAB
+    void opXRA_H();         // 0xAC
+    void opXRA_L();         // 0xAD
+    void opXRA_M();         // 0xAE
     void opXRA_A();         // 0xAF
 
     void opRNZ();           // 0xC0

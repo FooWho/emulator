@@ -53,6 +53,7 @@ int main(int argc, char *argv[])
     bool finished = false;
     while (!finished) {
         cpu.step();
+        //std::cout << "Did " << (int)(Intel8080TestHelper::getOpcode(cpu)) << "" << std::endl;
         // ---------------------------------------------------------
         // CP/M BDOS Shim (The "Magic" Part)
         // ---------------------------------------------------------

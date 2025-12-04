@@ -125,11 +125,60 @@ void Intel8080::buildOpcodeTable()
     pOpcodeLookup[0x7B] = &Intel8080::opMOV_A_E;        // MOV A, E instruction
     pOpcodeLookup[0x7C] = &Intel8080::opMOV_A_H;        // MOV A, H instruction
     pOpcodeLookup[0x7D] = &Intel8080::opMOV_A_L;        // MOV A, L instruction
-    pOpcodeLookup[0x7E] = &Intel8080::opMOV_A_M;        // MOV A, M instruction
+    pOpcodeLookup[0x7E] = &Intel8080::opMOV_A_M;        // MOV to register A data from memory location M contained in HL register pair
     pOpcodeLookup[0x7F] = &Intel8080::opMOV_A_A;        // MOV A, A instruction
 
-    pOpcodeLookup[0xA7] = &Intel8080::opANA_A;         // ANA A instruction
+    pOpcodeLookup[0x80] = &Intel8080::opADD_B;          // ADD B to A
+    pOpcodeLookup[0x81] = &Intel8080::opADD_C;          // ADD C to A
+    pOpcodeLookup[0x82] = &Intel8080::opADD_D;          // ADD D to A
+    pOpcodeLookup[0x83] = &Intel8080::opADD_E;          // ADD E to A
+    pOpcodeLookup[0x84] = &Intel8080::opADD_H;          // ADD H to A
+    pOpcodeLookup[0x85] = &Intel8080::opADD_L;          // ADD L to A
+    pOpcodeLookup[0x86] = &Intel8080::opADD_M;          // ADD M (address in HL register pair) to A
+    pOpcodeLookup[0x87] = &Intel8080::opADD_A;          // ADD A to A
+    pOpcodeLookup[0x88] = &Intel8080::opADC_B;          // ADD with Carry B to A
+    pOpcodeLookup[0x89] = &Intel8080::opADC_C;          // ADD with Carry C to A
+    pOpcodeLookup[0x8A] = &Intel8080::opADC_D;          // ADD with Carry D to A
+    pOpcodeLookup[0x8B] = &Intel8080::opADC_E;          // ADD with Carry E to A
+    pOpcodeLookup[0x8C] = &Intel8080::opADC_H;          // ADD with Carry H to A
+    pOpcodeLookup[0x8D] = &Intel8080::opADC_L;          // ADD with Carry L to A
+    pOpcodeLookup[0x8E] = &Intel8080::opADC_M;          // ADD with Carry M (address in HL register pair) to A
+    pOpcodeLookup[0x8F] = &Intel8080::opADC_A;          // ADD with Carry A to A
 
+    pOpcodeLookup[0x90] = &Intel8080::opSUB_B;          // SUB B from A
+    pOpcodeLookup[0x91] = &Intel8080::opSUB_C;          // SUB C from A
+    pOpcodeLookup[0x92] = &Intel8080::opSUB_D;          // SUB D from A
+    pOpcodeLookup[0x93] = &Intel8080::opSUB_E;          // SUB E from A
+    pOpcodeLookup[0x94] = &Intel8080::opSUB_H;          // SUB H from A
+    pOpcodeLookup[0x95] = &Intel8080::opSUB_L;          // SUB L from A
+    pOpcodeLookup[0x96] = &Intel8080::opSUB_M;          // SUB M
+    pOpcodeLookup[0x97] = &Intel8080::opSUB_A;          // SUB A from A
+
+    pOpcodeLookup[0x98] = &Intel8080::opSBB_B;          // SUB with Borrow B
+    pOpcodeLookup[0x99] = &Intel8080::opSBB_C;          // SUB with Borrow C
+    pOpcodeLookup[0x9A] = &Intel8080::opSBB_D;          // SUB with Borrow D
+    pOpcodeLookup[0x9B] = &Intel8080::opSBB_E;          // SUB with Borrow E
+    pOpcodeLookup[0x9C] = &Intel8080::opSBB_H;          // SUB with Borrow H
+    pOpcodeLookup[0x9D] = &Intel8080::opSBB_L;          // SUB with Borrow L
+    pOpcodeLookup[0x9E] = &Intel8080::opSBB_M;          // SUB with Borrow M
+    pOpcodeLookup[0x9F] = &Intel8080::opSBB_A;          // SUB with Borrow A
+
+    pOpcodeLookup[0xA0] = &Intel8080::opANA_B;          // ANA B instruction
+    pOpcodeLookup[0xA1] = &Intel8080::opANA_C;          // ANA C instruction
+    pOpcodeLookup[0xA2] = &Intel8080::opANA_D;          // ANA D instruction
+    pOpcodeLookup[0xA3] = &Intel8080::opANA_E;          // ANA E instruction
+    pOpcodeLookup[0xA4] = &Intel8080::opANA_H;          // ANA H instruction
+    pOpcodeLookup[0xA5] = &Intel8080::opANA_L;          // ANA L instruction
+    pOpcodeLookup[0xA6] = &Intel8080::opANA_M;          // ANA M instruction
+    pOpcodeLookup[0xA7] = &Intel8080::opANA_A;          // ANA A instruction
+
+    pOpcodeLookup[0xA8] = &Intel8080::opXRA_B;          // XRA B instruction
+    pOpcodeLookup[0xA9] = &Intel8080::opXRA_C;          // XRA C instruction
+    pOpcodeLookup[0xAA] = &Intel8080::opXRA_D;          // XRA D instruction
+    pOpcodeLookup[0xAB] = &Intel8080::opXRA_E;          // XRA E instruction
+    pOpcodeLookup[0xAC] = &Intel8080::opXRA_H;          // XRA H instruction
+    pOpcodeLookup[0xAD] = &Intel8080::opXRA_L;          // XRA L instruction
+    pOpcodeLookup[0xAE] = &Intel8080::opXRA_M;          // XRA M instruction
     pOpcodeLookup[0xAF] = &Intel8080::opXRA_A;          // XRA A instruction
 
     pOpcodeLookup[0xC0] = &Intel8080::opRNZ;            // Return if Not Zero instruction
@@ -635,7 +684,7 @@ void Intel8080::opDAD_H()
 void Intel8080::opINR_L()
 {
     // Opcode: 0x2C         Mnemonic: INR L
-    // Size: 1              Cycles: 5
+    // Size: 1 byte         Cycles: 5
     // Description: Increment the L register
     // Flags: S, Z, AC, P
 
@@ -650,7 +699,7 @@ void Intel8080::opINR_L()
 void Intel8080::opDCR_L()
 {
     // Opcode: 0x2D         Mnemonic: DRC L
-    // Size: 1              Cycles: 5
+    // Size: 1 byte         Cycles: 5
     // Description: Decrement the L register
     // Flags: S, Z, AC, P
 
@@ -661,6 +710,19 @@ void Intel8080::opDCR_L()
 
     spdlog::debug("DCR L -> L: 0x{:02X}", regs.l);
 }
+
+void Intel8080::opMVI_L_D8()
+{
+    // Opcode: 0x2E         Mnemonic: MVI L, D8
+    // Size: 2 bytes        Cycles: 7
+    // Description: Move immediate 8-bit data into L register
+    // Flags: None
+
+    fetchByte();
+    regs.l = byteData;
+    spdlog::debug("MVI L, D8 -> L: 0x{:02X} D8: 0x{:02X}", regs.l, byteData);
+}
+
 
 void Intel8080::opLXI_SP_D16()
 {
@@ -1472,6 +1534,467 @@ void Intel8080::opMOV_A_A()
     spdlog::debug("MOV A,A -> A: 0x{:02X} A: 0x{:02X}", regs.a, regs.a);
 }
 
+void Intel8080::opADD_B()
+{
+    // Opcode: 0x80         Mnemonic: ADD B
+    // Size: 1 byte         Cycles: 4
+    // Description: Add contents of B register to Accumulator
+    // Flags: S, Z, AC, P, CY
+
+    performAdd(regs.b, false);
+    spdlog::debug("ADD B -> A: 0x{:02X} B: 0x{:02X}", regs.a, regs.b);
+}
+
+void Intel8080::opADD_C()
+{
+    // Opcode: 0x81         Mnemonic: ADD C
+    // Size: 1 byte         Cycles: 4
+    // Description: Add contents of C register to Accumulator
+    // Flags: S, Z, AC, P, CY
+
+    performAdd(regs.c, false);
+    spdlog::debug("ADD C -> A: 0x{:02X} C: 0x{:02X}", regs.a, regs.c);
+}
+
+void Intel8080::opADD_D()
+{
+    // Opcode: 0x82         Mnemonic: ADD D
+    // Size: 1 byte         Cycles: 4
+    // Description: Add contents of D register to Accumulator
+    // Flags: S, Z, AC, P, CY
+
+    performAdd(regs.d, false);
+    spdlog::debug("ADD D -> A: 0x{:02X} D: 0x{:02X}", regs.a, regs.d);
+}
+
+void Intel8080::opADD_E()
+{
+    // Opcode: 0x83         Mnemonic: ADD E
+    // Size: 1 byte         Cycles: 4
+    // Description: Add contents of E register to Accumulator
+    // Flags: S, Z, AC, P, CY
+
+    performAdd(regs.e, false);
+    spdlog::debug("ADD E -> A: 0x{:02X} E: 0x{:02X}", regs.a, regs.e);
+}
+
+void Intel8080::opADD_H()
+{
+    // Opcode: 0x84         Mnemonic: ADD H
+    // Size: 1 byte         Cycles: 4
+    // Description: Add contents of H register to Accumulator
+    // Flags: S, Z, AC, P, CY
+
+    performAdd(regs.h, false);
+    spdlog::debug("ADD H -> A: 0x{:02X} H: 0x{:02X}", regs.a, regs.h);
+}
+
+void Intel8080::opADD_L()
+{
+    // Opcode: 0x85         Mnemonic: ADD L
+    // Size: 1 byte         Cycles: 4
+    // Description: Add contents of L register to Accumulator
+    // Flags: S, Z, AC, P, CY
+
+    performAdd(regs.l, false);
+    spdlog::debug("ADD L -> A: 0x{:02X} L: 0x{:02X}", regs.a, regs.l);
+}
+
+void Intel8080::opADD_M()
+{
+    // Opcode: 0x86         Mnemonic: ADD M
+    // Size: 1 byte         Cycles: 7
+    // Description: Add contents of memory location pointed by HL to Accumulator
+    // Flags: S, Z, AC, P, CY
+
+    readByte(regs.hl);
+    performAdd(byteData, false);
+}
+
+void Intel8080::opADD_A()
+{
+    // Opcode: 0x87         Mnemonic: ADD A
+    // Size: 1 byte         Cycles: 4
+    // Description: Add contents of Accumulator to Accumulator
+    // Flags: S, Z, AC, P, CY
+
+    performAdd(regs.a, false);
+    spdlog::debug("ADD A -> A: 0x{:02X} A: 0x{:02X}", regs.a, regs.a);
+}
+
+void Intel8080::opADC_B()
+{
+    // Opcode: 0x88         Mnemonic: ADC B
+    // Size: 1 byte         Cycles: 4
+    // Description: Add contents of B register to Accumulator with carry
+    // Flags: S, Z, AC, P, CY
+
+    performAdd(regs.b, true);
+    spdlog::debug("ADC B -> A: 0x{:02X} B: 0x{:02X}", regs.a, regs.b);
+}
+
+void Intel8080::opADC_C()
+{
+    // Opcode: ox89         Mnemonic: ADC C
+    // Size: 1 byte         Cycles: 4
+    // Description: Add contents of C register to Accumulator with carry
+    // Flags: S, Z, AC, P, CY
+
+    performAdd(regs.c, true);
+    spdlog::debug("ADC C -> A: 0x{:02X} C: 0x{:02X}", regs.a, regs.c);
+}
+
+void Intel8080::opADC_D()
+{
+    // Opcode: 0x8A         Mnemonic: ADC D
+    // Size: 1 byte         Cycles: 4
+    // Description: Add contents of D register to Accumulator with carry
+    // Flags: S, Z, AC, P, CY
+
+    performAdd(regs.d, true);
+    spdlog::debug("ADC D -> A: 0x{:02X} D: 0x{:02X}", regs.a, regs.d);
+}
+
+void Intel8080::opADC_E()
+{
+    // Opcode: 0x8B         Mnemonic: ADC H
+    // Size: 1 byte         Cycles: 4
+    // Description: Add contents of E register to Accumulator with carry
+    // Flags: S, Z, AC, P, CY
+
+    performAdd(regs.e, true);
+    spdlog::debug("ADC E -> A: 0x{:02X} E: 0x{:02X}", regs.a, regs.e);
+}
+
+void Intel8080::opADC_H()
+{
+    // Opcode: 0x8C         Mnemonic: ADC H
+    // Size: 1 byte         Cycles: 4
+    // Description: Add contents of H register to Accumulator with carry
+    // Flags: S, Z, AC, P, CY
+
+    performAdd(regs.h, true);
+    spdlog::debug("ADC H -> A: 0x{:02X} H: 0x{:02X}", regs.a, regs.h);
+}
+
+void Intel8080::opADC_L()
+{
+    // Opcode: 0x8D         Mnemonic: ADC L
+    // Size: 1 byte         Cycles: 4
+    // Description: Add contents of L register to Accumulator with carry
+    // Flags: S, Z, AC, P, CY
+
+    performAdd(regs.l, true);
+    spdlog::debug("ADC L -> A: 0x{:02X} L: 0x{:02X}", regs.a, regs.l);
+}
+
+void Intel8080::opADC_M()
+{
+    // Opcode: 0x8E         Mnemonic: ADC M
+    // Size: 1 byte         Cycles: 7
+    // Description: Add contents of byte in memory location contained in HL register to A with carry
+    // Flags: S, Z, AC, P, CY
+
+    readByte(regs.hl);
+    performAdd(byteData, true);
+    spdlog::debug("ADC M -> A: 0x{:02X} [0x{:04X}] = 0x{:02X}", regs.a, regs.hl, byteData);
+}
+
+void Intel8080::opADC_A()
+{
+    // Opcode: 0x8F         Mnemonic: ADC A
+    // Size: 1 byte         Cycles: 4
+    // Description: Add contents of Accumulator to Accumulator with carry
+    // Flags: S, Z, AC, P, CY
+
+    performAdd(regs.a, true);
+    spdlog::debug("ADC A -> A: 0x{:02X} A: 0x{:02X}", regs.a, regs.a);
+}
+
+void Intel8080::opSUB_B()
+{
+    // Opcode: 0x90         Mnemonic: SUB B
+    // Size: 1 byte         Cycles: 4
+    // Description: Subtract contents of B register from Accumulator
+    // Flags: S, Z, AC, P, CY
+
+    performSub(regs.b, false);
+    spdlog::debug("SUB B -> A: 0x{:02X} B: 0x{:02X}", regs.a, regs.b);
+}
+
+void Intel8080::opSUB_C()
+{
+    // Opcode: 0x91         Mnemonic: SUB C
+    // Size: 1 byte         Cycles: 4
+    // Description: Subtract contents of C register from Accumulator
+    // Flags: S, Z, AC, P, CY
+
+    performSub(regs.c, false);
+    spdlog::debug("SUB C -> A: 0x{:02X} C: 0x{:02X}", regs.a, regs.c);
+}
+
+void Intel8080::opSUB_D()
+{
+    // Opcode: 0x92         Mnemonic: SUB D
+    // Size: 1 byte         Cycles: 4
+    // Description: Subtract contents of D register from Accumulator
+    // Flags: S, Z, AC, P, CY
+
+    performSub(regs.d, false);
+    spdlog::debug("SUB D -> A: 0x{:02X} D: 0x{:02X}", regs.a, regs.d);
+}
+
+void Intel8080::opSUB_E()
+{
+    // Opcode: 0x93         Mnemonic: SUB E
+    // Size: 1 byte         Cycles: 4
+    // Description: Subtract contents of E register from Accumulator
+    // Flags: S, Z, AC, P, CY
+
+    performSub(regs.e, false);
+    spdlog::debug("SUB E -> A: 0x{:02X} E: 0x{:02X}", regs.a, regs.e);
+}
+
+void Intel8080::opSUB_H()
+{
+    // Opcode: 0x94         Mnemonic: SUB H
+    // Size: 1 byte         Cycles: 4
+    // Description: Subtract contents of H register from Accumulator
+    // Flags: S, Z, AC, P, CY
+
+    performSub(regs.h, false);
+    spdlog::debug("SUB H -> A: 0x{:02X} H: 0x{:02X}", regs.a, regs.h);
+}
+
+void Intel8080::opSUB_L()
+{
+    // Opcode: 0x95         Mnemonic: SUB L
+    // Size: 1 byte         Cycles: 4
+    // Description: Subtract contents of L register from Accumulator
+    // Flags: S, Z, AC, P, CY
+
+    performSub(regs.l, false);
+    spdlog::debug("SUB L -> A: 0x{:02X} L: 0x{:02X}", regs.a, regs.l);
+}
+
+void Intel8080::opSUB_M()
+{
+    // Opcode: 0x96         Mnemonic: SUB M
+    // Size: 1 byte         Cycles: 7
+    // Description: Subtract contents of memory location pointed by HL from Accumulator 
+    // Flags: S, Z, AC, P, CY
+
+    readByte(regs.hl);
+    performSub(byteData, false);
+    spdlog::debug("SUB M -> A: 0x{:02X} [0x{:04X}] = 0x{:02X}", regs.a, regs.hl, byteData);
+}
+
+void Intel8080::opSUB_A()
+{
+    // Opcode: 0x97         Mnemonic: SUB A
+    // Size: 1 byte         Cycles: 4
+    // Description: Subtract contents of Accumulator from Accumulator
+    // Flags: S, Z, AC, P, CY
+
+    performSub(regs.a, false);
+    spdlog::debug("SUB A -> A: 0x{:02X} A: 0x{:02X}", regs.a, regs.a);
+}
+
+void Intel8080::opSBB_B()
+{
+    // Opcode: 0x98         Mnemonic: SBB B
+    // Size: 1 byte         Cycles: 4
+    // Description: Subtract contents of register B from Accumulator with borrow
+    // Flags: S, Z, AC, P, CY
+
+    performSub(regs.b, true);
+    spdlog::debug("SBB B -> A: 0x{:02X} B: 0x{:02X}", regs.a, regs.b);
+}
+
+void Intel8080::opSBB_C()
+{
+    // Opcode: 0x99         Mnemonic: SBB C
+    // Size: 1 byte         Cycles: 4
+    // Description: Subtract contents of register C from Accumulator with borrow
+    // Flags: S, Z, AC, P, CY
+
+    performSub(regs.c, true);
+    spdlog::debug("SBB C -> A: 0x{:02X} C: 0x{:02X}", regs.a, regs.c);
+}
+
+void Intel8080::opSBB_D()
+{
+    // Opcode: 0x9A         Mnemonic: SBB D
+    // Size: 1 byte         Cycles: 4
+    // Description: Subtract contents of register D from Accumulator with borrow
+    // Flags: S, Z, AC, P, CY
+
+    performSub(regs.d, true);
+    spdlog::debug("SBB D -> A: 0x{:02X} D: 0x{:02X}", regs.a, regs.d);
+}
+
+void Intel8080::opSBB_E()
+{
+    // Opcode: 0x9B         Mnemonic: SBB E
+    // Size: 1 byte         Cycles: 4
+    // Description: Subtract contents of register E from Accumulator with borrow
+    // Flags: S, Z, AC, P, CY
+
+    performSub(regs.e, true);
+    spdlog::debug("SBB E -> A: 0x{:02X} E: 0x{:02X}", regs.a, regs.e);
+}
+
+void Intel8080::opSBB_H()
+{
+    // Opcode: 0x9C         Mnemonic: SBB H
+    // Size: 1 byte         Cycles: 4
+    // Description: Subtract contents of register H from Accumulator with borrow
+    // Flags: S, Z, AC, P, CY
+
+    performSub(regs.h, true);
+    spdlog::debug("SBB H -> A: 0x{:02X} H: 0x{:02X}", regs.a, regs.h);
+}
+
+void Intel8080::opSBB_L()
+{
+    // Opcode: 0x9D         Mnemonic: SBB L
+    // Size: 1 byte         Cycles: 4
+    // Description: Subtract contents of register L from Accumulator with borrow
+    // Flags: S, Z, AC, P, CY
+
+    performSub(regs.l, true);
+    spdlog::debug("SBB L -> A: 0x{:02X} L: 0x{:02X}", regs.a, regs.l);
+}
+
+void Intel8080::opSBB_M()
+{
+    // Opcode: 0x9E         Mnemonic: SBB M
+    // Size: 1 byte         Cycles: 7
+    // Description: Subtract contens of memory location address contained in HL register pair from Accumulator with Borrow
+    // Flags: S, Z, AC, P, CY
+
+    readByte(regs.hl);
+    performSub(byteData, true);
+    spdlog::debug("SBB M -> A: 0x{:02X} [0x{:04X}] = 0x{:02X}", regs.a, regs.hl, byteData);
+}
+
+void Intel8080::opSBB_A()
+{
+    // Opcode: 0x9F         Mnemonic: SBB A
+    // Size: 1 byte         Cycles: 4
+    // Description: Subtract Accumulator from Accumulator with Borrow
+    // Flags: S, Z, AC, P, CY
+
+    performSub(regs.a, true);
+    spdlog::debug("SBB A -> A: 0x{:02X} A: 0x{:02X}", regs.a, regs.a);
+}
+
+void Intel8080::opANA_B()
+{
+    // Opcode: 0xA0         Mnemonic: ANA B
+    // Size: 1 byte         Cycles: 4
+    // Description: Bitwise AND of Accumulator with register B
+    // Flags: S, Z, AC, P, CY
+
+    BYTE result = regs.a & regs.b;
+    regFlagsSZP(result);
+    regs.f.cy = 0;
+    regs.f.ac = 0;
+    regs.a = result;
+    spdlog::debug("ANA B -> A: 0x{:02X}", regs.a);
+}
+
+void Intel8080::opANA_C()
+{
+    // Opcode: 0xA1         Mnemonic: ANA C
+    // Size: 1 byte         Cycles: 4
+    // Description: Bitwise AND of Accumulator with register C
+    // Flags: S, Z, AC, P, CY
+
+    BYTE result = regs.a & regs.c;
+    regFlagsSZP(result);
+    regs.f.cy = 0;
+    regs.f.ac = 0;
+    regs.a = result;
+    spdlog::debug("ANA C -> A: 0x{:02X}", regs.a);
+}
+
+void Intel8080::opANA_D()
+{
+    // Opcode: 0xA2         Mnemonic: ANA D
+    // Size: 1 byte         Cycles: 4
+    // Description: Bitwise AND of Accumulator with register D
+    // Flags: S, Z, AC, P, CY
+
+    BYTE result = regs.a & regs.d;
+    regFlagsSZP(result);
+    regs.f.cy = 0;
+    regs.f.ac = 0;
+    regs.a = result;
+    spdlog::debug("ANA D -> A: 0x{:02X}", regs.a);
+}
+
+void Intel8080::opANA_E()
+{
+    // Opcode: 0xA3         Mnemonic: ANA E
+    // Size: 1 byte         Cycles: 4
+    // Description: Bitwise AND of Accumulator with register E
+    // Flags: S, Z, AC, P, CY
+
+    BYTE result = regs.a & regs.e;
+    regFlagsSZP(result);
+    regs.f.cy = 0;
+    regs.f.ac = 0;
+    regs.a = result;
+    spdlog::debug("ANA E -> A: 0x{:02X}", regs.a);
+}
+
+void Intel8080::opANA_H()
+{
+    // Opcode: 0xA4         Mnemonic: ANA H
+    // Size: 1 byte         Cycles: 4
+    // Description: Bitwise AND of Accumulator with register H
+    // Flags: S, Z, AC, P, CY
+
+    BYTE result = regs.a & regs.h;
+    regFlagsSZP(result);
+    regs.f.cy = 0;
+    regs.f.ac = 0;
+    regs.a = result;
+    spdlog::debug("ANA H -> A: 0x{:02X}", regs.a);
+}
+
+void Intel8080::opANA_L()
+{
+    // Opcode: 0xA5         Mnemonic: ANA L
+    // Size: 1 byte         Cycles: 4
+    // Description: Bitwise AND of Accumulator with register L
+    // Flags: S, Z, AC, P, CY
+
+    BYTE result = regs.a & regs.l;
+    regFlagsSZP(result);
+    regs.f.cy = 0;
+    regs.f.ac = 0;
+    regs.a = result;
+    spdlog::debug("ANA L -> A: 0x{:02X}", regs.a);
+}
+
+void Intel8080::opANA_M()
+{
+    // Opcode: 0xA6         Mnemonic: ANA M
+    // Size: 1 byte         Cycles: 7
+    // Description: Bitwise AND of Accumulator with contents of memory location pointed by HL
+    // Flags: S, Z, AC, P, CY
+
+    readByte(regs.hl);
+    BYTE result = regs.a & byteData;
+    regFlagsSZP(result);
+    regs.f.cy = 0;
+    regs.f.ac = 0;
+    regs.a = result;
+    spdlog::debug("ANA M -> A: 0x{:02X} [0x{:04X}] = 0x{:02X}", regs.a, regs.hl, byteData);
+}
+
 void Intel8080::opANA_A()
 {
     // Opcode: 0xA7         Mnemonic: ANA A
@@ -1479,10 +2002,117 @@ void Intel8080::opANA_A()
     // Description: Bitwise AND of the accumulator with itself
     // Flags: S, Z, AC, P, CY
 
+    BYTE result = regs.a & regs.a;
     regFlagsSZP(regs.a & regs.a);
     regs.f.cy = 0;
     regs.f.ac = 0;
+    regs.a = result;
     spdlog::debug("ANA A -> A: 0x{:02X}", regs.a);
+}
+
+void Intel8080::opXRA_B()
+{
+    // Opcode: 0xA8         Mnemonic: XRA B
+    // Size: 1 byte         Cycles: 4
+    // Description: Bitwise XOR operation of Accumulator and register B
+    // Flags: S, Z, AC, P, CY
+
+    BYTE result = regs.a ^ regs.b;
+    regFlagsSZP(result);
+    regs.f.cy = 0;
+    regs.f.ac = 0;
+    regs.a = result;
+    spdlog::debug("XRA B -> A: 0x{:02X}", regs.a);
+}
+
+void Intel8080::opXRA_C()
+{
+    // Opcode: 0xA9         Mnemonic: XRA C
+    // Size: 1 byte         Cycles: 4
+    // Description: Bitwise XOR operation of Accumulator and register B
+    // Flags: S, Z, AC, P, CY
+
+    BYTE result = regs.a ^ regs.c;
+    regFlagsSZP(result);
+    regs.f.cy = 0;
+    regs.f.ac = 0;
+    regs.a = result;
+    spdlog::debug("XRA C -> A: 0x{:02X}", regs.a);
+}
+
+void Intel8080::opXRA_D()
+{
+    // Opcode: 0xAA         Mnemonic: XRA D
+    // Size: 1 byte         Cycles: 4
+    // Description: Bitwise XOR operation of Accumulator and register D
+
+    BYTE result = regs.a ^ regs.d;
+    regFlagsSZP(result);
+    regs.f.cy = 0;
+    regs.f.ac = 0;
+    regs.a = result;
+    spdlog::debug("XRA D -> A: 0x{:02X}", regs.a);
+}
+
+void Intel8080::opXRA_E()
+{
+    // Opcode: 0xAB         Mnemonic: XRA E
+    // Size: 1 byte         Cycles: 4
+    // Description: Bitwise XOR operation of Accumulator and register E
+    // Flags: S, Z, AC, P, CY
+
+    BYTE result = regs.a ^ regs.e;
+    regFlagsSZP(result);
+    regs.f.cy = 0;
+    regs.f.ac = 0;
+    regs.a = result;
+    spdlog::debug("XRA E -> A: 0x{:02X}", regs.a);
+}
+
+void Intel8080::opXRA_H()
+{
+    // Opcode: 0xAC         Mnemonic: XRA H
+    // Size: 1 byte         Cycles: 4
+    // Description: Bitwise XOR of Accumulator and register H
+    // Flags: S, Z, AC, P, CY
+
+    BYTE result = regs.a ^ regs.h;
+    regFlagsSZP(result);
+    regs.f.cy = 0;
+    regs.f.ac = 0;
+    regs.a = result;
+    spdlog::debug("XRA H -> A: 0x{:02X}", regs.a);
+}
+
+void Intel8080::opXRA_L()
+{
+    // Opcode: 0xAD         Mnemonic: XRA L
+    // Size: 1 byte         Cycles: 4
+    // Description: Bitwise XOR of Accumulator and register L
+    // Flags: S, Z, AC, P, CY
+
+    BYTE result = regs.a ^ regs.l;
+    regFlagsSZP(result);
+    regs.f.cy = 0;
+    regs.f.ac = 0;
+    regs.a = result;
+    spdlog::debug("XRA L -> A: 0x{:02X}", regs.a);
+}
+
+void Intel8080::opXRA_M()
+{
+    // Opcode: 0xAE         Mnemonic: XRA M
+    // Size: 1 byte         Cycles: 4
+    // Description: Bitwise XOR of Accumulator and contents of memory location pointed by HL
+    // Flags: S, Z, AC, P, CY
+
+    readByte(regs.hl);
+    BYTE result = regs.a ^ byteData;
+    regFlagsSZP(result);
+    regs.f.cy = 0;
+    regs.f.ac = 0;
+    regs.a = result;
+    spdlog::debug("XRA M -> A: 0x{:02X} [0x{:04X}] = 0x{:02X}", regs.a, regs.hl, byteData);
 }
 
 void Intel8080::opXRA_A()
