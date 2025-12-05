@@ -322,7 +322,7 @@ void Intel8080::opILLEGAL()
     spdlog::debug("ILLEGAL");
     printf("Illegal opcode executed at address 0x%04X\n", regs.pc - 1);
     printState();
-    //throw std::runtime_error("Illegal opcode executed");
+    throw std::runtime_error("Illegal opcode executed");
 }
 
 void Intel8080::opNOP()
@@ -434,6 +434,7 @@ void Intel8080::opDAD_B()
 
     WORD result = regs.hl + regs.bc;
     regFlagsDoubleCarry(regs.hl, regs.bc);
+    regs.hl = result;
     spdlog::debug("DAD B -> HL: 0x{:04X} BC: 0x{:04X} -> 0x{:04X}", regs.hl, regs.bc, result);
 }
 
