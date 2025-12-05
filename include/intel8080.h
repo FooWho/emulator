@@ -100,20 +100,20 @@ class Intel8080 : public CPU {
 
     void opDAD_D();         // 0x19
     void opLDAX_D();        // 0x1A
-    
+    void opDCX_D();         // 0x1B
     void opINR_E();         // 0x1C
     void opDCR_E();         // 0x1D
     void opMVI_E_D8();      // 0x1E
     void opRAR();           // 0x1F
     void opLXI_H_D16();     // 0x21
-
+    void opSHLD();          // 0x22
     void opINX_H();         // 0x23
     void opINR_H();         // 0x24
     void opDCR_H();         // 0x25
     void opMVI_H_D8();      // 0x26
 
     void opDAD_H();         // 0x29
-
+    void opLHLD();          // 0x2A
     void opDCX_H();         // 0x2B
     void opINR_L();         // 0x2C
     void opDCR_L();         // 0x2D
@@ -259,6 +259,24 @@ class Intel8080 : public CPU {
     void opXRA_L();         // 0xAD
     void opXRA_M();         // 0xAE
     void opXRA_A();         // 0xAF
+
+    void opORA_B();         // 0xB0
+    void opORA_C();         // 0xB1
+    void opORA_D();         // 0xB2
+    void opORA_E();         // 0xB3
+    void opORA_H();         // 0xB4
+    void opORA_L();         // 0xB5
+    void opORA_M();         // 0xB6
+    void opORA_A();         // 0xB7
+
+    void opCMP_B();         // 0xB8
+    void opCMP_C();         // 0xB9
+    void opCMP_D();         // 0xBA
+    void opCMP_E();         // 0xBB
+    void opCMP_H();         // 0xBC
+    void opCMP_L();         // 0xBD
+    void opCMP_M();         // 0xBE
+    void opCMP_A();         // 0xBF
 
     void opRNZ();           // 0xC0
     void opPOP_B();         // 0xC1
