@@ -125,6 +125,7 @@ class Intel8080 : public CPU {
     void opINR_M();         // 0x34
     void opDCR_M();         // 0x35
     void opMVI_M_D8();      // 0x36
+    void opSTC();           // 0x37
 
     void opLDA();           // 0x3A
 
@@ -132,7 +133,7 @@ class Intel8080 : public CPU {
     void opDCR_A();         // 0x3D
 
     void opMVI_A_D8();      // 0x3E
-
+    void opCMC();           // 0x3F
     void opMOV_B_B();       // 0x40
     void opMOV_B_C();       // 0x41
     void opMOV_B_D();       // 0x42
@@ -314,7 +315,7 @@ class Intel8080 : public CPU {
     void opRPO();           // 0xE0
     void opPOP_H();         // 0xE1
     void opJPO();           // 0xE2
-
+    void opXTHL();          // 0xE3
     void opCPO();           // 0xE4
     void opPUSH_H();        // 0xE5
     void opANI_D8();        // 0xE6

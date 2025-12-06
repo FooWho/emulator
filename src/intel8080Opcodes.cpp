@@ -47,20 +47,23 @@ void Intel8080::buildOpcodeTable()
     pOpcodeLookup[0x2C] = &Intel8080::opINR_L;          // Increment L instruction
     pOpcodeLookup[0x2D] = &Intel8080::opDCR_L;          // Decrement L instruction
     pOpcodeLookup[0x2E] = &Intel8080::opMVI_L_D8;       // MoVe Immediate byte data into register L
+    pOpcodeLookup[0x2F] = &Intel8080::opCMA;            // CoMplement A
+    pOpcodeLookup[0x30] = &Intel8080::opNOP;            // *NOP instruction
     pOpcodeLookup[0x31] = &Intel8080::opLXI_SP_D16;     // LXI SP,D16 instruction
     pOpcodeLookup[0x32] = &Intel8080::opSTA;            // STA instruction
 
     pOpcodeLookup[0x34] = &Intel8080::opINR_M;          // INcrement Memory location pointed by HL register pair    
     pOpcodeLookup[0x35] = &Intel8080::opDCR_M;          // DeCrement Memory location pointed by HL register pair
     pOpcodeLookup[0x36] = &Intel8080::opMVI_M_D8;       // MVI M,D8 instruction
-
+    pOpcodeLookup[0x37] = &Intel8080::opSTC;            // Set Carry Flag instruction
+    pOpcodeLookup[0x38] = &Intel8080::opNOP;            // *NOP instruction
     pOpcodeLookup[0x3A] = &Intel8080::opLDA;            // LDA instruction
 
     pOpcodeLookup[0x3C] = &Intel8080::opINR_A;          // INR A instruction
     pOpcodeLookup[0x3D] = &Intel8080::opDCR_A;          // DCR A instruction
 
     pOpcodeLookup[0x3E] = &Intel8080::opMVI_A_D8;       // MOV M, A instruction
-
+    pOpcodeLookup[0x3F] = &Intel8080::opCMC;            // CoMplement Carry instruction
     pOpcodeLookup[0x40] = &Intel8080::opMOV_B_B;        // MOV B, B instruction
     pOpcodeLookup[0x41] = &Intel8080::opMOV_B_C;        // MOV B, C instruction
     pOpcodeLookup[0x42] = &Intel8080::opMOV_B_D;        // MOV B, D instruction
@@ -239,7 +242,7 @@ void Intel8080::buildOpcodeTable()
     pOpcodeLookup[0xE0] = &Intel8080::opRPO;            // Return if Parity Odd instruction
     pOpcodeLookup[0xE1] = &Intel8080::opPOP_H;          // POP H instruction
     pOpcodeLookup[0xE2] = &Intel8080::opJPO;            // Jump if Parity Odd instruction
-
+    pOpcodeLookup[0xE3] = &Intel8080::opXTHL;           // Exchange SP/HL
     pOpcodeLookup[0XE4] = &Intel8080::opCPO;            // Call if Parity Odd instruction
     pOpcodeLookup[0xE5] = &Intel8080::opPUSH_H;         // PUSH H instruction
     pOpcodeLookup[0xE6] = &Intel8080::opANI_D8;         // ANI D8 instruction
@@ -829,6 +832,17 @@ void Intel8080::opMVI_L_D8()
     spdlog::debug("MVI L, D8 -> L: 0x{:02X} D8: 0x{:02X}", regs.l, byteData);
 }
 
+void Intel8080::opCMA()
+{
+    // Opcode: 0x2F         Mnemonic: CMA
+    // Size: 1              Cycles: 4
+    // Description: Complement the Accumulator
+    // Flags: None
+
+    regs.a = !regs.a;
+    spdlog::debug("CMA -> A: 0x{:02X}", regs.a);
+}
+
 
 void Intel8080::opLXI_SP_D16()
 {
@@ -897,6 +911,17 @@ void Intel8080::opMVI_M_D8()
     writeByte(regs.hl, byteData);
 }
 
+void Intel8080::opSTC()
+{
+    // Opcode: 0x37         Mnemonic: STC
+    // Size: 1 byte         Cycles: 4
+    // Description: Set the carry flag
+    // Flags: CY
+
+    regs.f.cy = 1;
+    spdlog::debug("STC -> CY: 1");
+}
+
 void Intel8080::opLDA()
 {
     // Opcode: 0x3A         Mnemonic: LDA
@@ -950,6 +975,16 @@ void Intel8080::opMVI_A_D8()
     fetchByte();
     regs.a = byteData;
     spdlog::debug("MVI A, D8 -> A: 0x{:02X} D8: 0x{:02X}", regs.a, byteData);
+}
+
+void Intel8080::opCMC()
+{
+    // Opcode: 0x3F         Mnemonic: CMC
+    // Size: 1              Cycles: 4
+    // Description: Complement the carry flag
+    // Flags: CY
+
+    regs.f.cy = !regs.f.cy;
 }
 
 void Intel8080::opMOV_B_B()
@@ -2817,6 +2852,19 @@ void Intel8080::opJPO()
     } else {
         spdlog::debug("JPO not taken -> PC remains: 0x{:04X}", regs.pc);
     }
+}
+
+void Intel8080::opXTHL()
+{
+    // Opcode: 0xE3         Mnemonic: XTHL
+    // Size: 1              Cycles: 18
+    // Exchange contents of memory word pointed by SP are exchanged with contents of extended register HL
+    // Flags: None  
+
+    readWord(regs.sp);
+    WORD tmp = regs.hl;
+    regs.hl = wordData;
+    writeWord(regs.sp, tmp);
 }
 
 void Intel8080::opCPO()

@@ -52,6 +52,9 @@ int main(int argc, char *argv[])
 
     bool finished = false;
     while (!finished) {
+        if (Intel8080TestHelper::getRegisterPC(cpu) == 0x0689) {
+            int x = 5;
+        }
         cpu.step();
         //std::cout << "Did " << (int)(Intel8080TestHelper::getOpcode(cpu)) << "" << std::endl;
         // ---------------------------------------------------------
