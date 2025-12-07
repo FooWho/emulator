@@ -22,6 +22,7 @@ void Intel8080::buildOpcodeTable()
     pOpcodeLookup[0x0E] = &Intel8080::opMVI_C_D8;       // MoVe Immediate byte data into register C
     pOpcodeLookup[0x0F] = &Intel8080::opRRC;            // Rotate accumulator Right with Carry
 
+    pOpcodeLookup[0x10] = &Intel8080::opNOP;            // *NOP instruction
     pOpcodeLookup[0x11] = &Intel8080::opLXI_D_D16;      // LXI D,D16 instruction
     pOpcodeLookup[0x12] = &Intel8080::opSTAX_D;         // STAX D instruction
     pOpcodeLookup[0x13] = &Intel8080::opINX_D;          // INX D instruction
@@ -34,6 +35,9 @@ void Intel8080::buildOpcodeTable()
     pOpcodeLookup[0x1C] = &Intel8080::opINR_E;          // INR E instruction
     pOpcodeLookup[0x1D] = &Intel8080::opDCR_E;          // DCR E instruction
     pOpcodeLookup[0x1E] = &Intel8080::opMVI_E_D8;       // MVI E,D8 instruction
+
+
+    pOpcodeLookup[0x20] = &Intel8080::opNOP;            // *NOP instruction
     pOpcodeLookup[0x21] = &Intel8080::opLXI_H_D16;      // LXI H,D16 instruction
     pOpcodeLookup[0x22] = &Intel8080::opSHLD;           // SHLD instruction
     pOpcodeLookup[0x23] = &Intel8080::opINX_H;          // INX H instruction
@@ -48,6 +52,7 @@ void Intel8080::buildOpcodeTable()
     pOpcodeLookup[0x2D] = &Intel8080::opDCR_L;          // Decrement L instruction
     pOpcodeLookup[0x2E] = &Intel8080::opMVI_L_D8;       // MoVe Immediate byte data into register L
     pOpcodeLookup[0x2F] = &Intel8080::opCMA;            // CoMplement A
+
     pOpcodeLookup[0x30] = &Intel8080::opNOP;            // *NOP instruction
     pOpcodeLookup[0x31] = &Intel8080::opLXI_SP_D16;     // LXI SP,D16 instruction
     pOpcodeLookup[0x32] = &Intel8080::opSTA;            // STA instruction
@@ -61,9 +66,9 @@ void Intel8080::buildOpcodeTable()
 
     pOpcodeLookup[0x3C] = &Intel8080::opINR_A;          // INR A instruction
     pOpcodeLookup[0x3D] = &Intel8080::opDCR_A;          // DCR A instruction
-
     pOpcodeLookup[0x3E] = &Intel8080::opMVI_A_D8;       // MOV M, A instruction
     pOpcodeLookup[0x3F] = &Intel8080::opCMC;            // CoMplement Carry instruction
+    
     pOpcodeLookup[0x40] = &Intel8080::opMOV_B_B;        // MOV B, B instruction
     pOpcodeLookup[0x41] = &Intel8080::opMOV_B_C;        // MOV B, C instruction
     pOpcodeLookup[0x42] = &Intel8080::opMOV_B_D;        // MOV B, D instruction
