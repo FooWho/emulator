@@ -111,6 +111,7 @@ class Intel8080 : public CPU {
     void opINR_H();         // 0x24
     void opDCR_H();         // 0x25
     void opMVI_H_D8();      // 0x26
+    void opDAA();           // 0x27
 
     void opDAD_H();         // 0x29
     void opLHLD();          // 0x2A

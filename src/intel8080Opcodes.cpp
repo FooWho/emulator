@@ -40,7 +40,7 @@ void Intel8080::buildOpcodeTable()
     pOpcodeLookup[0x24] = &Intel8080::opINR_H;          // INR H instruction
     pOpcodeLookup[0x25] = &Intel8080::opDCR_H;          // DCR H instruction
     pOpcodeLookup[0x26] = &Intel8080::opMVI_H_D8;       // MVI H,D8 instruction
-
+    pOpcodeLookup[0x27] = &Intel8080::opDAA;            // DAA instruction
     pOpcodeLookup[0x29] = &Intel8080::opDAD_H;          // DAD H instruction
     pOpcodeLookup[0x2A] = &Intel8080::opLHLD;           // LHLD instruction
     pOpcodeLookup[0x2B] = &Intel8080::opDCX_H;          // DCX H instruction
@@ -422,7 +422,7 @@ void Intel8080::opRLC()
     // Description: Rotate Accumulator Left with Carry
     // Flags: CY
 
-    BYTE result = regs.a & 0x01;
+    BYTE result = regs.a & 0x80;
     regs.a = (regs.a << 1) | (result >> 7);
     regs.f.cy = result & 0xFF ? 1 : 0;
     spdlog::debug("RRC -> A: 0x{:02X}", regs.a);
@@ -753,6 +753,35 @@ void Intel8080::opMVI_H_D8()
     spdlog::debug("MVI H, D8 -> H: 0x{:02X} D8: 0x{:02X}", regs.h, byteData);
 }
 
+void Intel8080::opDAA()
+{
+    // Opcode: 0x27         Mnemonic: DAA
+    // Size: 1              Cycles: 4
+    // Description: Decimal Adjust Accumulator
+    // Flags: S, Z, AC, P, CY
+
+    //BYTE correction = 0;
+    bool setCarry = false;
+
+    if ((regs.a & 0x0F) > 9 || regs.f.ac) {
+        regs.a += 0x06;
+        regs.f.ac = 1;
+    }
+    if ((regs.a >> 4) > 9 || regs.f.cy) {
+        regs.a += 0x60;
+        regs.f.cy = 1;
+    }
+
+    //WORD result = regs.a + correction;
+
+    regFlagsSZP(regs.a);
+    //regFlagsAuxCarry(regs.a, correction, result);
+    //regs.f.cy = setCarry ? 1 : 0;
+    //regs.a = result & 0xFF;
+
+    spdlog::debug("DAA -> A: 0x{:02X}", regs.a);
+}
+
 void Intel8080::opDAD_H()
 {
     // Opcode: 0x29         Mnemonic: DAD H
@@ -839,7 +868,7 @@ void Intel8080::opCMA()
     // Description: Complement the Accumulator
     // Flags: None
 
-    regs.a = !regs.a;
+    regs.a = ~regs.a;
     spdlog::debug("CMA -> A: 0x{:02X}", regs.a);
 }
 
