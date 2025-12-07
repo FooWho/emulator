@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
     //bus.attachMemory(&rom, 0x0000, 0x1FFF);
     bus.attachMemory(&ram, 0x0000, 0xFFFE); 
 
-    std::ifstream file("/home/jasonelison/Workspace/TST8080.BIN", std::ios::binary | std::ios::ate);
+    std::ifstream file("/home/jelison/Workspace/TST8080.BIN", std::ios::binary | std::ios::ate);
 
     std::streamsize size = file.tellg();
     file.seekg(0, std::ios::beg);
@@ -52,11 +52,7 @@ int main(int argc, char *argv[])
 
     bool finished = false;
     while (!finished) {
-        if (Intel8080TestHelper::getRegisterPC(cpu) == 0x0689) {
-            int x = 5;
-        }
         cpu.step();
-        //std::cout << "Did " << (int)(Intel8080TestHelper::getOpcode(cpu)) << "" << std::endl;
         // ---------------------------------------------------------
         // CP/M BDOS Shim (The "Magic" Part)
         // ---------------------------------------------------------

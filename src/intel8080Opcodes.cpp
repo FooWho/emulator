@@ -425,7 +425,7 @@ void Intel8080::opRLC()
     BYTE result = regs.a & 0x80;
     regs.a = (regs.a << 1) | (result >> 7);
     regs.f.cy = result & 0xFF ? 1 : 0;
-    spdlog::debug("RRC -> A: 0x{:02X}", regs.a);
+    spdlog::debug("RLC -> A: 0x{:02X}", regs.a);
 }
 
 void Intel8080::opDAD_B()
