@@ -9,6 +9,7 @@
 #include "rom.h"
 #include "ram.h"
 #include "bus.h"
+#include "spaceInvaders.h"
 #include "intel8080TestHelper.h"
 
 
@@ -16,11 +17,23 @@
 
 int main(int argc, char *argv[])
 {
-    
+    SpaceInvaders game;
+
+    game.Run();
+
+
+
+
+
+
+
+    /*
     Intel8080 cpu;
     Bus bus;
     //Rom rom(0x2000); // 8KB ROM
     Ram ram(0xFFFF); // 8KB RAM
+
+    SpaceInvaders game;
 
     cpu.reset();
 
@@ -28,7 +41,7 @@ int main(int argc, char *argv[])
     //bus.attachMemory(&rom, 0x0000, 0x1FFF);
     bus.attachMemory(&ram, 0x0000, 0xFFFE); 
 
-    std::ifstream file("/home/jasonelison/Workspace/TST8080.BIN", std::ios::binary | std::ios::ate);
+    std::ifstream file("/home/jelison/Workspace/TST8080.BIN", std::ios::binary | std::ios::ate);
 
     std::streamsize size = file.tellg();
     file.seekg(0, std::ios::beg);
@@ -89,7 +102,7 @@ int main(int argc, char *argv[])
     }
 
     return 0;
-
+    */
     
 
     /*

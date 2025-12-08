@@ -26,6 +26,7 @@ add_executable(Intel8080
     src/rom.cpp
     src/ram.cpp
     src/bus.cpp
+    src/spaceInvaders.cpp
 )
 target_include_directories(Intel8080 PRIVATE 
     ${CMAKE_CURRENT_SOURCE_DIR}/include

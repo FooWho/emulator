@@ -14,6 +14,7 @@ Intel8080::Intel8080()
     buildOpcodeTable();
     bus = nullptr;
 }
+
 void Intel8080::reset()
 {
     wordData = 0;
