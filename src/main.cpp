@@ -11,22 +11,19 @@
 #include "spaceInvaders.h"
 #include "intel8080TestHelper.h"
 
-
-
-
 int main(int argc, char *argv[])
 {
-    SpaceInvaders game;
+    //SpaceInvaders game;
 
-    game.Run();
+    //game.Run();
 
-    /*
+    
     Intel8080 cpu;
     Bus bus;
     //Rom rom(0x2000); // 8KB ROM
     Ram ram(0xFFFF); // 8KB RAM
 
-    cpu.attachBus(bus.attachCpu(&cpu));
+    cpu.attachBus(&bus);
     //bus.attachMemory(&rom, 0x0000, 0x1FFF);
     bus.attachMemory(&ram, 0x0000, 0xFFFE); 
 
@@ -91,6 +88,4 @@ int main(int argc, char *argv[])
     }
 
     return 0;
-    */
-
 }

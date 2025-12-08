@@ -4,7 +4,6 @@
 #include <optional>
 #include "types.h"
 
-class CPU; // Forward declaration
 class VirtualMemory; // Forward declaration
 
 class Bus {
@@ -18,11 +17,9 @@ class Bus {
       ~MemoryMapping() = default;
   };
   std::vector<MemoryMapping> memory_map;
-  CPU *cpu;
     
  public:
   Bus();
-  Bus *attachCpu(CPU *cpu);
   Bus *attachMemory(VirtualMemory *memory, WORD startAddress, WORD endAddress);
   BYTE readByte(WORD address) const;
   WORD readWord(WORD address) const;

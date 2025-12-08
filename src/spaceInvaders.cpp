@@ -32,9 +32,7 @@ SpaceInvaders::SpaceInvaders()
 
     cpu = new Intel8080();
     cpu->reset();
-    cpu->attachBus(bus);
-
-    
+    cpu->attachBus(bus);  
 }
 
 SpaceInvaders::~SpaceInvaders()

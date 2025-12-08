@@ -5,15 +5,8 @@
 
 Bus::Bus()
 {
-    cpu = nullptr;
     memory_map.clear();
     return;
-}
-
-Bus *Bus::attachCpu(CPU* cpu)
-{
-    this->cpu = cpu;
-    return this;
 }
 
 Bus *Bus::attachMemory(VirtualMemory *memory, WORD startAddress, WORD endAddress)
