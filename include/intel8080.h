@@ -59,6 +59,7 @@ class Intel8080 : public CPU {
     } regs;
 
     bool interruptsEnabled;
+    bool isHalted;
     BYTE opcode;
     BYTE byteData;
     WORD wordData;

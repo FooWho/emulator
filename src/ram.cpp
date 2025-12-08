@@ -1,6 +1,5 @@
 #include <cstdio>
 #include <stdexcept>
-#include <spdlog/spdlog.h>
 #include "ram.h"
 
 Ram::Ram(WORD size)

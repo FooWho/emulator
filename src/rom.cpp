@@ -1,6 +1,5 @@
 #include <cstdio>
 #include <stdexcept>
-#include <spdlog/spdlog.h>
 #include "rom.h"
 
 Rom::Rom(WORD size)
@@ -12,7 +11,6 @@ Rom::Rom(std::vector<BYTE> initData)
 {
     romem = std::vector<BYTE>(initData.size(), 0);
     romem.assign(initData.begin(), initData.end());
-    spdlog::debug("ROM initialized: size={}", romem.size());
 }
 
 Rom::Rom(WORD size, std::vector<BYTE> initData)

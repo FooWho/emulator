@@ -2,7 +2,6 @@
 #include <cstdlib>
 #include <stdexcept>
 #include <array>
-#include <spdlog/spdlog.h>
 #include "intel8080.h"
 #include "virtualMemory.h"
 #include "bus.h"
@@ -21,6 +20,8 @@ void Intel8080::reset()
     byteData = 0;
     opcode = 0;
     interruptsEnabled = false;
+    isHalted = false;
+
 
     // Reset flags to their initial state.
     regs.f.flags = 0x02; // Set the always-on bit (bit 1) to 1
@@ -46,13 +47,11 @@ Intel8080 *Intel8080::attachBus(Bus *bus)
 void Intel8080::fetchOpcode()
 {
     opcode = bus->readByte(regs.pc++);
-    spdlog::debug("Intel8080::fetchOpcode(): opcode = 0x{:02X}     PC = 0x{:04X}", opcode, regs.pc);
 }
 
 void Intel8080::fetchByte()
 {
     byteData = bus->readByte(regs.pc++);
-    spdlog::debug("Intel8080::fetchByte(): byteDta = 0x{:02X}     PC = 0x{:04X}", byteData, regs.pc);
 }
 
 void Intel8080::fetchWord()
@@ -61,48 +60,40 @@ void Intel8080::fetchWord()
     BYTE high = bus->readByte(regs.pc + 1);
     wordData = (static_cast<WORD>(high) << 8) | static_cast<WORD>(low);
     regs.pc += 2;
-    spdlog::debug("Intel8080::fetchWord(): wordData =  0x{:04X}     PC = 0x{:04X}", wordData, regs.pc);
 }
 
 void Intel8080::readOpcode(WORD address)
 {
     opcode = bus->readByte(address);
-    spdlog::debug("Intel8080::readOpcode(0x{:04X}): opcode = 0x{:02X}     PC = 0x{:04X}", address, opcode, regs.pc);
 }
 
 void Intel8080::readByte(WORD address)
 {
     byteData = bus->readByte(address);
-    spdlog::debug("Intel8080::readByte(0x{:04X}): byteData = 0x{:02X}     PC = 0x{:04X}", address, byteData, regs.pc);
 }
 
 void Intel8080::readWord(WORD address)
 {
     wordData = bus->readWord(address);
-    spdlog::debug("Intel8080::readWord(0x{:04X}): wordData = 0x{:04X}     PC = 0x{:04X}", address, wordData, regs.pc);
 }
 
 void Intel8080::writeOpcode(WORD address, BYTE data)
 {
     bus->writeByte(address, data);
-    spdlog::debug("Intel8080::writeOpcode(0x{:04X}, 0x{:02X})     PC = 0x{:04X}", address, data, regs.pc);
 } 
 
 void Intel8080::writeByte(WORD address, BYTE data)
 {
     bus->writeByte(address, data);
-    spdlog::debug("Intel8080::writeByte(0x{:04X}, 0x{:02X})     PC = 0x{:04X}", address, data, regs.pc);
 }
 
 void Intel8080::writeWord(WORD address, WORD data)
 {
     bus->writeWord(address, data);
-    spdlog::debug("Intel8080::writeWord(0x{:04X}, 0x{:04X})     PC = 0x{:04X}", address, data, regs.pc);
 }
 
 void Intel8080::execute()
 {
-    spdlog::debug("Intel8080::execute(): Executing opcode 0x{:02X} at PC = 0x{:04X}", opcode, regs.pc - 1);
     (this->*pOpcodeLookup[opcode])();
 }
 

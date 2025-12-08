@@ -1,4 +1,5 @@
-#include <spdlog/spdlog.h>
+#include <cstdio>
+#include <stdexcept>
 #include "types.h"
 #include "intel8080.h"
 
@@ -6,7 +7,7 @@ void Intel8080::buildOpcodeTable()
 {
     pOpcodeLookup.fill(&Intel8080::opILLEGAL);          // Initialize with a dummy opcode
     pOpcodeLookup[0x00] = &Intel8080::opNOP;            // No OPeration
-    pOpcodeLookup[0x01] = &Intel8080::opLXI_B_D16;      // Load eXtended register BC with Immediate value
+    pOpcodeLookup[0x01] = &Intel8080::opLXI_B_D16;      // Load eXtended register B with Immediate WORD value
     pOpcodeLookup[0x02] = &Intel8080::opSTAX_B;         // STore Accumulator at memory location conatined in eXtended register BC
     pOpcodeLookup[0x03] = &Intel8080::opINX_B;          // INcrement eXtended register BC
     pOpcodeLookup[0x04] = &Intel8080::opINR_B;          // INcrement Register B
@@ -23,14 +24,14 @@ void Intel8080::buildOpcodeTable()
     pOpcodeLookup[0x0F] = &Intel8080::opRRC;            // Rotate accumulator Right with Carry
 
     pOpcodeLookup[0x10] = &Intel8080::opNOP;            // *NOP instruction
-    pOpcodeLookup[0x11] = &Intel8080::opLXI_D_D16;      // LXI D,D16 instruction
-    pOpcodeLookup[0x12] = &Intel8080::opSTAX_D;         // STAX D instruction
-    pOpcodeLookup[0x13] = &Intel8080::opINX_D;          // INX D instruction
-    pOpcodeLookup[0x14] = &Intel8080::opINR_D;          // INR D instruction
-    pOpcodeLookup[0x15] = &Intel8080::opDCR_D;          // DCR D instruction
-    pOpcodeLookup[0x16] = &Intel8080::opMVI_D_D8;       // MVI D,D8 instruction
+    pOpcodeLookup[0x11] = &Intel8080::opLXI_D_D16;      // Load eXtended register D with Immediated data
+    pOpcodeLookup[0x12] = &Intel8080::opSTAX_D;         // STore Accumulator at memory location contained in eXtended register DC
+    pOpcodeLookup[0x13] = &Intel8080::opINX_D;          // INcrement eXtended register D
+    pOpcodeLookup[0x14] = &Intel8080::opINR_D;          // INcrement Register D
+    pOpcodeLookup[0x15] = &Intel8080::opDCR_D;          // DeCRement register D
+    pOpcodeLookup[0x16] = &Intel8080::opMVI_D_D8;       // MoVe Immediate data into register D
     pOpcodeLookup[0x17] = &Intel8080::opRAL;            // Rotate Accumulator Left through Carry
-    pOpcodeLookup[0x19] = &Intel8080::opDAD_D;          // DAD D instruction
+    pOpcodeLookup[0x19] = &Intel8080::opDAD_D;          // Double ADd HL = HL + DE
     pOpcodeLookup[0x1A] = &Intel8080::opLDAX_D;         // LDAX D instruction
     pOpcodeLookup[0x1B] = &Intel8080::opDCX_D;          // DCX D instruction
     pOpcodeLookup[0x1C] = &Intel8080::opINR_E;          // INR E instruction
@@ -329,7 +330,6 @@ void Intel8080::performSub(BYTE val, bool withBorrow) {
 
 void Intel8080::opILLEGAL()
 {
-    spdlog::debug("ILLEGAL");
     printf("Illegal opcode executed at address 0x%04X\n", regs.pc - 1);
     printState();
     throw std::runtime_error("Illegal opcode executed");
@@ -342,7 +342,7 @@ void Intel8080::opNOP()
     // Description: No Operation
     // Flags: None
 
-    spdlog::debug("NOP");
+    // Do nothing
 }
 
 void Intel8080::opLXI_B_D16()
@@ -354,7 +354,6 @@ void Intel8080::opLXI_B_D16()
 
     fetchWord();
     regs.bc = wordData;
-    spdlog::debug("LXI B, D16 -> B: 0x{:02X} C: 0x{:02X} D16: 0x{:04X}", regs.b, regs.c, wordData);
 }
 
 void Intel8080::opSTAX_B()
@@ -366,7 +365,6 @@ void Intel8080::opSTAX_B()
 
     wordData = regs.bc;
     writeByte(wordData, regs.a);
-    spdlog::debug("STAX B -> [0x{:04X}] = 0x{:02X}", wordData, regs.a);
 }   
 
 void Intel8080::opINX_B()
@@ -377,7 +375,6 @@ void Intel8080::opINX_B()
     // Flags: None
 
     regs.bc++;
-    spdlog::debug("INX B -> B: 0x{:02X} C: 0x{:02X} BC: 0x{:04X}", regs.b, regs.c, regs.bc);
 }
 
 void Intel8080::opINR_B()
@@ -391,8 +388,6 @@ void Intel8080::opINR_B()
     regFlagsAuxCarry(regs.b, 1, result);
     regFlagsSZP(result);
     regs.b = result;
-
-    spdlog::debug("INR B -> B: 0x{:02X}", regs.b);
 }
 
 void Intel8080::opDCR_B()
@@ -406,8 +401,6 @@ void Intel8080::opDCR_B()
     regFlagsAuxCarry(regs.b, 1, result);
     regFlagsSZP(result);
     regs.b = result;
-
-    spdlog::debug("DCR B -> B: 0x{:02X}", regs.b);
 }
 
 void Intel8080::opMVI_B_D8()
@@ -419,7 +412,6 @@ void Intel8080::opMVI_B_D8()
 
     fetchByte();
     regs.b = byteData;
-    spdlog::debug("MVI B, D8 -> B: 0x{:02X} D8: 0x{:02X}", regs.b, byteData);
 }
 
 void Intel8080::opRLC()
@@ -432,7 +424,6 @@ void Intel8080::opRLC()
     BYTE result = regs.a & 0x80;
     regs.a = (regs.a << 1) | (result >> 7);
     regs.f.cy = result & 0xFF ? 1 : 0;
-    spdlog::debug("RLC -> A: 0x{:02X}", regs.a);
 }
 
 void Intel8080::opDAD_B()
@@ -445,7 +436,6 @@ void Intel8080::opDAD_B()
     WORD result = regs.hl + regs.bc;
     regFlagsDoubleCarry(regs.hl, regs.bc);
     regs.hl = result;
-    spdlog::debug("DAD B -> HL: 0x{:04X} BC: 0x{:04X} -> 0x{:04X}", regs.hl, regs.bc, result);
 }
 
 void Intel8080::opLDAX_B()
@@ -457,7 +447,6 @@ void Intel8080::opLDAX_B()
 
     readByte(regs.bc);
     regs.a = byteData;
-    spdlog::debug("LDAX B -> A: 0x{:02X} [0x{:04X}]", regs.a, regs.bc);
 }
 
 void Intel8080::opDCX_B()
@@ -468,7 +457,6 @@ void Intel8080::opDCX_B()
     // Flags: None
 
     regs.bc--;
-    spdlog::debug("DCX B -> B: 0x{:02X} C: 0x{:02X} BC: 0x{:04X}", regs.b, regs.c, regs.bc);
 }
 
 void Intel8080::opINR_C()
@@ -482,8 +470,6 @@ void Intel8080::opINR_C()
     regFlagsAuxCarry(regs.c, 1, result);
     regFlagsSZP(result);
     regs.c = result;
-
-    spdlog::debug("INR C -> C: 0x{:02X}", regs.c);
 }
 
 void Intel8080::opDCR_C()
@@ -497,8 +483,6 @@ void Intel8080::opDCR_C()
     regFlagsAuxCarry(regs.c, 1, result);
     regFlagsSZP(result);
     regs.c = result;
-
-    spdlog::debug("DCR C -> C: 0x{:02X}", regs.c);
 }
 
 void Intel8080::opMVI_C_D8()
@@ -510,7 +494,6 @@ void Intel8080::opMVI_C_D8()
 
     fetchByte();
     regs.c = byteData;
-    spdlog::debug("MVI C, D8 -> C: 0x{:02X} D8: 0x{:02X}", regs.c, byteData);
 }
 
 void Intel8080::opRRC()
@@ -523,7 +506,6 @@ void Intel8080::opRRC()
     BYTE result = regs.a & 0x01;
     regs.a = (regs.a >> 1) | (result << 7);
     regs.f.cy = result & 0xFF ? 1 : 0;
-    spdlog::debug("RRC -> A: 0x{:02X}", regs.a);
 }   
 
 void Intel8080::opLXI_D_D16()
@@ -535,7 +517,6 @@ void Intel8080::opLXI_D_D16()
 
     fetchWord();
     regs.de = wordData;
-    spdlog::debug("LXI D, D16 -> D: 0x{:02X} E: 0x{:02X} D16: 0x{:04X}", regs.d, regs.e, wordData);
 } 
 
 void Intel8080::opSTAX_D()
@@ -546,7 +527,6 @@ void Intel8080::opSTAX_D()
     // Flags: None
 
     writeByte(regs.de, regs.a);
-    spdlog::debug("STAX D -> [0x{:04X}] = 0x{:02X}", regs.de, regs.a);
 }
 
 void Intel8080::opINX_D()
@@ -557,7 +537,6 @@ void Intel8080::opINX_D()
     // Flags: None
 
     regs.de++;
-    spdlog::debug("INX D -> D: 0x{:02X} E: 0x{:02X} DE: 0x{:04X}", regs.d, regs.e, regs.de);
 }
 
 void Intel8080::opINR_D()
@@ -571,8 +550,6 @@ void Intel8080::opINR_D()
     regFlagsAuxCarry(regs.d, 1, result);
     regFlagsSZP(result);
     regs.d = result;
-
-    spdlog::debug("INR D -> D: 0x{:02X}", regs.d);
 }
 
 void Intel8080::opDCR_D()
@@ -586,8 +563,6 @@ void Intel8080::opDCR_D()
     regFlagsAuxCarry(regs.d, 1, result);
     regFlagsSZP(result);
     regs.d = result;
-
-    spdlog::debug("DCR D -> D: 0x{:02X}", regs.d);
 }
 
 void Intel8080::opMVI_D_D8()
@@ -599,7 +574,6 @@ void Intel8080::opMVI_D_D8()
 
     fetchByte();
     regs.d = byteData;
-    spdlog::debug("MVI D, D8 -> D: 0x{:02X} D8: 0x{:02X}", regs.d, byteData);
 }
 
 void Intel8080::opRAL()
@@ -612,7 +586,6 @@ void Intel8080::opRAL()
     BYTE result = (regs.a & 0x80) >> 7;
     regs.a = (regs.a << 1) | regs.f.cy;
     regs.f.cy = result;
-    spdlog::debug("RAL -> A: 0x{:02X}", regs.a);
 }
 
 void Intel8080::opDAD_D()
@@ -625,7 +598,6 @@ void Intel8080::opDAD_D()
     WORD result = regs.hl + regs.de;
     regFlagsDoubleCarry(regs.hl, regs.de);
     regs.hl = result;
-    spdlog::debug("DAD D -> HL: 0x{:04X} DE: 0x{:04X} -> 0x{:04X}", regs.hl, regs.de, result);
 }
 
 void Intel8080::opLDAX_D()
@@ -638,7 +610,6 @@ void Intel8080::opLDAX_D()
     wordData = regs.de;
     readByte(wordData);
     regs.a = byteData;
-    spdlog::debug("LDAX D -> A: 0x{:02X} [0x{:04X}] = 0x{:02X}", regs.a, wordData, byteData);
 }
 
 void Intel8080::opDCX_D()
@@ -649,7 +620,6 @@ void Intel8080::opDCX_D()
     // Flags: None
 
     regs.de--;
-    spdlog::debug("DCX D -> D: 0x{:02X} E: 0x{:02X} DE: 0x{:04X}", regs.d, regs.e, regs.de);
 }
 
 void Intel8080::opINR_E()
@@ -663,8 +633,6 @@ void Intel8080::opINR_E()
     regFlagsAuxCarry(regs.e, 1, result);
     regFlagsSZP(result);
     regs.e = result;
-
-    spdlog::debug("INR E -> E: 0x{:02X}", regs.e);
 }
 
 void Intel8080::opDCR_E()
@@ -678,8 +646,6 @@ void Intel8080::opDCR_E()
     regFlagsAuxCarry(regs.e, 1, result);
     regFlagsSZP(result);
     regs.e = result;
-
-    spdlog::debug("DCR E -> E: 0x{:02X}", regs.e);
 }
 
 void Intel8080::opMVI_E_D8()
@@ -691,7 +657,6 @@ void Intel8080::opMVI_E_D8()
 
     fetchByte();
     regs.e = byteData;
-    spdlog::debug("MVI E, D8 -> E: 0x{:02X} D8: 0x{:02X}", regs.e, byteData);
 }
 
 void Intel8080::opRAR()
@@ -704,7 +669,6 @@ void Intel8080::opRAR()
     BYTE result = regs.a & 0x01;
     regs.a = (regs.a >> 1) | (regs.f.cy << 7);
     regs.f.cy = result;
-    spdlog::debug("RAR -> A: 0x{:02X}", regs.a);
 }
 
 void Intel8080::opLXI_H_D16()
@@ -716,7 +680,6 @@ void Intel8080::opLXI_H_D16()
 
     fetchWord();
     regs.hl = wordData;
-    spdlog::debug("LXI H, D16 -> H: 0x{:02X} L: 0x{:02X} D16: 0x{:04X}", regs.h, regs.l, wordData);
 }
 
 void Intel8080::opSHLD()
@@ -728,7 +691,6 @@ void Intel8080::opSHLD()
 
     fetchWord();
     writeWord(wordData, regs.hl);
-    spdlog::debug("SHLD -> H: 0x{:02X} L: 0x{:02X} Addr: 0x{:04X}", regs.h, regs.l, wordData);
 }
 
 
@@ -740,7 +702,6 @@ void Intel8080::opINX_H()
     // Flags: None
 
     regs.hl++;
-    spdlog::debug("INX H -> H: 0x{:02X} L: 0x{:02X} HL: 0x{:04X}", regs.h, regs.l, regs.hl);
 }
 
 void Intel8080::opINR_H()
@@ -754,8 +715,6 @@ void Intel8080::opINR_H()
     regFlagsAuxCarry(regs.h, 1, result);
     regFlagsSZP(result);
     regs.h = result;
-
-    spdlog::debug("INR H -> H: 0x{:02X}", regs.h);
 }
 
 void Intel8080::opDCR_H()
@@ -769,8 +728,6 @@ void Intel8080::opDCR_H()
     regFlagsAuxCarry(regs.h, 1, result);
     regFlagsSZP(result);
     regs.h = result;
-
-    spdlog::debug("DCR H -> H: 0x{:02X}", regs.h);
 }
 
 
@@ -783,7 +740,6 @@ void Intel8080::opMVI_H_D8()
 
     fetchByte();
     regs.h = byteData;
-    spdlog::debug("MVI H, D8 -> H: 0x{:02X} D8: 0x{:02X}", regs.h, byteData);
 }
 
 void Intel8080::opDAA()
@@ -792,9 +748,6 @@ void Intel8080::opDAA()
     // Size: 1              Cycles: 4
     // Description: Decimal Adjust Accumulator
     // Flags: S, Z, AC, P, CY
-
-    //BYTE correction = 0;
-    bool setCarry = false;
 
     if ((regs.a & 0x0F) > 9 || regs.f.ac) {
         regs.a += 0x06;
@@ -805,14 +758,7 @@ void Intel8080::opDAA()
         regs.f.cy = 1;
     }
 
-    //WORD result = regs.a + correction;
-
     regFlagsSZP(regs.a);
-    //regFlagsAuxCarry(regs.a, correction, result);
-    //regs.f.cy = setCarry ? 1 : 0;
-    //regs.a = result & 0xFF;
-
-    spdlog::debug("DAA -> A: 0x{:02X}", regs.a);
 }
 
 void Intel8080::opDAD_H()
@@ -825,7 +771,6 @@ void Intel8080::opDAD_H()
     WORD result = regs.hl + regs.hl;
     regFlagsDoubleCarry(regs.hl, regs.hl);
     regs.hl = result;
-    spdlog::debug("DAD H -> HL: 0x{:04X} HL: 0x{:04X} -> 0x{:04X}", regs.hl, regs.hl, result);
 }
 
 void Intel8080::opLHLD()
@@ -838,7 +783,6 @@ void Intel8080::opLHLD()
     fetchWord();
     readWord(wordData);
     regs.hl = wordData;
-    spdlog::debug("LHLD -> H: 0x{:02X} L: 0x{:02X} Addr: 0x{:04X}", regs.h, regs.l, wordData);
 }
 
 void Intel8080::opDCX_H()
@@ -849,7 +793,6 @@ void Intel8080::opDCX_H()
     // Flags: None
 
     regs.hl--;
-    spdlog::debug("DCX H -> H: 0x{:02X} L: 0x{:02X} HL: 0x{:04X}", regs.h, regs.l, regs.hl);
 }
 
 void Intel8080::opINR_L()
@@ -863,8 +806,6 @@ void Intel8080::opINR_L()
     regFlagsAuxCarry(regs.l, 1, result);
     regFlagsSZP(result);
     regs.l = result;
-
-    spdlog::debug("INR L -> L: 0x{:02X}", regs.l);
 }
 
 void Intel8080::opDCR_L()
@@ -878,8 +819,6 @@ void Intel8080::opDCR_L()
     regFlagsAuxCarry(regs.l, 1, result);
     regFlagsSZP(result);
     regs.l = result;
-
-    spdlog::debug("DCR L -> L: 0x{:02X}", regs.l);
 }
 
 void Intel8080::opMVI_L_D8()
@@ -891,7 +830,6 @@ void Intel8080::opMVI_L_D8()
 
     fetchByte();
     regs.l = byteData;
-    spdlog::debug("MVI L, D8 -> L: 0x{:02X} D8: 0x{:02X}", regs.l, byteData);
 }
 
 void Intel8080::opCMA()
@@ -902,7 +840,6 @@ void Intel8080::opCMA()
     // Flags: None
 
     regs.a = ~regs.a;
-    spdlog::debug("CMA -> A: 0x{:02X}", regs.a);
 }
 
 
@@ -915,7 +852,6 @@ void Intel8080::opLXI_SP_D16()
 
     fetchWord();
     regs.sp = wordData;
-    spdlog::debug("LXI SP, D16 -> SP: 0x{:04X} D16: 0x{:04X}", regs.sp, wordData);
 }
 
 void Intel8080::opSTA()
@@ -927,7 +863,6 @@ void Intel8080::opSTA()
 
     fetchWord();
     writeByte(wordData, regs.a);
-    spdlog::debug("STA -> [0x{:04X}] = 0x{:02X}", wordData, regs.a);
 }
 
 void Intel8080::opINX_SP()
@@ -938,7 +873,6 @@ void Intel8080::opINX_SP()
     // Flags: None
 
     regs.sp++;
-    spdlog::debug("INX SP -> SP: 0x{:04X}", regs.sp);
 }
 
 void Intel8080::opINR_M()
@@ -953,8 +887,6 @@ void Intel8080::opINR_M()
     regFlagsAuxCarry(byteData, 1, result);
     regFlagsSZP(result);
     writeByte(regs.hl, result);
-
-    spdlog::debug("INR M -> [0x{:04X}]: 0x{:02X}", regs.hl, result);
 }
 
 void Intel8080::opDCR_M()
@@ -969,8 +901,6 @@ void Intel8080::opDCR_M()
     regFlagsAuxCarry(byteData, 1, result);
     regFlagsSZP(result);
     writeByte(regs.hl, result);
-
-    spdlog::debug("DCR M -> [0x{:04X}]: 0x{:02X}", regs.hl, result);
 }
 
 void Intel8080::opMVI_M_D8()
@@ -992,7 +922,6 @@ void Intel8080::opSTC()
     // Flags: CY
 
     regs.f.cy = 1;
-    spdlog::debug("STC -> CY: 1");
 }
 
 void Intel8080::opDAD_SP()
@@ -1005,7 +934,6 @@ void Intel8080::opDAD_SP()
     WORD result = regs.hl + regs.sp;
     regFlagsDoubleCarry(regs.hl, regs.sp);
     regs.hl = result;
-    spdlog::debug("DAD SP -> HL: 0x{:04X} SP: 0x{:04X} -> 0x{:04X}", regs.hl, regs.sp, result);
 }
 
 void Intel8080::opLDA()
@@ -1018,7 +946,6 @@ void Intel8080::opLDA()
     fetchWord();
     readByte(wordData);
     regs.a = byteData;
-    spdlog::debug("LDA -> A: 0x{:02X} [0x{:04X}] = 0x{:02X}", regs.a, wordData, byteData);
 }
 
 void Intel8080::opDCX_SP()
@@ -1029,7 +956,6 @@ void Intel8080::opDCX_SP()
     // Flags: None
 
     regs.sp--;
-    spdlog::debug("DCX SP -> SP: 0x{:04X}", regs.sp);
 }
 
 void Intel8080::opINR_A()
@@ -1043,8 +969,6 @@ void Intel8080::opINR_A()
     regFlagsAuxCarry(regs.a, 1, result);
     regFlagsSZP(result);
     regs.a = result;
-
-    spdlog::debug("INR A -> A: 0x{:02X}", regs.a);
 }
 
 void Intel8080::opDCR_A()
@@ -1058,8 +982,6 @@ void Intel8080::opDCR_A()
     regFlagsAuxCarry(regs.a, 1, result);
     regFlagsSZP(result);
     regs.a = result;
-
-    spdlog::debug("DCR A -> A: 0x{:02X}", regs.a);
 }
 
 void Intel8080::opMVI_A_D8()
@@ -1071,7 +993,6 @@ void Intel8080::opMVI_A_D8()
 
     fetchByte();
     regs.a = byteData;
-    spdlog::debug("MVI A, D8 -> A: 0x{:02X} D8: 0x{:02X}", regs.a, byteData);
 }
 
 void Intel8080::opCMC()
@@ -1092,7 +1013,6 @@ void Intel8080::opMOV_B_B()
     // Flags: None
 
     regs.b = regs.b;
-    spdlog::debug("MOV B,B -> B: 0x{:02X} B: 0x{:02X}", regs.b, regs.b);
 }
 
 void Intel8080::opMOV_B_C()
@@ -1103,7 +1023,6 @@ void Intel8080::opMOV_B_C()
     // Flags: None
 
     regs.b = regs.c;
-    spdlog::debug("MOV B,C -> B: 0x{:02X} C: 0x{:02X}", regs.b, regs.c);
 }
 
 void Intel8080::opMOV_B_D()
@@ -1114,7 +1033,6 @@ void Intel8080::opMOV_B_D()
     // Flags: None
 
     regs.b = regs.d;
-    spdlog::debug("MOV B,D -> B: 0x{:02X} D: 0x{:02X}", regs.b, regs.d);
 }
 
 void Intel8080::opMOV_B_E()
@@ -1125,7 +1043,6 @@ void Intel8080::opMOV_B_E()
     // Flags: None
 
     regs.b = regs.e;
-    spdlog::debug("MOV B,E -> B: 0x{:02X} E: 0x{:02X}", regs.b, regs.e);
 }
 
 void Intel8080::opMOV_B_H()
@@ -1136,7 +1053,6 @@ void Intel8080::opMOV_B_H()
     // Flags: None
 
     regs.b = regs.h;
-    spdlog::debug("MOV B,H -> B: 0x{:02X} H: 0x{:02X}", regs.b, regs.h);
 }
 
 void Intel8080::opMOV_B_L()
@@ -1147,7 +1063,6 @@ void Intel8080::opMOV_B_L()
     // Flags: None
 
     regs.b = regs.l;
-    spdlog::debug("MOV B,L -> B: 0x{:02X} L: 0x{:02X}", regs.b, regs.l);
 }
 
 void Intel8080::opMOV_B_M()
@@ -1159,8 +1074,6 @@ void Intel8080::opMOV_B_M()
 
     readByte(regs.hl);
     regs.b = byteData;
-
-    spdlog::debug("MOV B, M -> B: 0x{:02X} [0x{:04X}] = 0x{:02X}", regs.b, regs.hl, byteData);
 }
 
 
@@ -1173,7 +1086,6 @@ void Intel8080::opMOV_B_A()
     // Flags: None
 
     regs.b = regs.a;
-    spdlog::debug("MOV B,A -> B: 0x{:02X} A: 0x{:02X}", regs.b, regs.a);
 }
 
 void Intel8080::opMOV_C_B()
@@ -1184,7 +1096,6 @@ void Intel8080::opMOV_C_B()
     // Flags: None
 
     regs.c = regs.b;
-    spdlog::debug("MOV C,B -> C: 0x{:02X} B: 0x{:02X}", regs.c, regs.b);
 }
 
 void Intel8080::opMOV_C_C()
@@ -1195,7 +1106,6 @@ void Intel8080::opMOV_C_C()
     // Flags: None
 
     regs.c = regs.c;
-    spdlog::debug("MOV C,C -> C: 0x{:02X} C: 0x{:02X}", regs.c, regs.c);
 }
 
 void Intel8080::opMOV_C_D()
@@ -1206,7 +1116,6 @@ void Intel8080::opMOV_C_D()
     // Flags: None
 
     regs.c = regs.d;
-    spdlog::debug("MOV C,D -> C: 0x{:02X} D: 0x{:02X}", regs.c, regs.d);
 }
 
 void Intel8080::opMOV_C_E()
@@ -1217,7 +1126,6 @@ void Intel8080::opMOV_C_E()
     // Flags: None
 
     regs.c = regs.e;
-    spdlog::debug("MOV C,E -> C: 0x{:02X} E: 0x{:02X}", regs.c, regs.e);
 }
 
 void Intel8080::opMOV_C_H()
@@ -1228,7 +1136,6 @@ void Intel8080::opMOV_C_H()
     // Flags: None
 
     regs.c = regs.h;
-    spdlog::debug("MOV C,H -> C: 0x{:02X} H: 0x{:02X}", regs.c, regs.h);
 }
 
 void Intel8080::opMOV_C_L()
@@ -1239,7 +1146,6 @@ void Intel8080::opMOV_C_L()
     // Flags: None
 
     regs.c = regs.l;
-    spdlog::debug("MOV C,L -> C: 0x{:02X} L: 0x{:02X}", regs.c, regs.l);
 }
 
 void Intel8080::opMOV_C_M()
@@ -1251,7 +1157,6 @@ void Intel8080::opMOV_C_M()
 
     readByte(regs.hl);
     regs.c = byteData;
-    spdlog::debug("MOV C, M -> C: 0x{:02X} [0x{:04X}] = 0x{:02X}", regs.c, regs.hl, byteData);
 }
 
 void Intel8080::opMOV_C_A()
@@ -1262,7 +1167,6 @@ void Intel8080::opMOV_C_A()
     // Flags: None
 
     regs.c = regs.a;
-    spdlog::debug("MOV C,A -> C: 0x{:02X} A: 0x{:02X}", regs.c, regs.a);
 }
 
 void Intel8080::opMOV_D_B()
@@ -1273,7 +1177,6 @@ void Intel8080::opMOV_D_B()
     // Flags: None
 
     regs.d = regs.b;
-    spdlog::debug("MOV D,B -> D: 0x{:02X} B: 0x{:02X}", regs.d, regs.b);
 }
 
 void Intel8080::opMOV_D_C()
@@ -1284,7 +1187,6 @@ void Intel8080::opMOV_D_C()
     // Flags: None
 
     regs.d = regs.c;
-    spdlog::debug("MOV D,C -> D: 0x{:02X} C: 0x{:02X}", regs.d, regs.c);
 }
 
 void Intel8080::opMOV_D_D()
@@ -1295,7 +1197,6 @@ void Intel8080::opMOV_D_D()
     // Flags: None
 
     regs.d = regs.d;
-    spdlog::debug("MOV D,D -> D: 0x{:02X} D: 0x{:02X}", regs.d, regs.d);
 }
 
 void Intel8080::opMOV_D_E()
@@ -1306,7 +1207,6 @@ void Intel8080::opMOV_D_E()
     // Flags: None
 
     regs.d = regs.e;
-    spdlog::debug("MOV D,E -> D: 0x{:02X} E: 0x{:02X}", regs.d, regs.e);
 }
 
 void Intel8080::opMOV_D_H()
@@ -1317,7 +1217,6 @@ void Intel8080::opMOV_D_H()
     // Flags: None
 
     regs.d = regs.h;
-    spdlog::debug("MOV D,H -> D: 0x{:02X} H: 0x{:02X}", regs.d, regs.h);
 }
 
 void Intel8080::opMOV_D_L()
@@ -1328,7 +1227,6 @@ void Intel8080::opMOV_D_L()
     // Flags: None
 
     regs.d = regs.l;
-    spdlog::debug("MOV D,L -> D: 0x{:02X} L: 0x{:02X}", regs.d, regs.l);
 }
 
 void Intel8080::opMOV_D_M()
@@ -1340,7 +1238,6 @@ void Intel8080::opMOV_D_M()
 
     readByte(regs.hl);
     regs.d = byteData;
-    spdlog::debug("MOV D, M -> D: 0x{:02X} [0x{:04X}] = 0x{:02X}", regs.d, regs.hl, byteData);
 }
 
 void Intel8080::opMOV_D_A()
@@ -1351,7 +1248,6 @@ void Intel8080::opMOV_D_A()
     // Flags: None
 
     regs.d = regs.a;
-    spdlog::debug("MOV D,A -> D: 0x{:02X} A: 0x{:02X}", regs.d, regs.a);
 }
 
 void Intel8080::opMOV_E_B()
@@ -1362,7 +1258,6 @@ void Intel8080::opMOV_E_B()
     // Flags: None
 
     regs.e = regs.b;
-    spdlog::debug("MOV E,B -> E: 0x{:02X} B: 0x{:02X}", regs.e, regs.b);
 }
 
 void Intel8080::opMOV_E_C()
@@ -1373,7 +1268,6 @@ void Intel8080::opMOV_E_C()
     // Flags: None
 
     regs.e = regs.c;
-    spdlog::debug("MOV E,C -> E: 0x{:02X} C: 0x{:02X}", regs.e, regs.c);
 }
 
 void Intel8080::opMOV_E_D()
@@ -1384,7 +1278,6 @@ void Intel8080::opMOV_E_D()
     // Flags: None
 
     regs.e = regs.d;
-    spdlog::debug("MOV E,D -> E: 0x{:02X} D: 0x{:02X}", regs.e, regs.d);
 }
 
 void Intel8080::opMOV_E_E()
@@ -1395,7 +1288,6 @@ void Intel8080::opMOV_E_E()
     // Flags: None
 
     regs.e = regs.e;
-    spdlog::debug("MOV E,E -> E: 0x{:02X} E: 0x{:02X}", regs.e, regs.e);
 }
 
 void Intel8080::opMOV_E_H()
@@ -1406,7 +1298,6 @@ void Intel8080::opMOV_E_H()
     // Flags: None
 
     regs.e = regs.h;
-    spdlog::debug("MOV E,H -> E: 0x{:02X} H: 0x{:02X}", regs.e, regs.h);
 }
 
 void Intel8080::opMOV_E_L()
@@ -1417,7 +1308,6 @@ void Intel8080::opMOV_E_L()
     // Flags: None
 
     regs.e = regs.l;
-    spdlog::debug("MOV E,L -> E: 0x{:02X} L: 0x{:02X}", regs.e, regs.l);
 }
 
 void Intel8080::opMOV_E_M()
@@ -1429,7 +1319,6 @@ void Intel8080::opMOV_E_M()
 
     readByte(regs.hl);
     regs.e = byteData;
-    spdlog::debug("MOV E, M -> E: 0x{:02X} [0x{:04X}] = 0x{:02X}", regs.e, regs.hl, byteData);
 }
 
 void Intel8080::opMOV_E_A()
@@ -1440,7 +1329,6 @@ void Intel8080::opMOV_E_A()
     // Flags: None
 
     regs.e = regs.a;
-    spdlog::debug("MOV E,A -> E: 0x{:02X} A: 0x{:02X}", regs.e, regs.a);
 }
 
 void Intel8080::opMOV_H_B()
@@ -1451,7 +1339,6 @@ void Intel8080::opMOV_H_B()
     // Flags: None
 
     regs.h = regs.b;
-    spdlog::debug("MOV H,B -> H: 0x{:02X} B: 0x{:02X}", regs.h, regs.b);
 }
 
 void Intel8080::opMOV_H_C()
@@ -1462,7 +1349,6 @@ void Intel8080::opMOV_H_C()
     // Flags: None
 
     regs.h = regs.c;
-    spdlog::debug("MOV H,C -> H: 0x{:02X} C: 0x{:02X}", regs.h, regs.c);
 }
 
 void Intel8080::opMOV_H_D()
@@ -1473,7 +1359,6 @@ void Intel8080::opMOV_H_D()
     // Flags: None
 
     regs.h = regs.d;
-    spdlog::debug("MOV H,D -> H: 0x{:02X} D: 0x{:02X}", regs.h, regs.d);
 }
 
 void Intel8080::opMOV_H_E()
@@ -1484,7 +1369,6 @@ void Intel8080::opMOV_H_E()
     // Flags: None
 
     regs.h = regs.e;
-    spdlog::debug("MOV H,E -> H: 0x{:02X} E: 0x{:02X}", regs.h, regs.e);
 }
 
 void Intel8080::opMOV_H_H()
@@ -1495,7 +1379,6 @@ void Intel8080::opMOV_H_H()
     // Flags: None
 
     regs.h = regs.h;
-    spdlog::debug("MOV H,H -> H: 0x{:02X} H: 0x{:02X}", regs.h, regs.h);
 }
 
 void Intel8080::opMOV_H_L()
@@ -1506,7 +1389,6 @@ void Intel8080::opMOV_H_L()
     // Flags: None
 
     regs.h = regs.l;
-    spdlog::debug("MOV H,L -> H: 0x{:02X} L: 0x{:02X}", regs.h, regs.l);
 }
 
 void Intel8080::opMOV_H_M()
@@ -1518,7 +1400,6 @@ void Intel8080::opMOV_H_M()
 
     readByte(regs.hl);
     regs.h = byteData;
-    spdlog::debug("MOV H, M -> H: 0x{:02X} [0x{:04X}] = 0x{:02X}", regs.h, regs.hl, byteData);
 }
 
 void Intel8080::opMOV_H_A()
@@ -1529,7 +1410,6 @@ void Intel8080::opMOV_H_A()
     // Flags: None
 
     regs.h = regs.a;
-    spdlog::debug("MOV H,A -> H: 0x{:02X} A: 0x{:02X}", regs.h, regs.a);
 }
 
 void Intel8080::opMOV_L_B()
@@ -1540,7 +1420,6 @@ void Intel8080::opMOV_L_B()
     // Flags: None
 
     regs.l = regs.b;
-    spdlog::debug("MOV L,B -> L: 0x{:02X} B: 0x{:02X}", regs.l, regs.b);
 }
 
 void Intel8080::opMOV_L_C()
@@ -1551,7 +1430,6 @@ void Intel8080::opMOV_L_C()
     // Flags: None
 
     regs.l = regs.c;
-    spdlog::debug("MOV L,C -> L: 0x{:02X} C: 0x{:02X}", regs.l, regs.c);
 }
 
 void Intel8080::opMOV_L_D()
@@ -1562,7 +1440,6 @@ void Intel8080::opMOV_L_D()
     // Flags: None
 
     regs.l = regs.d;
-    spdlog::debug("MOV L,D -> L: 0x{:02X} D: 0x{:02X}", regs.l, regs.d);
 }
 
 void Intel8080::opMOV_L_E()
@@ -1573,7 +1450,6 @@ void Intel8080::opMOV_L_E()
     // Flags: None
 
     regs.l = regs.e;
-    spdlog::debug("MOV L,E -> L: 0x{:02X} E: 0x{:02X}", regs.l, regs.e);
 }
 
 void Intel8080::opMOV_L_H()
@@ -1584,7 +1460,6 @@ void Intel8080::opMOV_L_H()
     // Flags: None
 
     regs.l = regs.h;
-    spdlog::debug("MOV L,H -> L: 0x{:02X} H: 0x{:02X}", regs.l, regs.h);
 }
 
 void Intel8080::opMOV_L_L()
@@ -1595,7 +1470,6 @@ void Intel8080::opMOV_L_L()
     // Flags: None
 
     regs.l = regs.l;
-    spdlog::debug("MOV L,L -> L: 0x{:02X} L: 0x{:02X}", regs.l, regs.l);
 }
 
 void Intel8080::opMOV_L_M()
@@ -1606,7 +1480,6 @@ void Intel8080::opMOV_L_M()
 
     readByte(regs.hl);
     regs.l = byteData;
-    spdlog::debug("MOV L, M -> L: 0x{:02X} [0x{:04X}] = 0x{:02X}", regs.l, regs.hl, byteData);
 }
 
 void Intel8080::opMOV_L_A()
@@ -1617,7 +1490,6 @@ void Intel8080::opMOV_L_A()
     // Flags: None
 
     regs.l = regs.a;
-    spdlog::debug("MOV L,A -> L: 0x{:02X} A: 0x{:02X}", regs.l, regs.a);
 }
 
 void Intel8080::opMOV_M_B()
@@ -1628,8 +1500,6 @@ void Intel8080::opMOV_M_B()
     // Flags: None
 
     writeByte(regs.hl, regs.b);
-
-    spdlog::debug("MOV M,B -> [0x{:04X}] = 0x{:02X}", regs.hl, regs.b);
 }
 
 void Intel8080::opMOV_M_C()
@@ -1640,8 +1510,6 @@ void Intel8080::opMOV_M_C()
     // Flags: None
 
     writeByte(regs.hl, regs.c);
-
-    spdlog::debug("MOV M,C -> [0x{:04X}] = 0x{:02X}", regs.hl, regs.c);
 }
 
 void Intel8080::opMOV_M_D()
@@ -1652,8 +1520,6 @@ void Intel8080::opMOV_M_D()
     // Flags: None
 
     writeByte(regs.hl, regs.d);
-
-    spdlog::debug("MOV M,D -> [0x{:04X}] = 0x{:02X}", regs.hl, regs.d);
 }
 
 void Intel8080::opMOV_M_E()
@@ -1664,8 +1530,6 @@ void Intel8080::opMOV_M_E()
     // Flags: None
 
     writeByte(regs.hl, regs.e);
-
-    spdlog::debug("MOV M,E -> [0x{:04X}] = 0x{:02X}", regs.hl, regs.e);
 }
 
 void Intel8080::opMOV_M_H()
@@ -1676,8 +1540,6 @@ void Intel8080::opMOV_M_H()
     // Flags: None
 
     writeByte(regs.hl, regs.h);
-
-    spdlog::debug("MOV M,H -> [0x{:04X}] = 0x{:02X}", regs.hl, regs.h);
 }
 
 void Intel8080::opMOV_M_L()
@@ -1688,8 +1550,6 @@ void Intel8080::opMOV_M_L()
     // Flags: None
 
     writeByte(regs.hl, regs.l);
-
-    spdlog::debug("MOV M,L -> [0x{:04X}] = 0x{:02X}", regs.hl, regs.l);
 }
 
 void Intel8080::opHLT()
@@ -1699,7 +1559,7 @@ void Intel8080::opHLT()
     // Description: Advance PC to the next address. CPU enters stopped state and executes no more instructions until an interrupt ocurrs.
     // Flags: None
 
-    spdlog::debug("HLT");
+    isHalted = true;
 }
 
 void Intel8080::opMOV_M_A()
@@ -1710,7 +1570,6 @@ void Intel8080::opMOV_M_A()
     // Flags: None
 
     writeByte(regs.hl, regs.a);
-    spdlog::debug("MOV M,A -> [0x{:04X}] = 0x{:02X}", regs.hl, regs.a);
 }   
 
 void Intel8080::opMOV_A_B()
@@ -1721,8 +1580,6 @@ void Intel8080::opMOV_A_B()
     // Flags: None
 
     regs.a = regs.b;
-
-    spdlog::debug("MOV A,B -> A: 0x{:02X} B: 0x{:02X}", regs.a, regs.b);
 }
 
 void Intel8080::opMOV_A_C()
@@ -1733,7 +1590,6 @@ void Intel8080::opMOV_A_C()
     // Flags: None
 
     regs.a = regs.c;
-    spdlog::debug("MOV A,C -> A: 0x{:02X} C: 0x{:02X}", regs.a, regs.c);
 }
 
 void Intel8080::opMOV_A_D()
@@ -1744,7 +1600,6 @@ void Intel8080::opMOV_A_D()
     // Flags: None  
 
     regs.a = regs.d;
-    spdlog::debug("MOV A,D -> A: 0x{:02X} D: 0x{:02X}", regs.a, regs.d);
 }
 
 void Intel8080::opMOV_A_E()
@@ -1755,7 +1610,6 @@ void Intel8080::opMOV_A_E()
     // Flags: None
 
     regs.a = regs.e;
-    spdlog::debug("MOV A,E -> A: 0x{:02X} E: 0x{:02X}", regs.a, regs.e);
 }
 
 void Intel8080::opMOV_A_H()
@@ -1766,7 +1620,6 @@ void Intel8080::opMOV_A_H()
     // Flags: None
 
     regs.a = regs.h;
-    spdlog::debug("MOV A,H -> A: 0x{:02X} H: 0x{:02X}", regs.a, regs.h);
 }
 
 void Intel8080::opMOV_A_L()
@@ -1777,7 +1630,6 @@ void Intel8080::opMOV_A_L()
     // Flags: None
 
     regs.a = regs.l;
-    spdlog::debug("MOV A,L -> A: 0x{:02X} L: 0x{:02X}", regs.a, regs.l);
 }
 
 void Intel8080::opMOV_A_M()
@@ -1789,7 +1641,6 @@ void Intel8080::opMOV_A_M()
 
     readByte(regs.hl);
     regs.a = byteData;
-    spdlog::debug("MOV A,M -> A: 0x{:02X} [0x{:04X}] = 0x{:02X}", regs.a, regs.hl, byteData);
 }
 
 void Intel8080::opMOV_A_A()
@@ -1800,7 +1651,6 @@ void Intel8080::opMOV_A_A()
     // Flags: None
 
     regs.a = regs.a;
-    spdlog::debug("MOV A,A -> A: 0x{:02X} A: 0x{:02X}", regs.a, regs.a);
 }
 
 void Intel8080::opADD_B()
@@ -1811,7 +1661,6 @@ void Intel8080::opADD_B()
     // Flags: S, Z, AC, P, CY
 
     performAdd(regs.b, false);
-    spdlog::debug("ADD B -> A: 0x{:02X} B: 0x{:02X}", regs.a, regs.b);
 }
 
 void Intel8080::opADD_C()
@@ -1822,7 +1671,6 @@ void Intel8080::opADD_C()
     // Flags: S, Z, AC, P, CY
 
     performAdd(regs.c, false);
-    spdlog::debug("ADD C -> A: 0x{:02X} C: 0x{:02X}", regs.a, regs.c);
 }
 
 void Intel8080::opADD_D()
@@ -1833,7 +1681,6 @@ void Intel8080::opADD_D()
     // Flags: S, Z, AC, P, CY
 
     performAdd(regs.d, false);
-    spdlog::debug("ADD D -> A: 0x{:02X} D: 0x{:02X}", regs.a, regs.d);
 }
 
 void Intel8080::opADD_E()
@@ -1844,7 +1691,6 @@ void Intel8080::opADD_E()
     // Flags: S, Z, AC, P, CY
 
     performAdd(regs.e, false);
-    spdlog::debug("ADD E -> A: 0x{:02X} E: 0x{:02X}", regs.a, regs.e);
 }
 
 void Intel8080::opADD_H()
@@ -1855,7 +1701,6 @@ void Intel8080::opADD_H()
     // Flags: S, Z, AC, P, CY
 
     performAdd(regs.h, false);
-    spdlog::debug("ADD H -> A: 0x{:02X} H: 0x{:02X}", regs.a, regs.h);
 }
 
 void Intel8080::opADD_L()
@@ -1866,7 +1711,6 @@ void Intel8080::opADD_L()
     // Flags: S, Z, AC, P, CY
 
     performAdd(regs.l, false);
-    spdlog::debug("ADD L -> A: 0x{:02X} L: 0x{:02X}", regs.a, regs.l);
 }
 
 void Intel8080::opADD_M()
@@ -1888,7 +1732,6 @@ void Intel8080::opADD_A()
     // Flags: S, Z, AC, P, CY
 
     performAdd(regs.a, false);
-    spdlog::debug("ADD A -> A: 0x{:02X} A: 0x{:02X}", regs.a, regs.a);
 }
 
 void Intel8080::opADC_B()
@@ -1899,7 +1742,6 @@ void Intel8080::opADC_B()
     // Flags: S, Z, AC, P, CY
 
     performAdd(regs.b, true);
-    spdlog::debug("ADC B -> A: 0x{:02X} B: 0x{:02X}", regs.a, regs.b);
 }
 
 void Intel8080::opADC_C()
@@ -1910,7 +1752,6 @@ void Intel8080::opADC_C()
     // Flags: S, Z, AC, P, CY
 
     performAdd(regs.c, true);
-    spdlog::debug("ADC C -> A: 0x{:02X} C: 0x{:02X}", regs.a, regs.c);
 }
 
 void Intel8080::opADC_D()
@@ -1921,7 +1762,6 @@ void Intel8080::opADC_D()
     // Flags: S, Z, AC, P, CY
 
     performAdd(regs.d, true);
-    spdlog::debug("ADC D -> A: 0x{:02X} D: 0x{:02X}", regs.a, regs.d);
 }
 
 void Intel8080::opADC_E()
@@ -1932,7 +1772,6 @@ void Intel8080::opADC_E()
     // Flags: S, Z, AC, P, CY
 
     performAdd(regs.e, true);
-    spdlog::debug("ADC E -> A: 0x{:02X} E: 0x{:02X}", regs.a, regs.e);
 }
 
 void Intel8080::opADC_H()
@@ -1943,7 +1782,6 @@ void Intel8080::opADC_H()
     // Flags: S, Z, AC, P, CY
 
     performAdd(regs.h, true);
-    spdlog::debug("ADC H -> A: 0x{:02X} H: 0x{:02X}", regs.a, regs.h);
 }
 
 void Intel8080::opADC_L()
@@ -1954,7 +1792,6 @@ void Intel8080::opADC_L()
     // Flags: S, Z, AC, P, CY
 
     performAdd(regs.l, true);
-    spdlog::debug("ADC L -> A: 0x{:02X} L: 0x{:02X}", regs.a, regs.l);
 }
 
 void Intel8080::opADC_M()
@@ -1966,7 +1803,6 @@ void Intel8080::opADC_M()
 
     readByte(regs.hl);
     performAdd(byteData, true);
-    spdlog::debug("ADC M -> A: 0x{:02X} [0x{:04X}] = 0x{:02X}", regs.a, regs.hl, byteData);
 }
 
 void Intel8080::opADC_A()
@@ -1977,7 +1813,6 @@ void Intel8080::opADC_A()
     // Flags: S, Z, AC, P, CY
 
     performAdd(regs.a, true);
-    spdlog::debug("ADC A -> A: 0x{:02X} A: 0x{:02X}", regs.a, regs.a);
 }
 
 void Intel8080::opSUB_B()
@@ -1988,7 +1823,6 @@ void Intel8080::opSUB_B()
     // Flags: S, Z, AC, P, CY
 
     performSub(regs.b, false);
-    spdlog::debug("SUB B -> A: 0x{:02X} B: 0x{:02X}", regs.a, regs.b);
 }
 
 void Intel8080::opSUB_C()
@@ -1999,7 +1833,6 @@ void Intel8080::opSUB_C()
     // Flags: S, Z, AC, P, CY
 
     performSub(regs.c, false);
-    spdlog::debug("SUB C -> A: 0x{:02X} C: 0x{:02X}", regs.a, regs.c);
 }
 
 void Intel8080::opSUB_D()
@@ -2010,7 +1843,6 @@ void Intel8080::opSUB_D()
     // Flags: S, Z, AC, P, CY
 
     performSub(regs.d, false);
-    spdlog::debug("SUB D -> A: 0x{:02X} D: 0x{:02X}", regs.a, regs.d);
 }
 
 void Intel8080::opSUB_E()
@@ -2021,7 +1853,6 @@ void Intel8080::opSUB_E()
     // Flags: S, Z, AC, P, CY
 
     performSub(regs.e, false);
-    spdlog::debug("SUB E -> A: 0x{:02X} E: 0x{:02X}", regs.a, regs.e);
 }
 
 void Intel8080::opSUB_H()
@@ -2032,7 +1863,6 @@ void Intel8080::opSUB_H()
     // Flags: S, Z, AC, P, CY
 
     performSub(regs.h, false);
-    spdlog::debug("SUB H -> A: 0x{:02X} H: 0x{:02X}", regs.a, regs.h);
 }
 
 void Intel8080::opSUB_L()
@@ -2043,7 +1873,6 @@ void Intel8080::opSUB_L()
     // Flags: S, Z, AC, P, CY
 
     performSub(regs.l, false);
-    spdlog::debug("SUB L -> A: 0x{:02X} L: 0x{:02X}", regs.a, regs.l);
 }
 
 void Intel8080::opSUB_M()
@@ -2055,7 +1884,6 @@ void Intel8080::opSUB_M()
 
     readByte(regs.hl);
     performSub(byteData, false);
-    spdlog::debug("SUB M -> A: 0x{:02X} [0x{:04X}] = 0x{:02X}", regs.a, regs.hl, byteData);
 }
 
 void Intel8080::opSUB_A()
@@ -2066,7 +1894,6 @@ void Intel8080::opSUB_A()
     // Flags: S, Z, AC, P, CY
 
     performSub(regs.a, false);
-    spdlog::debug("SUB A -> A: 0x{:02X} A: 0x{:02X}", regs.a, regs.a);
 }
 
 void Intel8080::opSBB_B()
@@ -2077,7 +1904,6 @@ void Intel8080::opSBB_B()
     // Flags: S, Z, AC, P, CY
 
     performSub(regs.b, true);
-    spdlog::debug("SBB B -> A: 0x{:02X} B: 0x{:02X}", regs.a, regs.b);
 }
 
 void Intel8080::opSBB_C()
@@ -2088,7 +1914,6 @@ void Intel8080::opSBB_C()
     // Flags: S, Z, AC, P, CY
 
     performSub(regs.c, true);
-    spdlog::debug("SBB C -> A: 0x{:02X} C: 0x{:02X}", regs.a, regs.c);
 }
 
 void Intel8080::opSBB_D()
@@ -2099,7 +1924,6 @@ void Intel8080::opSBB_D()
     // Flags: S, Z, AC, P, CY
 
     performSub(regs.d, true);
-    spdlog::debug("SBB D -> A: 0x{:02X} D: 0x{:02X}", regs.a, regs.d);
 }
 
 void Intel8080::opSBB_E()
@@ -2110,7 +1934,6 @@ void Intel8080::opSBB_E()
     // Flags: S, Z, AC, P, CY
 
     performSub(regs.e, true);
-    spdlog::debug("SBB E -> A: 0x{:02X} E: 0x{:02X}", regs.a, regs.e);
 }
 
 void Intel8080::opSBB_H()
@@ -2121,7 +1944,6 @@ void Intel8080::opSBB_H()
     // Flags: S, Z, AC, P, CY
 
     performSub(regs.h, true);
-    spdlog::debug("SBB H -> A: 0x{:02X} H: 0x{:02X}", regs.a, regs.h);
 }
 
 void Intel8080::opSBB_L()
@@ -2132,7 +1954,6 @@ void Intel8080::opSBB_L()
     // Flags: S, Z, AC, P, CY
 
     performSub(regs.l, true);
-    spdlog::debug("SBB L -> A: 0x{:02X} L: 0x{:02X}", regs.a, regs.l);
 }
 
 void Intel8080::opSBB_M()
@@ -2144,7 +1965,6 @@ void Intel8080::opSBB_M()
 
     readByte(regs.hl);
     performSub(byteData, true);
-    spdlog::debug("SBB M -> A: 0x{:02X} [0x{:04X}] = 0x{:02X}", regs.a, regs.hl, byteData);
 }
 
 void Intel8080::opSBB_A()
@@ -2155,7 +1975,6 @@ void Intel8080::opSBB_A()
     // Flags: S, Z, AC, P, CY
 
     performSub(regs.a, true);
-    spdlog::debug("SBB A -> A: 0x{:02X} A: 0x{:02X}", regs.a, regs.a);
 }
 
 void Intel8080::opANA_B()
@@ -2170,7 +1989,6 @@ void Intel8080::opANA_B()
     regs.f.cy = 0;
     regs.f.ac = 0;
     regs.a = result;
-    spdlog::debug("ANA B -> A: 0x{:02X}", regs.a);
 }
 
 void Intel8080::opANA_C()
@@ -2185,7 +2003,6 @@ void Intel8080::opANA_C()
     regs.f.cy = 0;
     regs.f.ac = 0;
     regs.a = result;
-    spdlog::debug("ANA C -> A: 0x{:02X}", regs.a);
 }
 
 void Intel8080::opANA_D()
@@ -2200,7 +2017,6 @@ void Intel8080::opANA_D()
     regs.f.cy = 0;
     regs.f.ac = 0;
     regs.a = result;
-    spdlog::debug("ANA D -> A: 0x{:02X}", regs.a);
 }
 
 void Intel8080::opANA_E()
@@ -2215,7 +2031,6 @@ void Intel8080::opANA_E()
     regs.f.cy = 0;
     regs.f.ac = 0;
     regs.a = result;
-    spdlog::debug("ANA E -> A: 0x{:02X}", regs.a);
 }
 
 void Intel8080::opANA_H()
@@ -2230,7 +2045,6 @@ void Intel8080::opANA_H()
     regs.f.cy = 0;
     regs.f.ac = 0;
     regs.a = result;
-    spdlog::debug("ANA H -> A: 0x{:02X}", regs.a);
 }
 
 void Intel8080::opANA_L()
@@ -2245,7 +2059,6 @@ void Intel8080::opANA_L()
     regs.f.cy = 0;
     regs.f.ac = 0;
     regs.a = result;
-    spdlog::debug("ANA L -> A: 0x{:02X}", regs.a);
 }
 
 void Intel8080::opANA_M()
@@ -2261,7 +2074,6 @@ void Intel8080::opANA_M()
     regs.f.cy = 0;
     regs.f.ac = 0;
     regs.a = result;
-    spdlog::debug("ANA M -> A: 0x{:02X} [0x{:04X}] = 0x{:02X}", regs.a, regs.hl, byteData);
 }
 
 void Intel8080::opANA_A()
@@ -2276,7 +2088,6 @@ void Intel8080::opANA_A()
     regs.f.cy = 0;
     regs.f.ac = 0;
     regs.a = result;
-    spdlog::debug("ANA A -> A: 0x{:02X}", regs.a);
 }
 
 void Intel8080::opXRA_B()
@@ -2291,7 +2102,6 @@ void Intel8080::opXRA_B()
     regs.f.cy = 0;
     regs.f.ac = 0;
     regs.a = result;
-    spdlog::debug("XRA B -> A: 0x{:02X}", regs.a);
 }
 
 void Intel8080::opXRA_C()
@@ -2306,7 +2116,6 @@ void Intel8080::opXRA_C()
     regs.f.cy = 0;
     regs.f.ac = 0;
     regs.a = result;
-    spdlog::debug("XRA C -> A: 0x{:02X}", regs.a);
 }
 
 void Intel8080::opXRA_D()
@@ -2320,7 +2129,6 @@ void Intel8080::opXRA_D()
     regs.f.cy = 0;
     regs.f.ac = 0;
     regs.a = result;
-    spdlog::debug("XRA D -> A: 0x{:02X}", regs.a);
 }
 
 void Intel8080::opXRA_E()
@@ -2335,7 +2143,6 @@ void Intel8080::opXRA_E()
     regs.f.cy = 0;
     regs.f.ac = 0;
     regs.a = result;
-    spdlog::debug("XRA E -> A: 0x{:02X}", regs.a);
 }
 
 void Intel8080::opXRA_H()
@@ -2350,7 +2157,6 @@ void Intel8080::opXRA_H()
     regs.f.cy = 0;
     regs.f.ac = 0;
     regs.a = result;
-    spdlog::debug("XRA H -> A: 0x{:02X}", regs.a);
 }
 
 void Intel8080::opXRA_L()
@@ -2365,13 +2171,12 @@ void Intel8080::opXRA_L()
     regs.f.cy = 0;
     regs.f.ac = 0;
     regs.a = result;
-    spdlog::debug("XRA L -> A: 0x{:02X}", regs.a);
 }
 
 void Intel8080::opXRA_M()
 {
     // Opcode: 0xAE         Mnemonic: XRA M
-    // Size: 1 byte         Cycles: 4
+    // Size: 1 byte         Cycles: 7
     // Description: Bitwise XOR of Accumulator and contents of memory location pointed by HL
     // Flags: S, Z, AC, P, CY
 
@@ -2381,7 +2186,6 @@ void Intel8080::opXRA_M()
     regs.f.cy = 0;
     regs.f.ac = 0;
     regs.a = result;
-    spdlog::debug("XRA M -> A: 0x{:02X} [0x{:04X}] = 0x{:02X}", regs.a, regs.hl, byteData);
 }
 
 void Intel8080::opXRA_A()
@@ -2397,12 +2201,14 @@ void Intel8080::opXRA_A()
     regs.f.ac = 0;
     regs.f.p = 1;
     regs.f.cy = 0;
-    spdlog::debug("XRA A -> A: 0x{:02X}", regs.a);
 }
 
 void Intel8080::opORA_B()
 {
-    // Opcode: 0xB0
+    // Opcode: 0xB0         Mnemonic: ORA B
+    // Size: 1 byte         Cycles: 4
+    // Description: Bitwise OR of Accumulator and register B
+    // Flags: S, Z, AC, P, CY
 
     BYTE result = regs.a | regs.b;
     regFlagsSZP(result);
@@ -2411,7 +2217,10 @@ void Intel8080::opORA_B()
 
 void Intel8080::opORA_C()
 {
-    // Opcode: 0xB1
+    // Opcode: 0xB1         Mnemonic: ORA C
+    // Size: 1 byte         Cycles: 4
+    // Description: Bitwise OR of Accumulator and register C
+    // Flags: S, Z, AC, P, CY
 
     BYTE result = regs.a | regs.c;
     regFlagsSZP(result);
@@ -2420,7 +2229,10 @@ void Intel8080::opORA_C()
 
 void Intel8080::opORA_D()
 {
-    // Opcode: 0xB2
+    // Opcode: 0xB2         Mnemonic: ORA D
+    // Size: 1 byte         Cycles: 4
+    // Description: Bitwise OR of Accumulator and register D
+    // Flags: S, Z, AC, P, CY
 
     BYTE result = regs.a | regs.d;
     regFlagsSZP(result);
@@ -2429,7 +2241,10 @@ void Intel8080::opORA_D()
 
 void Intel8080::opORA_E()
 {
-    // Opcode: 0xB3
+    // Opcode: 0xB3         Mnemonic: ORA E
+    // Size: 1 byte         Cycles: 4
+    // Description: Bitwise OR of Accumulator and register E
+    // Flags: S, Z, AC, P, CY
 
     BYTE result = regs.a | regs.e;
     regFlagsSZP(result);
@@ -2438,7 +2253,10 @@ void Intel8080::opORA_E()
 
 void Intel8080::opORA_H()
 {
-    // Opcode: 0xB4
+    // Opcode: 0xB4         Mnemonic: ORA H
+    // Size: 1 byte         Cycles: 4
+    // Description: Bitwise OR of Accumulator and register H
+    // Flags: S, Z, AC, P, CY
 
     BYTE result = regs.a | regs.h;
     regFlagsSZP(result);
@@ -2447,7 +2265,10 @@ void Intel8080::opORA_H()
 
 void Intel8080::opORA_L()
 {
-    // Opcode: 0xB5
+    // Opcode: 0xB5         Mnemonic: ORA L
+    // Size: 1 byte         Cycles: 4
+    // Description: Bitwise OR of Accumulator and register L
+    // Flags: S, Z, AC, P, CY
 
     BYTE result = regs.a | regs.l;
     regFlagsSZP(result);
@@ -2456,7 +2277,10 @@ void Intel8080::opORA_L()
 
 void Intel8080::opORA_M()
 {
-    // Opcode: 0xB6
+    // Opcode: 0xB6         Mnemonic: ORA M
+    // Size: 1 byte         Cycles: 7
+    // Description: Bitwise OR of Accumulator with BYTE data  from address contained in extended HL register
+    // Flags: S, Z, AC, P, CY
 
     readByte(regs.hl);
     BYTE result = regs.a | byteData;
@@ -2466,7 +2290,10 @@ void Intel8080::opORA_M()
 
 void Intel8080::opORA_A()
 {
-    // Opcode: 0xB7
+    // Opcode: 0xB7         Mnemonic: ORA A
+    // Size: 1 byte         Cycles: 4
+    // Description: Bitwise OR of Accumulator and Accumulator
+    // Flags: S, Z, AC, P, CY
 
     BYTE result = regs.a | regs.a;
     regFlagsSZP(result);
@@ -2475,7 +2302,10 @@ void Intel8080::opORA_A()
 
 void Intel8080::opCMP_B()
 {
-    // Opcode: 0xB8
+    // Opcode: 0xB8         Mnemonic: CMP B
+    // Size: 1 byte         Cycles: 4
+    // Description: Compare Accumulator with register B
+    // Flags: S, Z, AC, P, CY
 
     BYTE accumulator = regs.a;
     performSub(regs.b, false);
@@ -2484,7 +2314,10 @@ void Intel8080::opCMP_B()
 
 void Intel8080::opCMP_C()
 {
-    // Opcode: 0xB9
+    // Opcode: 0xB9         Mnemonic: CMP C
+    // Size: 1 byte         Cycles: 4
+    // Description: Compare Accumulator with register C
+    // Flags: S, Z, AC, P, CY
 
     BYTE accumulator = regs.a;
     performSub(regs.c, false);
@@ -2493,7 +2326,10 @@ void Intel8080::opCMP_C()
 
 void Intel8080::opCMP_D()
 {
-    // Opcode: 0xBA
+    // Opcode: 0xBA         Mnemonic: CMP D
+    // Size: 1 byte         Cycles: 4
+    // Description: Compare Accumulator with register D
+    // Flags: S, Z, AC, P, CY
 
     BYTE accumulator = regs.a;
     performSub(regs.d, false);
@@ -2502,7 +2338,10 @@ void Intel8080::opCMP_D()
 
 void Intel8080::opCMP_E()
 {
-    // Opcode: 0xBB
+    // Opcode: 0xBB         Mnemonic: CMP E
+    // Size: 1 byte         Cycles: 4
+    // Description: Compare Accumulator with register E
+    // Flags: S, Z, AC, P, CY
 
     BYTE accumulator = regs.a;
     performSub(regs.e, false);
@@ -2511,7 +2350,10 @@ void Intel8080::opCMP_E()
 
 void Intel8080::opCMP_H()
 {
-    // Opcode: 0xBC
+    // Opcode: 0xBC         Mnemonic: CMP H
+    // Size: 1 byte         Cycles: 4
+    // Description: Compare Accumulator with register H
+    // Flags: S, Z, AC, P, CY
 
     BYTE accumulator = regs.a;
     performSub(regs.h, false);
@@ -2520,7 +2362,10 @@ void Intel8080::opCMP_H()
 
 void Intel8080::opCMP_L()
 {
-    // Opcode: 0xBD
+    // Opcode: 0xBD         Mnemonic: CMP L
+    // Size: 1 byte         Cycles: 4
+    // Description: Compare Accumulator with register L
+    // Flags: S, Z, AC, P, CY
 
     BYTE accumulator = regs.a;
     performSub(regs.l, false);
@@ -2529,7 +2374,9 @@ void Intel8080::opCMP_L()
 
 void Intel8080::opCMP_M()
 {
-    // Opcode: 0xBE
+    // Opcode: 0xBE         Mnemonic: CMP M
+    // Size: 1 byte         Cycles: 7
+    // Description: Compare Accumulator with contents of memory location pointed by HL
 
     BYTE accumulator = regs.a;
     readByte(regs.hl);
@@ -2539,7 +2386,11 @@ void Intel8080::opCMP_M()
 
 void Intel8080::opCMP_A()
 {
-    // Opcode: 0xBF
+    // Opcode: 0xBF         Mnemonic: CMP A
+    // Size: 1 byte         Cycles: 4
+    // Description: Compare Accumulator with Accumulator
+    // Flags: S, Z, AC, P, CY
+
     BYTE accumulator = regs.a;
     performSub(regs.b, false);
     regs.a = accumulator;
@@ -2556,9 +2407,6 @@ void Intel8080::opRNZ()
         readWord(regs.sp);
         regs.pc = wordData;
         regs.sp += 2;
-        spdlog::debug("RNZ taken -> PC: 0x{:04X} SP: 0x{:04X}", regs.pc, regs.sp);
-    } else {
-        spdlog::debug("RNZ not taken -> PC remains: 0x{:04X}", regs.pc);
     }
 }
 
@@ -2572,7 +2420,6 @@ void Intel8080::opPOP_B()
     readWord(regs.sp);
     regs.bc = wordData;
     regs.sp += 2;
-    spdlog::debug("POP B -> SP: 0x{:04X}", regs.sp);
 }
 
 void Intel8080::opJNZ()
@@ -2585,9 +2432,6 @@ void Intel8080::opJNZ()
     fetchWord();
     if (regs.f.z == 0) {
         regs.pc = wordData;
-        spdlog::debug("JNZ taken -> PC: 0x{:04X}", regs.pc);
-    } else {
-        spdlog::debug("JNZ not taken -> PC remains: 0x{:04X}", regs.pc);
     }
 }
 
@@ -2600,7 +2444,6 @@ void Intel8080::opJMP()
 
     fetchWord();
     regs.pc = wordData;
-    spdlog::debug("JMP -> PC: 0x{:04X}", regs.pc);
 } 
 
 void Intel8080::opCNZ()
@@ -2615,9 +2458,6 @@ void Intel8080::opCNZ()
         regs.sp -= 2;
         writeWord(regs.sp, regs.pc);
         regs.pc = wordData;
-        spdlog::debug("CNZ -> PC: 0x{:04X} SP: 0x{:04X}", regs.pc, regs.sp);
-    } else {
-        spdlog::debug("CNZ not taken -> PC remains: 0x{:04X}", regs.pc);
     }
 }
 
@@ -2630,7 +2470,6 @@ void Intel8080::opPUSH_B()
 
     regs.sp -= 2;
     writeWord(regs.sp, regs.bc);
-    spdlog::debug("PUSH B -> SP: 0x{:04X}", regs.sp);
 }
 
 void Intel8080::opADI_D8()
@@ -2642,8 +2481,6 @@ void Intel8080::opADI_D8()
 
     fetchByte();
     performAdd(byteData, false);
-
-    spdlog::debug("ADI D8 -> A: 0x{:02X} D8: 0x{:02X}", regs.a, byteData);
 }
 
 void Intel8080::opRZ()
@@ -2657,11 +2494,9 @@ void Intel8080::opRZ()
         readWord(regs.sp);
         regs.pc = wordData;
         regs.sp += 2;
-        spdlog::debug("RZ taken -> PC: 0x{:04X} SP: 0x{:04X}", regs.pc, regs.sp);
-        } else {
-        spdlog::debug("RZ not taken -> PC remains: 0x{:04X}", regs.pc);
     }
 }
+
 
 
 void Intel8080::opRET()
@@ -2674,7 +2509,6 @@ void Intel8080::opRET()
     readWord(regs.sp);
     regs.pc = wordData;
     regs.sp += 2;
-    spdlog::debug("RET -> PC: 0x{:04X} SP: 0x{:04X}", regs.pc, regs.sp);
 }
 
 void Intel8080::opJZ()
@@ -2687,9 +2521,6 @@ void Intel8080::opJZ()
     fetchWord();
     if (regs.f.z) {
         regs.pc = wordData;
-        spdlog::debug("JZ taken -> PC: 0x{:04X}", regs.pc);
-    } else {
-        spdlog::debug("JZ not taken -> PC remains: 0x{:04X}", regs.pc);
     }
 }
 
@@ -2705,9 +2536,6 @@ void Intel8080::opCZ()
         regs.sp -= 2;
         writeWord(regs.sp, regs.pc);
         regs.pc = wordData;
-        spdlog::debug("CZ -> PC: 0x{:04X} SP: 0x{:04X}", regs.pc, regs.sp);
-        } else {
-        spdlog::debug("CZ not taken -> PC remains: 0x{:04X}", regs.pc);
     }
 }
 
@@ -2722,7 +2550,6 @@ void Intel8080::opCALL()
     regs.sp -= 2;
     writeWord(regs.sp, regs.pc);
     regs.pc = wordData;
-    spdlog::debug("CALL -> PC: 0x{:04X} SP: 0x{:04X}", regs.pc, regs.sp);
 }  
 
 void Intel8080::opACI_D8()
@@ -2734,8 +2561,6 @@ void Intel8080::opACI_D8()
 
     fetchByte();
     performAdd(byteData, true);
-
-    spdlog::debug("ACI D8 -> A: 0x{:02X} D8: 0x{:02X}", regs.a, byteData);
 }
 
 void Intel8080::opRNC()
@@ -2749,9 +2574,6 @@ void Intel8080::opRNC()
         readWord(regs.sp);
         regs.pc = wordData;
         regs.sp += 2;
-        spdlog::debug("RNC taken -> PC: 0x{:04X} SP: 0x{:04X}", regs.pc, regs.sp);
-        } else {
-        spdlog::debug("RNC not taken -> PC remains: 0x{:04X}", regs.pc);
     }
 }
 
@@ -2766,7 +2588,6 @@ void Intel8080::opPOP_D()
     readWord(regs.sp);
     regs.de = wordData;
     regs.sp += 2;
-    spdlog::debug("POP D -> SP: 0x{:04X}", regs.sp);
 }
 
 void Intel8080::opJNC()
@@ -2779,10 +2600,7 @@ void Intel8080::opJNC()
     fetchWord();
     if (!regs.f.cy) {
         regs.pc = wordData;
-        spdlog::debug("JNC taken -> PC: 0x{:04X}", regs.pc);
-    } else {
-        spdlog::debug("JNC not taken -> PC remains: 0x{:04X}", regs.pc);
-    }
+    } 
 }
 
 
@@ -2794,7 +2612,6 @@ void Intel8080::opOUT_D8()
     // Flags: None  
 
     fetchByte();
-    spdlog::debug("OUT D8 -> D8: 0x{:02X}", byteData);
 }
 
 void Intel8080::opCNC()
@@ -2809,9 +2626,6 @@ void Intel8080::opCNC()
         regs.sp -= 2;
         writeWord(regs.sp, regs.pc);
         regs.pc = wordData;
-        spdlog::debug("CNC -> PC: 0x{:04X} SP: 0x{:04X}", regs.pc, regs.sp);
-        } else {
-        spdlog::debug("CNC not taken -> PC remains: 0x{:04X}", regs.pc);
     }
 }
 
@@ -2824,7 +2638,6 @@ void Intel8080::opPUSH_D()
 
     regs.sp -= 2;
     writeWord(regs.sp, regs.de);
-    spdlog::debug("PUSH D -> SP: 0x{:04X}", regs.sp);
 }
 
 void Intel8080::opSUI_D8()
@@ -2835,8 +2648,6 @@ void Intel8080::opSUI_D8()
 
     fetchByte();
     performSub(byteData, false);
-
-    spdlog::debug("SUI D8 -> A: 0x{:02X} D8: 0x{:02X}", regs.a, byteData);
 }
 
 void Intel8080::opRC()
@@ -2850,9 +2661,6 @@ void Intel8080::opRC()
         readWord(regs.sp);
         regs.pc = wordData;
         regs.sp += 2;
-        spdlog::debug("RC taken -> PC: 0x{:04X} SP: 0x{:04X}", regs.pc, regs.sp);
-        } else {
-        spdlog::debug("RC not taken -> PC remains: 0x{:04X}", regs.pc);
     }
 }
 
@@ -2867,9 +2675,6 @@ void Intel8080::opJC()
     fetchWord();
     if (regs.f.cy) {
         regs.pc = wordData;
-        spdlog::debug("JC taken -> PC: 0x{:04X}", regs.pc);
-    } else {
-        spdlog::debug("JC not taken -> PC remains: 0x{:04X}", regs.pc);
     }
 }
 
@@ -2885,9 +2690,6 @@ void Intel8080::opCC()
         regs.sp -= 2;
         writeWord(regs.sp, regs.pc);
         regs.pc = wordData;
-        spdlog::debug("CC -> PC: 0x{:04X} SP: 0x{:04X}", regs.pc, regs.sp);
-        } else {
-        spdlog::debug("CC not taken -> PC remains: 0x{:04X}", regs.pc);
     }
 }
 
@@ -2900,8 +2702,6 @@ void Intel8080::opSBI_D8()
 
     fetchByte();
     performSub(byteData, true);
-
-    spdlog::debug("SBI D8 -> A: 0x{:02X} D8: 0x{:02X}", regs.a, byteData);
 }
 
 void Intel8080::opRPO()
@@ -2915,9 +2715,6 @@ void Intel8080::opRPO()
         readWord(regs.sp);
         regs.pc = wordData;
         regs.sp += 2;
-        spdlog::debug("RPO taken -> PC: 0x{:04X} SP: 0x{:04X}", regs.pc, regs.sp);
-    } else {
-        spdlog::debug("RPO not taken -> PC remains: 0x{:04X}", regs.pc);
     }
 }
 
@@ -2932,7 +2729,6 @@ void Intel8080::opPOP_H()
     readWord(regs.sp);
     regs.hl = wordData;
     regs.sp += 2;
-    spdlog::debug("POP H -> SP: 0x{:04X}", regs.sp);
 }
 
 void Intel8080::opJPO()
@@ -2945,9 +2741,6 @@ void Intel8080::opJPO()
     fetchWord();
     if (!regs.f.p) {
         regs.pc = wordData;
-        spdlog::debug("JPO taken -> PC: 0x{:04X}", regs.pc);
-    } else {
-        spdlog::debug("JPO not taken -> PC remains: 0x{:04X}", regs.pc);
     }
 }
 
@@ -2975,9 +2768,6 @@ void Intel8080::opCPO()
         regs.sp -= 2;
         writeWord(regs.sp, regs.pc);
         regs.pc = wordData;
-        spdlog::debug("CPO -> PC: 0x{:04X} SP: 0x{:04X}", regs.pc, regs.sp);
-    } else {
-        spdlog::debug("CPO not taken -> PC remains: 0x{:04X}", regs.pc);
     }
 }
 
@@ -2990,7 +2780,6 @@ void Intel8080::opPUSH_H()
 
     regs.sp -= 2;
     writeWord(regs.sp, regs.hl);
-    spdlog::debug("PUSH H -> SP: 0x{:04X}", regs.sp);
 }
 
 void Intel8080::opANI_D8()
@@ -3001,14 +2790,11 @@ void Intel8080::opANI_D8()
     // Flags: S, Z, AC, P, CY
 
     fetchByte();
-    // The "Quirk": AC reflects the logical OR of bit 3
-    // This is inconsistently documented. Google Gemini states that without this behavior, the emulator will fail CPUDiag.bin
+    // Documentation is inconsistent. Some sources state AC is unchanged, others that AC is the OR of bit 3. The standard 8080 diagnostics expect the "OR" behavior
     regs.f.ac = ((regs.a | byteData) & 0x08) != 0;
     regs.f.cy = 0;
     regs.a &= byteData;
     regFlagsSZP(regs.a);
-    
-    spdlog::debug("ANI D8 -> A: 0x{:02X} D8: 0x{:02X}", regs.a, byteData);
 }
 
 void Intel8080::opRPE()
@@ -3022,9 +2808,6 @@ void Intel8080::opRPE()
         readWord(regs.sp);
         regs.pc = wordData;
         regs.sp += 2;
-        spdlog::debug("RPE taken -> PC: 0x{:04X} SP: 0x{:04X}", regs.pc, regs.sp); 
-    } else {
-        spdlog::debug("RPE not taken -> PC remains: 0x{:04X}", regs.pc);
     }
 }
 
@@ -3036,7 +2819,6 @@ void Intel8080::opPCHL()
     // Flags: None  
 
     regs.pc = regs.hl;
-    spdlog::debug("PCHL -> PC: 0x{:04X}", regs.pc);
 }
 
 void Intel8080::opJPE()
@@ -3049,9 +2831,6 @@ void Intel8080::opJPE()
     fetchWord();
     if (regs.f.p) {
         regs.pc = wordData;
-        spdlog::debug("JPE taken -> PC: 0x{:04X}", regs.pc);
-    } else {
-        spdlog::debug("JPE not taken -> PC remains: 0x{:04X}", regs.pc);
     }
 }
 
@@ -3066,8 +2845,6 @@ void Intel8080::opXCHG()
     wordData = regs.de;
     regs.de = regs.hl;
     regs.hl = wordData;
-
-    spdlog::debug("XCHG -> DE: 0x{:04X} HL: 0x{:04X}", regs.de, regs.hl);
 }
 
 void Intel8080::opCPE()
@@ -3082,9 +2859,6 @@ void Intel8080::opCPE()
         regs.sp -= 2;
         writeWord(regs.sp, regs.pc);
         regs.pc = wordData;
-        spdlog::debug("CPE -> PC: 0x{:04X} SP: 0x{:04X}", regs.pc, regs.sp);
-    } else {
-        spdlog::debug("CPE not taken -> PC remains: 0x{:04X}", regs.pc);
     }
 }
 
@@ -3100,8 +2874,6 @@ void Intel8080::opXRI_D8()
     regFlagsSZP(regs.a);
     regs.f.cy = 0;
     regs.f.ac = 0;
-
-    spdlog::debug("XRI D8 -> A: 0x{:02X} D8: 0x{:02X}", regs.a, byteData);
 }
 
 void Intel8080::opRP()
@@ -3115,9 +2887,6 @@ void Intel8080::opRP()
         readWord(regs.sp);
         regs.pc = wordData;
         regs.sp += 2;
-        spdlog::debug("RP taken -> PC: 0x{:04X} SP: 0x{:04X}", regs.pc, regs.sp);
-    } else {
-        spdlog::debug("RP not taken -> PC remains: 0x{:04X}", regs.pc);
     }
 }
 
@@ -3137,8 +2906,6 @@ void Intel8080::opPOP_PSW()
     regs.f.one = 1;
     regs.f.zero = 0;
     regs.f.zero2 = 0;
-
-    spdlog::debug("POP PSW -> A: 0x{:02X} SP: 0x{:04X}", regs.a, regs.sp);
 }
 
 void Intel8080::opJP()
@@ -3151,9 +2918,6 @@ void Intel8080::opJP()
     fetchWord();
     if (!regs.f.s) {
         regs.pc = wordData;
-        spdlog::debug("JP taken -> PC: 0x{:04X}", regs.pc);
-    } else {
-        spdlog::debug("JP not taken -> PC remains: 0x{:04X}", regs.pc);
     }
 }
 
@@ -3165,7 +2929,6 @@ void Intel8080::opDI()
     // Flags: None  
 
     interruptsEnabled = false;
-    spdlog::debug("DI");
 }
 
 void Intel8080::opCP()
@@ -3179,9 +2942,6 @@ void Intel8080::opCP()
         regs.sp -= 2;
         writeWord(regs.sp, regs.pc);
         regs.pc = wordData;
-        spdlog::debug("CP -> PC: 0x{:04X} SP: 0x{:04X}", regs.pc, regs.sp);
-    } else {
-        spdlog::debug("CP not taken -> PC remains: 0x{:04X}", regs.pc);
     }
 }
 
@@ -3194,7 +2954,6 @@ void Intel8080::opPUSH_PSW()
 
     regs.sp -= 2;
     writeWord(regs.sp, regs.af);
-    spdlog::debug("PUSH PSW -> SP: 0x{:04X}", regs.sp);
 }
 
 void Intel8080::opORI_D8()
@@ -3209,8 +2968,6 @@ void Intel8080::opORI_D8()
     regFlagsSZP(regs.a);
     regs.f.cy = 0;
     regs.f.ac = 0;
-
-    spdlog::debug("ORI D8 -> A: 0x{:02X} D8: 0x{:02X}", regs.a, byteData);
 }
 
 void Intel8080::opRM()
@@ -3224,9 +2981,6 @@ void Intel8080::opRM()
         readWord(regs.sp);
         regs.pc = wordData;
         regs.sp += 2;
-        spdlog::debug("RM taken -> PC: 0x{:04X} SP: 0x{:04X}", regs.pc, regs.sp);
-    } else {
-        spdlog::debug("RM not taken -> PC remains: 0x{:04X}", regs.pc);
     }
 }
 
@@ -3238,7 +2992,6 @@ void Intel8080::opSPHL()
     // Flags: None  
 
     regs.sp = regs.hl;
-    spdlog::debug("SPHL -> SP: 0x{:04X}", regs.sp);
 }
 
 
@@ -3252,9 +3005,6 @@ void Intel8080::opJM()
     fetchWord();
     if (regs.f.s) {
         regs.pc = wordData;
-        spdlog::debug("JM taken -> PC: 0x{:04X}", regs.pc);
-    } else {
-        spdlog::debug("JM not taken -> PC remains: 0x{:04X}", regs.pc);
     }
 }
 
@@ -3267,7 +3017,6 @@ void Intel8080::opEI()
 
 
     interruptsEnabled = true;
-    spdlog::debug("EI");
 }
 
 void Intel8080::opCM()
@@ -3282,10 +3031,7 @@ void Intel8080::opCM()
         regs.sp -= 2;
         writeWord(regs.sp, regs.pc);
         regs.pc = wordData;
-        spdlog::debug("CM -> PC: 0x{:04X} SP: 0x{:04X}", regs.pc, regs.sp);
-    } else {
-        spdlog::debug("CM not taken -> PC remains: 0x{:04X}", regs.pc);
-    }
+    } 
 }
 
 
@@ -3300,5 +3046,4 @@ void Intel8080::opCPI_D8()
     BYTE accumulator = regs.a;
     performSub(byteData, false);
     regs.a = accumulator;
-    spdlog::debug("CPI D8 -> A: 0x{:02X} D8: 0x{:02X}", accumulator, byteData);
 }
