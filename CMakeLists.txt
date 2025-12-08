@@ -17,4 +17,8 @@ target_include_directories(Intel8080 PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
+target_link_libraries(Intel8080 PRIVATE sfml-graphics)
+target_link_libraries(Intel8080 PRIVATE sfml-window)
+target_link_libraries(Intel8080 PRIVATE sfml-system)
+
 

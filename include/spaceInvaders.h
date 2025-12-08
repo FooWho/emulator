@@ -4,6 +4,7 @@
 #include "bus.h"
 #include "ram.h"
 #include "rom.h"
+#include <SFML/Graphics.hpp>
 
 class SpaceInvaders {
 
@@ -13,10 +14,13 @@ class SpaceInvaders {
         Ram *workingRam;
         Ram *videoRam;
         Rom *programRom;
+        sf::Clock clock;
+        sf::Time elapsedTime;
 
     public:
         SpaceInvaders();
         ~SpaceInvaders();
+        void Initialize();
         void Run();
 
 

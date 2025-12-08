@@ -13,11 +13,13 @@
 
 int main(int argc, char *argv[])
 {
-    //SpaceInvaders game;
+    SpaceInvaders game;
 
-    //game.Run();
+    game.Initialize();
 
-    
+    game.Run();
+
+    /*
     Intel8080 cpu;
     Bus bus;
     //Rom rom(0x2000); // 8KB ROM
@@ -88,4 +90,5 @@ int main(int argc, char *argv[])
     }
 
     return 0;
+    */
 }
