@@ -92,9 +92,9 @@ void Intel8080::writeWord(WORD address, WORD data)
     bus->writeWord(address, data);
 }
 
-void Intel8080::execute()
+int Intel8080::execute()
 {
-    (this->*pOpcodeLookup[opcode])();
+    return (this->*pOpcodeLookup[opcode])();
 }
 
 void Intel8080::step()

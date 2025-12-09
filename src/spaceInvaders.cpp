@@ -57,9 +57,20 @@ void SpaceInvaders::Run()
     sf::CircleShape shape(100.f);
     shape.setFillColor(sf::Color::Green);
     int cycle_count = 0;
+    elapsedTime = clock.restart();
 
     while (window.isOpen())
     {
+        elapsedTime += clock.restart();
+        if (elapsedTime.asMicroseconds() > 16666) {
+            // Video Interrupt
+
+        }
+        cycle_count = elapsedTime.asMicroseconds() * 2;
+        for (int i = 0; i < cycle_count; i++) {
+            cpu->step();
+        }
+
         sf::Event event;
         while (window.pollEvent(event))
         {
@@ -71,10 +82,5 @@ void SpaceInvaders::Run()
         window.draw(shape);
         window.display();
     
-        elapsedTime = clock.restart();
-        cycle_count = elapsedTime.asMicroseconds() * 2;
-        for (int i = 0; i < cycle_count; i++) {
-            cpu->step();
-        }
     }
 }

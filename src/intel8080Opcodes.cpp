@@ -80,7 +80,6 @@ void Intel8080::buildOpcodeTable()
     pOpcodeLookup[0x45] = &Intel8080::opMOV_B_L;        // MOV B, L instruction
     pOpcodeLookup[0x46] = &Intel8080::opMOV_B_M;        // MOV B, M instruction
     pOpcodeLookup[0x47] = &Intel8080::opMOV_B_A;        // MOV B, A instruction
-    
     pOpcodeLookup[0x48] = &Intel8080::opMOV_C_B;        // MOV C, B instruction
     pOpcodeLookup[0x49] = &Intel8080::opMOV_C_C;        // MOV C, C instruction
     pOpcodeLookup[0x4A] = &Intel8080::opMOV_C_D;        // MOV C, D instruction
@@ -98,7 +97,6 @@ void Intel8080::buildOpcodeTable()
     pOpcodeLookup[0x55] = &Intel8080::opMOV_D_L;        // MOV D, L instruction
     pOpcodeLookup[0x56] = &Intel8080::opMOV_D_M;        // MOV D, M instruction
     pOpcodeLookup[0x57] = &Intel8080::opMOV_D_A;        // MOV D, A instruction
-
     pOpcodeLookup[0x58] = &Intel8080::opMOV_E_B;        // MOV E, B instruction
     pOpcodeLookup[0x59] = &Intel8080::opMOV_E_C;        // MOV E, C instruction
     pOpcodeLookup[0x5A] = &Intel8080::opMOV_E_D;        // MOV E, D instruction
@@ -116,7 +114,6 @@ void Intel8080::buildOpcodeTable()
     pOpcodeLookup[0x65] = &Intel8080::opMOV_H_L;        //
     pOpcodeLookup[0x66] = &Intel8080::opMOV_H_M;        // MOV H, M instruction
     pOpcodeLookup[0x67] = &Intel8080::opMOV_H_A;        // MOV H, A instruction
-
     pOpcodeLookup[0x68] = &Intel8080::opMOV_L_B;        // MOV L, B instruction
     pOpcodeLookup[0x69] = &Intel8080::opMOV_L_C;        // MOV H, L instruction
     pOpcodeLookup[0x6A] = &Intel8080::opMOV_L_D;        // MOV L, D instruction
@@ -134,7 +131,6 @@ void Intel8080::buildOpcodeTable()
     pOpcodeLookup[0x75] = &Intel8080::opMOV_M_L;        // MOV M, L instruction
     pOpcodeLookup[0x76] = &Intel8080::opHLT;            // HLT instruction
     pOpcodeLookup[0x77] = &Intel8080::opMOV_M_A;        // MOV M, A instruction
-
     pOpcodeLookup[0x78] = &Intel8080::opMOV_A_B;        // MOV A, B instruction
     pOpcodeLookup[0x79] = &Intel8080::opMOV_A_C;        // MOV A, C instruction
     pOpcodeLookup[0x7A] = &Intel8080::opMOV_A_D;        // MOV A, D instruction
@@ -169,7 +165,6 @@ void Intel8080::buildOpcodeTable()
     pOpcodeLookup[0x95] = &Intel8080::opSUB_L;          // SUB L from A
     pOpcodeLookup[0x96] = &Intel8080::opSUB_M;          // SUB M
     pOpcodeLookup[0x97] = &Intel8080::opSUB_A;          // SUB A from A
-
     pOpcodeLookup[0x98] = &Intel8080::opSBB_B;          // SUB with Borrow B
     pOpcodeLookup[0x99] = &Intel8080::opSBB_C;          // SUB with Borrow C
     pOpcodeLookup[0x9A] = &Intel8080::opSBB_D;          // SUB with Borrow D
@@ -187,7 +182,6 @@ void Intel8080::buildOpcodeTable()
     pOpcodeLookup[0xA5] = &Intel8080::opANA_L;          // ANA L instruction
     pOpcodeLookup[0xA6] = &Intel8080::opANA_M;          // ANA M instruction
     pOpcodeLookup[0xA7] = &Intel8080::opANA_A;          // ANA A instruction
-
     pOpcodeLookup[0xA8] = &Intel8080::opXRA_B;          // XRA B instruction
     pOpcodeLookup[0xA9] = &Intel8080::opXRA_C;          // XRA C instruction
     pOpcodeLookup[0xAA] = &Intel8080::opXRA_D;          // XRA D instruction
@@ -205,7 +199,6 @@ void Intel8080::buildOpcodeTable()
     pOpcodeLookup[0xB5] = &Intel8080::opORA_L;
     pOpcodeLookup[0xB6] = &Intel8080::opORA_M;
     pOpcodeLookup[0xB7] = &Intel8080::opORA_A;
-
     pOpcodeLookup[0xB8] = &Intel8080::opCMP_B;
     pOpcodeLookup[0xB9] = &Intel8080::opCMP_C;
     pOpcodeLookup[0xBA] = &Intel8080::opCMP_D;
@@ -222,14 +215,14 @@ void Intel8080::buildOpcodeTable()
     pOpcodeLookup[0xC4] = &Intel8080::opCNZ;            // CNZ instruction
     pOpcodeLookup[0xC5] = &Intel8080::opPUSH_B;         // PUSH B instruction
     pOpcodeLookup[0xC6] = &Intel8080::opADI_D8;         // ADI D8 instruction
-
-    pOpcodeLookup[0xCC] = &Intel8080::opCZ;             // Call subroutine if Zero instruction
-    pOpcodeLookup[0xCD] = &Intel8080::opCALL;           // CALL instruction
-    pOpcodeLookup[0xCE] = &Intel8080::opACI_D8;         // ACI D8 instruction
-
+    pOpcodeLookup[0xC7] = &Intel8080::opRST_0;            // RST 0 instruction
     pOpcodeLookup[0xC8] = &Intel8080::opRZ;             // Return if Zero instruction
     pOpcodeLookup[0xC9] = &Intel8080::opRET;            // RET instruction
     pOpcodeLookup[0xCA] = &Intel8080::opJZ;             // JZ instruction
+    pOpcodeLookup[0xCC] = &Intel8080::opCZ;             // Call subroutine if Zero instruction
+    pOpcodeLookup[0xCD] = &Intel8080::opCALL;           // CALL instruction
+    pOpcodeLookup[0xCE] = &Intel8080::opACI_D8;         // ACI D8 instruction
+    pOpcodeLookup[0xCF] = &Intel8080::opRST_1;            // RST 1 instruction
 
     pOpcodeLookup[0xD0] = &Intel8080::opRNC;            // Return if No Carry instruction
     pOpcodeLookup[0xD1] = &Intel8080::opPOP_D;          // POP D instruction
@@ -238,14 +231,12 @@ void Intel8080::buildOpcodeTable()
     pOpcodeLookup[0xD4] = &Intel8080::opCNC;            // CNC instruction
     pOpcodeLookup[0xD5] = &Intel8080::opPUSH_D;         // PUSH D instruction
     pOpcodeLookup[0xD6] = &Intel8080::opSUI_D8;         // SUI D8
-
+    pOpcodeLookup[0xD7] = &Intel8080::opRST_2;            // RST 2 instruction
     pOpcodeLookup[0xD8] = &Intel8080::opRC;             // Return if Carry instruction
-
     pOpcodeLookup[0xDA] = &Intel8080::opJC;             // JC instruction
-
     pOpcodeLookup[0xDC] = &Intel8080::opCC;             // CC instruction
-
     pOpcodeLookup[0xDE] = &Intel8080::opSBI_D8;         // SBI D8
+    pOpcodeLookup[0xDF] = &Intel8080::opRST_3;            // RST 3 instruction
 
     pOpcodeLookup[0xE0] = &Intel8080::opRPO;            // Return if Parity Odd instruction
     pOpcodeLookup[0xE1] = &Intel8080::opPOP_H;          // POP H instruction
@@ -254,13 +245,14 @@ void Intel8080::buildOpcodeTable()
     pOpcodeLookup[0XE4] = &Intel8080::opCPO;            // Call if Parity Odd instruction
     pOpcodeLookup[0xE5] = &Intel8080::opPUSH_H;         // PUSH H instruction
     pOpcodeLookup[0xE6] = &Intel8080::opANI_D8;         // ANI D8 instruction
-
+    pOpcodeLookup[0xE7] = &Intel8080::opRST_4;            // RST 4 instruction
     pOpcodeLookup[0xE8] = &Intel8080::opRPE;            // Return if Parity Even instruction
     pOpcodeLookup[0xE9] = &Intel8080::opPCHL;           // PC <- HL instruction
     pOpcodeLookup[0xEA] = &Intel8080::opJPE;            // JPE instruction
     pOpcodeLookup[0xEB] = &Intel8080::opXCHG;           // eXCHanGe instruction
     pOpcodeLookup[0xEC] = &Intel8080::opCPE;            // Call if Parity Even instruction
     pOpcodeLookup[0xEE] = &Intel8080::opXRI_D8;         // eXclusive oR Immediate D8
+    pOpcodeLookup[0xEF] = &Intel8080::opRST_5;            // RST 5 instruction
 
     pOpcodeLookup[0xF0] = &Intel8080::opRP;             // Return if Positive instruction
     pOpcodeLookup[0xF1] = &Intel8080::opPOP_PSW;        // POP PSW instruction
@@ -269,14 +261,15 @@ void Intel8080::buildOpcodeTable()
     pOpcodeLookup[0xF4] = &Intel8080::opCP;             // Call if Positive instruction
     pOpcodeLookup[0xF5] = &Intel8080::opPUSH_PSW;       // PUSH PSW instruction
     pOpcodeLookup[0xF6] = &Intel8080::opORI_D8;         // OR Immediate data
-
+    pOpcodeLookup[0xF7] = &Intel8080::opRST_6;            // RST 6 instruction
     pOpcodeLookup[0xF8] = &Intel8080::opRM;             // Return if Minus instruction
     pOpcodeLookup[0xF9] = &Intel8080::opSPHL;           // SP <- HL instruction
     pOpcodeLookup[0xFA] = &Intel8080::opJM;             // Jump if Minus instruction
     pOpcodeLookup[0xFB] = &Intel8080::opEI;             // Enable Interrupts instruction
     pOpcodeLookup[0xFC] = &Intel8080::opCM;             // Call if Minus instruction
-
     pOpcodeLookup[0xFE] = &Intel8080::opCPI_D8;         // ComPare Immediate instruction
+    pOpcodeLookup[0xFF] = &Intel8080::opRST_7;            // RST 7 instruction
+
 
 
     // ... Add other opcode mappings here       
@@ -328,14 +321,14 @@ void Intel8080::performSub(BYTE val, bool withBorrow) {
     regs.a = result & 0xFF;
 }
 
-void Intel8080::opILLEGAL()
+int Intel8080::opILLEGAL()
 {
     printf("Illegal opcode executed at address 0x%04X\n", regs.pc - 1);
     printState();
     throw std::runtime_error("Illegal opcode executed");
 }
 
-void Intel8080::opNOP()
+int Intel8080::opNOP()
 {
     // Opcode: 0x00         Mnemonic: NOP
     // Size: 1  byte        Cycles: 4
@@ -343,9 +336,10 @@ void Intel8080::opNOP()
     // Flags: None
 
     // Do nothing
+    return 4;
 }
 
-void Intel8080::opLXI_B_D16()
+int Intel8080::opLXI_B_D16()
 {
     // Opcode: 0x01         Mnemonic: LXI B,D16
     // Size: 3  bytes       Cycles: 10
@@ -354,9 +348,10 @@ void Intel8080::opLXI_B_D16()
 
     fetchWord();
     regs.bc = wordData;
+    return 10;
 }
 
-void Intel8080::opSTAX_B()
+int Intel8080::opSTAX_B()
 {
     // Opcode: 0x02         Mnemonic: STAX B
     // Size: 1  byte        Cycles: 7
@@ -365,9 +360,10 @@ void Intel8080::opSTAX_B()
 
     wordData = regs.bc;
     writeByte(wordData, regs.a);
+    return 7;
 }   
 
-void Intel8080::opINX_B()
+int Intel8080::opINX_B()
 {
     // Opcode: 0x03         Mnemonic: INX B
     // Size: 1 byte         Cycles: 5
@@ -375,9 +371,10 @@ void Intel8080::opINX_B()
     // Flags: None
 
     regs.bc++;
+    return 5;
 }
 
-void Intel8080::opINR_B()
+int Intel8080::opINR_B()
 {
     // Opcode: 0x04         Mnemonic: INR B
     // Size: 1              Cycles: 5
@@ -388,9 +385,10 @@ void Intel8080::opINR_B()
     regFlagsAuxCarry(regs.b, 1, result);
     regFlagsSZP(result);
     regs.b = result;
+    return 5;
 }
 
-void Intel8080::opDCR_B()
+int Intel8080::opDCR_B()
 {
     // Opcode: 0x05         Mnemonic: DCR B
     // Size: 1              Cycles: 5
@@ -401,9 +399,10 @@ void Intel8080::opDCR_B()
     regFlagsAuxCarry(regs.b, 1, result);
     regFlagsSZP(result);
     regs.b = result;
+    return 5;
 }
 
-void Intel8080::opMVI_B_D8()
+int Intel8080::opMVI_B_D8()
 {
     // Opcode: 0x06          Mnemonic: MVI B, D8
     // Size: 2  bytes       Cycles: 7
@@ -412,9 +411,10 @@ void Intel8080::opMVI_B_D8()
 
     fetchByte();
     regs.b = byteData;
+    return 7;
 }
 
-void Intel8080::opRLC()
+int Intel8080::opRLC()
 {
     // Opcode: 0x07         Mnemonic: RLC
     // Size: 1              Cycles: 4
@@ -424,9 +424,10 @@ void Intel8080::opRLC()
     BYTE result = regs.a & 0x80;
     regs.a = (regs.a << 1) | (result >> 7);
     regs.f.cy = result & 0xFF ? 1 : 0;
+    return 4;
 }
 
-void Intel8080::opDAD_B()
+int Intel8080::opDAD_B()
 {
     // Opcode: 0x09         Mnemonic: DAD B
     // Size: 1              Cycles: 10
@@ -436,9 +437,10 @@ void Intel8080::opDAD_B()
     WORD result = regs.hl + regs.bc;
     regFlagsDoubleCarry(regs.hl, regs.bc);
     regs.hl = result;
+    return 10;
 }
 
-void Intel8080::opLDAX_B()
+int Intel8080::opLDAX_B()
 {
     // Opcode: 0x0A         Mnemonic: LDAX B
     // Size: 1  byte        Cycles: 7
@@ -447,9 +449,10 @@ void Intel8080::opLDAX_B()
 
     readByte(regs.bc);
     regs.a = byteData;
+    return 7;
 }
 
-void Intel8080::opDCX_B()
+int Intel8080::opDCX_B()
 {
     // Opcode: 0x0B         Mnemonic: DCX B
     // Size: 1 byte         Cycles: 5
@@ -457,9 +460,10 @@ void Intel8080::opDCX_B()
     // Flags: None
 
     regs.bc--;
+    return 5;
 }
 
-void Intel8080::opINR_C()
+int Intel8080::opINR_C()
 {
     // Opcode: 0x0C         Mnemonic: INR C
     // Size: 1              Cycles: 5
@@ -470,9 +474,10 @@ void Intel8080::opINR_C()
     regFlagsAuxCarry(regs.c, 1, result);
     regFlagsSZP(result);
     regs.c = result;
+    return 5;
 }
 
-void Intel8080::opDCR_C()
+int Intel8080::opDCR_C()
 {
     // Opcode: 0x0D         Mnemonic: DCR C
     // Size: 1              Cycles: 5
@@ -483,9 +488,10 @@ void Intel8080::opDCR_C()
     regFlagsAuxCarry(regs.c, 1, result);
     regFlagsSZP(result);
     regs.c = result;
+    return 5;
 }
 
-void Intel8080::opMVI_C_D8()
+int Intel8080::opMVI_C_D8()
 {
     // Opcode: 0x0E          Mnemonic: MVI C, D8
     // Size: 2  bytes       Cycles: 7
@@ -494,9 +500,10 @@ void Intel8080::opMVI_C_D8()
 
     fetchByte();
     regs.c = byteData;
+    return 7;
 }
 
-void Intel8080::opRRC()
+int Intel8080::opRRC()
 {
     // Opcode: 0x0F         Mnemonic: RRC
     // Size: 1              Cycles: 4
@@ -506,9 +513,10 @@ void Intel8080::opRRC()
     BYTE result = regs.a & 0x01;
     regs.a = (regs.a >> 1) | (result << 7);
     regs.f.cy = result & 0xFF ? 1 : 0;
+    return 4;
 }   
 
-void Intel8080::opLXI_D_D16()
+int Intel8080::opLXI_D_D16()
 {
     // Opcode: 0x11         Mnemonic: LXI D,D16
     // Size: 3  bytes       Cycles: 10
@@ -517,9 +525,10 @@ void Intel8080::opLXI_D_D16()
 
     fetchWord();
     regs.de = wordData;
+    return 10;
 } 
 
-void Intel8080::opSTAX_D()
+int Intel8080::opSTAX_D()
 {
     // Opcode: 0x12         Mnemonic: STAX D
     // Size: 1  byte        Cycles: 7
@@ -527,9 +536,10 @@ void Intel8080::opSTAX_D()
     // Flags: None
 
     writeByte(regs.de, regs.a);
+    return 7;
 }
 
-void Intel8080::opINX_D()
+int Intel8080::opINX_D()
 {
     // Opcode: 0x13         Mnemonic: INX D
     // Size: 1 byte         Cycles: 5
@@ -537,9 +547,10 @@ void Intel8080::opINX_D()
     // Flags: None
 
     regs.de++;
+    return 5;
 }
 
-void Intel8080::opINR_D()
+int Intel8080::opINR_D()
 {
     // Opcode: 0x14         Mnemonic: INR D
     // Size: 1              Cycles: 5
@@ -550,9 +561,10 @@ void Intel8080::opINR_D()
     regFlagsAuxCarry(regs.d, 1, result);
     regFlagsSZP(result);
     regs.d = result;
+    return 5;
 }
 
-void Intel8080::opDCR_D()
+int Intel8080::opDCR_D()
 {
     // Opcode: 0x15         Mnemonic: DCR D
     // Size: 1              Cycles: 5
@@ -563,9 +575,10 @@ void Intel8080::opDCR_D()
     regFlagsAuxCarry(regs.d, 1, result);
     regFlagsSZP(result);
     regs.d = result;
+    return 5;
 }
 
-void Intel8080::opMVI_D_D8()
+int Intel8080::opMVI_D_D8()
 {
     // Opcode: 0x16          Mnemonic: MVI D, D8
     // Size: 2 bytes        Cycles: 7
@@ -574,9 +587,10 @@ void Intel8080::opMVI_D_D8()
 
     fetchByte();
     regs.d = byteData;
+    return 7;
 }
 
-void Intel8080::opRAL()
+int Intel8080::opRAL()
 {
     // Opcode: 0x17         Mnemonic: RAL
     // Size: 1              Cycles: 4
@@ -586,9 +600,10 @@ void Intel8080::opRAL()
     BYTE result = (regs.a & 0x80) >> 7;
     regs.a = (regs.a << 1) | regs.f.cy;
     regs.f.cy = result;
+    return 4;
 }
 
-void Intel8080::opDAD_D()
+int Intel8080::opDAD_D()
 {
     // Opcode: 0x19         Mnemonic: DAD D
     // Size: 1              Cycles: 10
@@ -598,9 +613,10 @@ void Intel8080::opDAD_D()
     WORD result = regs.hl + regs.de;
     regFlagsDoubleCarry(regs.hl, regs.de);
     regs.hl = result;
+    return 10;
 }
 
-void Intel8080::opLDAX_D()
+int Intel8080::opLDAX_D()
 {
     // Opcode: 0x1A         Mnemonic: LDAX D
     // Size: 1              Cycles: 7
@@ -610,9 +626,10 @@ void Intel8080::opLDAX_D()
     wordData = regs.de;
     readByte(wordData);
     regs.a = byteData;
+    return 7;
 }
 
-void Intel8080::opDCX_D()
+int Intel8080::opDCX_D()
 {
     // Opcode: 0x1B         Mnemonic: DCX D
     // Size: 1 byte         Cycles: 5
@@ -620,9 +637,10 @@ void Intel8080::opDCX_D()
     // Flags: None
 
     regs.de--;
+    return 5;
 }
 
-void Intel8080::opINR_E()
+int Intel8080::opINR_E()
 {
     // Opcode: 0x1C         Mnemonic: INR E
     // Size: 1              Cycles: 5
@@ -633,9 +651,10 @@ void Intel8080::opINR_E()
     regFlagsAuxCarry(regs.e, 1, result);
     regFlagsSZP(result);
     regs.e = result;
+    return 5;
 }
 
-void Intel8080::opDCR_E()
+int Intel8080::opDCR_E()
 {
     // Opcode: 0x1D         Mnemonic: DCR E
     // Size: 1              Cycles: 5
@@ -646,9 +665,10 @@ void Intel8080::opDCR_E()
     regFlagsAuxCarry(regs.e, 1, result);
     regFlagsSZP(result);
     regs.e = result;
+    return 5;
 }
 
-void Intel8080::opMVI_E_D8()
+int Intel8080::opMVI_E_D8()
 {
     // Opcode: 0x1E         Mnemonic: MVI E, D8
     // Size: 2  bytes       Cycles: 7
@@ -657,9 +677,10 @@ void Intel8080::opMVI_E_D8()
 
     fetchByte();
     regs.e = byteData;
+    return 7;
 }
 
-void Intel8080::opRAR()
+int Intel8080::opRAR()
 {
     // Opcode: 0x1F         Mnemonic: RAR
     // Size: 1              Cycles: 4
@@ -669,9 +690,10 @@ void Intel8080::opRAR()
     BYTE result = regs.a & 0x01;
     regs.a = (regs.a >> 1) | (regs.f.cy << 7);
     regs.f.cy = result;
+    return 4;
 }
 
-void Intel8080::opLXI_H_D16()
+int Intel8080::opLXI_H_D16()
 {
     // Opcode: 0x21         Mnemonic: LXI H,D16
     // Size: 3  bytes       Cycles: 10
@@ -680,9 +702,10 @@ void Intel8080::opLXI_H_D16()
 
     fetchWord();
     regs.hl = wordData;
+    return 10;
 }
 
-void Intel8080::opSHLD()
+int Intel8080::opSHLD()
 {
     // Opcode: 0x22         Mnemonic: SHLD addr
     // Size: 3 bytes        Cycles: 16
@@ -691,10 +714,11 @@ void Intel8080::opSHLD()
 
     fetchWord();
     writeWord(wordData, regs.hl);
+    return 16;
 }
 
 
-void Intel8080::opINX_H()
+int Intel8080::opINX_H()
 {
     // Opcode: 0x23         Mnemonic: INX H
     // Size: 1 byte         Cycles: 5
@@ -702,9 +726,10 @@ void Intel8080::opINX_H()
     // Flags: None
 
     regs.hl++;
+    return 5;
 }
 
-void Intel8080::opINR_H()
+int Intel8080::opINR_H()
 {
     // Opcode: 0x24         Mnemonic: INR H
     // Size: 1              Cycles: 5
@@ -715,9 +740,10 @@ void Intel8080::opINR_H()
     regFlagsAuxCarry(regs.h, 1, result);
     regFlagsSZP(result);
     regs.h = result;
+    return 5;
 }
 
-void Intel8080::opDCR_H()
+int Intel8080::opDCR_H()
 {
     // Opcode: 0x25         Mnemonic: DCR H
     // Size: 1              Cycles: 5
@@ -728,10 +754,11 @@ void Intel8080::opDCR_H()
     regFlagsAuxCarry(regs.h, 1, result);
     regFlagsSZP(result);
     regs.h = result;
+    return 5;
 }
 
 
-void Intel8080::opMVI_H_D8()
+int Intel8080::opMVI_H_D8()
 {
     // Opcode: 0x26         Mnemonic: MVI H, D8
     // Size 2 bytes         Cycles: 7
@@ -740,9 +767,10 @@ void Intel8080::opMVI_H_D8()
 
     fetchByte();
     regs.h = byteData;
+    return 7;
 }
 
-void Intel8080::opDAA()
+int Intel8080::opDAA()
 {
     // Opcode: 0x27         Mnemonic: DAA
     // Size: 1              Cycles: 4
@@ -759,9 +787,10 @@ void Intel8080::opDAA()
     }
 
     regFlagsSZP(regs.a);
+    return 4;
 }
 
-void Intel8080::opDAD_H()
+int Intel8080::opDAD_H()
 {
     // Opcode: 0x29         Mnemonic: DAD H
     // Size: 1              Cycles: 10
@@ -771,9 +800,10 @@ void Intel8080::opDAD_H()
     WORD result = regs.hl + regs.hl;
     regFlagsDoubleCarry(regs.hl, regs.hl);
     regs.hl = result;
+    return 10;
 }
 
-void Intel8080::opLHLD()
+int Intel8080::opLHLD()
 {
     // Opcode: 0x2A         Mnemonic: LHLD addr
     // Size: 3 bytes        Cycles: 16
@@ -783,9 +813,10 @@ void Intel8080::opLHLD()
     fetchWord();
     readWord(wordData);
     regs.hl = wordData;
+    return 16;
 }
 
-void Intel8080::opDCX_H()
+int Intel8080::opDCX_H()
 {
     // Opcode: 0x2B         Mnemonic: DCX H
     // Size: 1 byte         Cycles: 5
@@ -793,9 +824,10 @@ void Intel8080::opDCX_H()
     // Flags: None
 
     regs.hl--;
+    return 5;
 }
 
-void Intel8080::opINR_L()
+int Intel8080::opINR_L()
 {
     // Opcode: 0x2C         Mnemonic: INR L
     // Size: 1 byte         Cycles: 5
@@ -806,9 +838,10 @@ void Intel8080::opINR_L()
     regFlagsAuxCarry(regs.l, 1, result);
     regFlagsSZP(result);
     regs.l = result;
+    return 5;
 }
 
-void Intel8080::opDCR_L()
+int Intel8080::opDCR_L()
 {
     // Opcode: 0x2D         Mnemonic: DRC L
     // Size: 1 byte         Cycles: 5
@@ -819,9 +852,10 @@ void Intel8080::opDCR_L()
     regFlagsAuxCarry(regs.l, 1, result);
     regFlagsSZP(result);
     regs.l = result;
+    return 5;
 }
 
-void Intel8080::opMVI_L_D8()
+int Intel8080::opMVI_L_D8()
 {
     // Opcode: 0x2E         Mnemonic: MVI L, D8
     // Size: 2 bytes        Cycles: 7
@@ -830,9 +864,10 @@ void Intel8080::opMVI_L_D8()
 
     fetchByte();
     regs.l = byteData;
+    return 7;
 }
 
-void Intel8080::opCMA()
+int Intel8080::opCMA()
 {
     // Opcode: 0x2F         Mnemonic: CMA
     // Size: 1              Cycles: 4
@@ -840,10 +875,11 @@ void Intel8080::opCMA()
     // Flags: None
 
     regs.a = ~regs.a;
+    return 4;
 }
 
 
-void Intel8080::opLXI_SP_D16()
+int Intel8080::opLXI_SP_D16()
 {
     // Opcode: 0x31         Mnemonic: LXI SP,D16
     // Size: 3  bytes       Cycles: 10
@@ -852,9 +888,10 @@ void Intel8080::opLXI_SP_D16()
 
     fetchWord();
     regs.sp = wordData;
+    return 10;
 }
 
-void Intel8080::opSTA()
+int Intel8080::opSTA()
 {
     // Opcode: 0x32         Mnemonic: STA
     // Size: 3  bytes       Cycles: 13
@@ -863,9 +900,10 @@ void Intel8080::opSTA()
 
     fetchWord();
     writeByte(wordData, regs.a);
+    return 13;
 }
 
-void Intel8080::opINX_SP()
+int Intel8080::opINX_SP()
 {
     // Opcode: 0x33         Mnemonic: INX SP
     // Size: 1 byte         Cycles: 5
@@ -873,9 +911,10 @@ void Intel8080::opINX_SP()
     // Flags: None
 
     regs.sp++;
+    return 5;
 }
 
-void Intel8080::opINR_M()
+int Intel8080::opINR_M()
 {
     // Opcode: 0x34         Mnemonic: INR M
     // Size: 1 byte         Cycles: 10
@@ -887,9 +926,10 @@ void Intel8080::opINR_M()
     regFlagsAuxCarry(byteData, 1, result);
     regFlagsSZP(result);
     writeByte(regs.hl, result);
+    return 10;
 }
 
-void Intel8080::opDCR_M()
+int Intel8080::opDCR_M()
 {
     // Opcode: 0x35         Mnemonic: DCR M
     // Size: 1 byte         Cycles: 10
@@ -901,9 +941,10 @@ void Intel8080::opDCR_M()
     regFlagsAuxCarry(byteData, 1, result);
     regFlagsSZP(result);
     writeByte(regs.hl, result);
+    return 10;
 }
 
-void Intel8080::opMVI_M_D8()
+int Intel8080::opMVI_M_D8()
 {
     // Opcode: 0x36         Mnemonic: MVI M, D8
     // Size: 2  bytes       Cycles: 10
@@ -912,9 +953,10 @@ void Intel8080::opMVI_M_D8()
 
     fetchByte();
     writeByte(regs.hl, byteData);
+    return 10;
 }
 
-void Intel8080::opSTC()
+int Intel8080::opSTC()
 {
     // Opcode: 0x37         Mnemonic: STC
     // Size: 1 byte         Cycles: 4
@@ -922,9 +964,10 @@ void Intel8080::opSTC()
     // Flags: CY
 
     regs.f.cy = 1;
+    return 4;
 }
 
-void Intel8080::opDAD_SP()
+int Intel8080::opDAD_SP()
 {
     // Opcode: 0x39         Mnemonic: DAD SP
     // Size: 1              Cycles: 10
@@ -934,9 +977,10 @@ void Intel8080::opDAD_SP()
     WORD result = regs.hl + regs.sp;
     regFlagsDoubleCarry(regs.hl, regs.sp);
     regs.hl = result;
+    return 10;
 }
 
-void Intel8080::opLDA()
+int Intel8080::opLDA()
 {
     // Opcode: 0x3A         Mnemonic: LDA
     // Size: 3 bytes        Cycles: 13
@@ -946,9 +990,10 @@ void Intel8080::opLDA()
     fetchWord();
     readByte(wordData);
     regs.a = byteData;
+    return 13;
 }
 
-void Intel8080::opDCX_SP()
+int Intel8080::opDCX_SP()
 {
     // Opcode: 0x3B         Mnemonic: DCX SP
     // Size: 1 byte         Cycles: 5
@@ -956,9 +1001,10 @@ void Intel8080::opDCX_SP()
     // Flags: None
 
     regs.sp--;
+    return 5;
 }
 
-void Intel8080::opINR_A()
+int Intel8080::opINR_A()
 {
     // Opcode: 0x3C         Mnemonic: INR A
     // Size: 1 byte         Cycles: 5
@@ -969,9 +1015,10 @@ void Intel8080::opINR_A()
     regFlagsAuxCarry(regs.a, 1, result);
     regFlagsSZP(result);
     regs.a = result;
+    return 5;
 }
 
-void Intel8080::opDCR_A()
+int Intel8080::opDCR_A()
 {
     // Opcode: 0x3D         Mnemonic: DCR A
     // Size: 1 byte         Cycles: 5
@@ -982,9 +1029,10 @@ void Intel8080::opDCR_A()
     regFlagsAuxCarry(regs.a, 1, result);
     regFlagsSZP(result);
     regs.a = result;
+    return 5;
 }
 
-void Intel8080::opMVI_A_D8()
+int Intel8080::opMVI_A_D8()
 {
     // Opcode: 0x3E         Mnemonic: MVI A, D8
     // Size: 2 bytes        Cycles: 7
@@ -993,9 +1041,10 @@ void Intel8080::opMVI_A_D8()
 
     fetchByte();
     regs.a = byteData;
+    return 7;
 }
 
-void Intel8080::opCMC()
+int Intel8080::opCMC()
 {
     // Opcode: 0x3F         Mnemonic: CMC
     // Size: 1              Cycles: 4
@@ -1003,9 +1052,10 @@ void Intel8080::opCMC()
     // Flags: CY
 
     regs.f.cy = !regs.f.cy;
+    return 4;
 }
 
-void Intel8080::opMOV_B_B()
+int Intel8080::opMOV_B_B()
 {
     // Opcode: 0x40         Mnemonic: MOV B, B
     // Size: 1 byte         Cycles: 5
@@ -1013,9 +1063,10 @@ void Intel8080::opMOV_B_B()
     // Flags: None
 
     regs.b = regs.b;
+    return 5;
 }
 
-void Intel8080::opMOV_B_C()
+int Intel8080::opMOV_B_C()
 {
     // Opcode: 0x41         Mnemonic: MOV B, C
     // Size: 1 byte         Cycles: 5
@@ -1023,9 +1074,10 @@ void Intel8080::opMOV_B_C()
     // Flags: None
 
     regs.b = regs.c;
+    return 5;
 }
 
-void Intel8080::opMOV_B_D()
+int Intel8080::opMOV_B_D()
 {
     // Opcode: 0x42         Mnemonic: MOV B, D
     // Size: 1 byte         Cycles: 5
@@ -1033,9 +1085,10 @@ void Intel8080::opMOV_B_D()
     // Flags: None
 
     regs.b = regs.d;
+    return 5;
 }
 
-void Intel8080::opMOV_B_E()
+int Intel8080::opMOV_B_E()
 {
     // Opcode: 0x43         Mnemonic: MOV B, E
     // Size: 1 byte         Cycles: 5
@@ -1043,9 +1096,10 @@ void Intel8080::opMOV_B_E()
     // Flags: None
 
     regs.b = regs.e;
+    return 5;
 }
 
-void Intel8080::opMOV_B_H()
+int Intel8080::opMOV_B_H()
 {
     // Opcode: 0x44         Mnemonic: MOV B, H
     // Size: 1 byte         Cycles: 5
@@ -1053,9 +1107,10 @@ void Intel8080::opMOV_B_H()
     // Flags: None
 
     regs.b = regs.h;
+    return 5;
 }
 
-void Intel8080::opMOV_B_L()
+int Intel8080::opMOV_B_L()
 {
     // Opcode: 0x45         Mnemonic: MOV B, L
     // Size: 1 byte         Cycles: 5
@@ -1063,9 +1118,10 @@ void Intel8080::opMOV_B_L()
     // Flags: None
 
     regs.b = regs.l;
+    return 5;
 }
 
-void Intel8080::opMOV_B_M()
+int Intel8080::opMOV_B_M()
 {
     // Opcode: 0x46         Mnemonic: MOV B, M
     // Size: 1 byte         Cycles: 7
@@ -1074,11 +1130,12 @@ void Intel8080::opMOV_B_M()
 
     readByte(regs.hl);
     regs.b = byteData;
+    return 7;
 }
 
 
 
-void Intel8080::opMOV_B_A()
+int Intel8080::opMOV_B_A()
 {
     // Opcode: 0x47         Mnemonic: MOV B, A
     // Size: 1 byte         Cycles: 5
@@ -1086,9 +1143,10 @@ void Intel8080::opMOV_B_A()
     // Flags: None
 
     regs.b = regs.a;
+    return 5;
 }
 
-void Intel8080::opMOV_C_B()
+int Intel8080::opMOV_C_B()
 {
     // Opcode: 0x48         Mnemonic: MOV C, B
     // Size: 1 byte         Cycles: 5
@@ -1096,9 +1154,10 @@ void Intel8080::opMOV_C_B()
     // Flags: None
 
     regs.c = regs.b;
+    return 5;
 }
 
-void Intel8080::opMOV_C_C()
+int Intel8080::opMOV_C_C()
 {
     // Opcode: 0x49         Mnemonic: MOV C, C
     // Size: 1              Cycles: 5
@@ -1106,9 +1165,10 @@ void Intel8080::opMOV_C_C()
     // Flags: None
 
     regs.c = regs.c;
+    return 5;
 }
 
-void Intel8080::opMOV_C_D()
+int Intel8080::opMOV_C_D()
 {
     // Opcode: 0x4A         Mnemonic: MOV C, D
     // Size: 1 byte         Cycles: 5
@@ -1116,9 +1176,10 @@ void Intel8080::opMOV_C_D()
     // Flags: None
 
     regs.c = regs.d;
+    return 5;
 }
 
-void Intel8080::opMOV_C_E()
+int Intel8080::opMOV_C_E()
 {
     // Opcode: 0x4B         Mnemonic: MOV C, E
     // Size: 1 byte         Cycles: 5
@@ -1126,9 +1187,10 @@ void Intel8080::opMOV_C_E()
     // Flags: None
 
     regs.c = regs.e;
+    return 5;
 }
 
-void Intel8080::opMOV_C_H()
+int Intel8080::opMOV_C_H()
 {
     // Opcode: 0x4C         Mnemonic: MOV C, H
     // Size: 1 byte         Cycles: 5
@@ -1136,9 +1198,10 @@ void Intel8080::opMOV_C_H()
     // Flags: None
 
     regs.c = regs.h;
+    return 5;
 }
 
-void Intel8080::opMOV_C_L()
+int Intel8080::opMOV_C_L()
 {
     // Opcode: 0x4D         Mnemonic: MOV C, L
     // Size: 1 byte         Cycles: 5
@@ -1146,9 +1209,10 @@ void Intel8080::opMOV_C_L()
     // Flags: None
 
     regs.c = regs.l;
+    return 5;
 }
 
-void Intel8080::opMOV_C_M()
+int Intel8080::opMOV_C_M()
 {
     // Opcode: 0x4E         Mnemonic: MOV C, M
     // Size: 1              Cycles: 7
@@ -1157,9 +1221,10 @@ void Intel8080::opMOV_C_M()
 
     readByte(regs.hl);
     regs.c = byteData;
+    return 7;
 }
 
-void Intel8080::opMOV_C_A()
+int Intel8080::opMOV_C_A()
 {
     // Opcode: 0x4F         Mnemonic: MOV C, A
     // Size: 1 byte         Cycles: 5
@@ -1167,9 +1232,10 @@ void Intel8080::opMOV_C_A()
     // Flags: None
 
     regs.c = regs.a;
+    return 5;
 }
 
-void Intel8080::opMOV_D_B()
+int Intel8080::opMOV_D_B()
 {
     // Opcode: 0x50         Mnemonic: MOV D, B
     // Size: 1 byte         Cycles: 5
@@ -1177,9 +1243,10 @@ void Intel8080::opMOV_D_B()
     // Flags: None
 
     regs.d = regs.b;
+    return 5;
 }
 
-void Intel8080::opMOV_D_C()
+int Intel8080::opMOV_D_C()
 {
     // Opcode: 0x51         Mnemonic: MOV D, C
     // Size: 1 byte         Cycles: 5
@@ -1187,9 +1254,10 @@ void Intel8080::opMOV_D_C()
     // Flags: None
 
     regs.d = regs.c;
+    return 5;
 }
 
-void Intel8080::opMOV_D_D()
+int Intel8080::opMOV_D_D()
 {
     // Opcode: 0x52         Mnemonic: MOV D, D
     // Size: 1 byte         Cycles: 5
@@ -1197,9 +1265,10 @@ void Intel8080::opMOV_D_D()
     // Flags: None
 
     regs.d = regs.d;
+    return 5;
 }
 
-void Intel8080::opMOV_D_E()
+int Intel8080::opMOV_D_E()
 {
     // Opcode: 0x53         Mnemonic: MOV D, E
     // Size: 1              Cycles: 5
@@ -1207,9 +1276,10 @@ void Intel8080::opMOV_D_E()
     // Flags: None
 
     regs.d = regs.e;
+    return 5;
 }
 
-void Intel8080::opMOV_D_H()
+int Intel8080::opMOV_D_H()
 {
     // Opcode: 0x54         Mnemonic: MOV D, H
     // Size: 1 byte         Cycles: 5
@@ -1217,9 +1287,10 @@ void Intel8080::opMOV_D_H()
     // Flags: None
 
     regs.d = regs.h;
+    return 5;
 }
 
-void Intel8080::opMOV_D_L()
+int Intel8080::opMOV_D_L()
 {
     // Opcode: 0x55         Mnemonic: MOV D, L
     // Size: 1 byte         Cycles: 5
@@ -1227,9 +1298,10 @@ void Intel8080::opMOV_D_L()
     // Flags: None
 
     regs.d = regs.l;
+    return 5;
 }
 
-void Intel8080::opMOV_D_M()
+int Intel8080::opMOV_D_M()
 {
     // Opcode: 0x56         Mnemonic: MOV D, M
     // Size: 1 byte         Cycles: 7
@@ -1238,9 +1310,10 @@ void Intel8080::opMOV_D_M()
 
     readByte(regs.hl);
     regs.d = byteData;
+    return 7;
 }
 
-void Intel8080::opMOV_D_A()
+int Intel8080::opMOV_D_A()
 {
     // Opcode: 0x57         Mnemonic: MOV D, A
     // Size: 1 byte         Cycles: 5
@@ -1248,9 +1321,10 @@ void Intel8080::opMOV_D_A()
     // Flags: None
 
     regs.d = regs.a;
+    return 5;
 }
 
-void Intel8080::opMOV_E_B()
+int Intel8080::opMOV_E_B()
 {
     // Opcode: 0x58         Mnemonic: MOV E, B
     // Size: 1 byte         Cycles: 5
@@ -1258,9 +1332,10 @@ void Intel8080::opMOV_E_B()
     // Flags: None
 
     regs.e = regs.b;
+    return 5;
 }
 
-void Intel8080::opMOV_E_C()
+int Intel8080::opMOV_E_C()
 {
     // Opcode: 0x59         Mnemonic: MOV E, C
     // Size: 1 byte         Cycles: 5
@@ -1268,9 +1343,10 @@ void Intel8080::opMOV_E_C()
     // Flags: None
 
     regs.e = regs.c;
+    return 5;
 }
 
-void Intel8080::opMOV_E_D()
+int Intel8080::opMOV_E_D()
 {
     // Opcode: 0x5A         Mnemonic: MOV E, D
     // Size: 1 byte         Cycles: 5
@@ -1278,9 +1354,10 @@ void Intel8080::opMOV_E_D()
     // Flags: None
 
     regs.e = regs.d;
+    return 5;
 }
 
-void Intel8080::opMOV_E_E()
+int Intel8080::opMOV_E_E()
 {
     // Opcode: 0x5B         Mnemonic: MOV E, E
     // Size: 1 byte         Cycles: 5
@@ -1288,9 +1365,10 @@ void Intel8080::opMOV_E_E()
     // Flags: None
 
     regs.e = regs.e;
+    return 5;
 }
 
-void Intel8080::opMOV_E_H()
+int Intel8080::opMOV_E_H()
 {
     // Opcode: 0x5C         Mnemonic: MOV E, H
     // Size: 1 byte         Cycles: 5
@@ -1298,9 +1376,10 @@ void Intel8080::opMOV_E_H()
     // Flags: None
 
     regs.e = regs.h;
+    return 5;
 }
 
-void Intel8080::opMOV_E_L()
+int Intel8080::opMOV_E_L()
 {
     // Opcode: 0x5D         Mnemonic: MOV E, L
     // Size: 1              Cycles: 5
@@ -1308,9 +1387,10 @@ void Intel8080::opMOV_E_L()
     // Flags: None
 
     regs.e = regs.l;
+    return 5;
 }
 
-void Intel8080::opMOV_E_M()
+int Intel8080::opMOV_E_M()
 {
     // Opcode: 0x5E         Mnemonic: MOV E, M
     // Size: 1  byte        Cycles: 7
@@ -1319,9 +1399,10 @@ void Intel8080::opMOV_E_M()
 
     readByte(regs.hl);
     regs.e = byteData;
+    return 7;
 }
 
-void Intel8080::opMOV_E_A()
+int Intel8080::opMOV_E_A()
 {
     // Opcode: 0x5F         Mnemonic: MOV E, A
     // Size: 1 byte         Cycles: 5
@@ -1329,9 +1410,10 @@ void Intel8080::opMOV_E_A()
     // Flags: None
 
     regs.e = regs.a;
+    return 5;
 }
 
-void Intel8080::opMOV_H_B()
+int Intel8080::opMOV_H_B()
 {
     // Opcode: 0x60         Mnemonic: MOV H, B
     // Size: 1 byte         Cycles: 5
@@ -1339,9 +1421,10 @@ void Intel8080::opMOV_H_B()
     // Flags: None
 
     regs.h = regs.b;
+    return 5;
 }
 
-void Intel8080::opMOV_H_C()
+int Intel8080::opMOV_H_C()
 {
     // Opcode: 0x61         Mnemonic: MOV H, C
     // Size: 1 byte         Cycles: 5
@@ -1349,9 +1432,10 @@ void Intel8080::opMOV_H_C()
     // Flags: None
 
     regs.h = regs.c;
+    return 5;
 }
 
-void Intel8080::opMOV_H_D()
+int Intel8080::opMOV_H_D()
 {
     // Opcode: 0x62         Mnemonic: MOV H, D
     // Size: 1 byte         Cycles: 5
@@ -1359,9 +1443,10 @@ void Intel8080::opMOV_H_D()
     // Flags: None
 
     regs.h = regs.d;
+    return 5;
 }
 
-void Intel8080::opMOV_H_E()
+int Intel8080::opMOV_H_E()
 {
     // Opcode: 0x63         Mnemonic: MOV H, E
     // Size: 1 byte         Cycles: 5
@@ -1369,9 +1454,10 @@ void Intel8080::opMOV_H_E()
     // Flags: None
 
     regs.h = regs.e;
+    return 5;
 }
 
-void Intel8080::opMOV_H_H()
+int Intel8080::opMOV_H_H()
 {
     // Opcode: 0x64         Mnemonic: MOV H, H
     // Size: 1 byte         Cycles: 5
@@ -1379,9 +1465,10 @@ void Intel8080::opMOV_H_H()
     // Flags: None
 
     regs.h = regs.h;
+    return 5;
 }
 
-void Intel8080::opMOV_H_L()
+int Intel8080::opMOV_H_L()
 {
     // Opcode: 0x65         Mnemonic: MOV H, L
     // Size: 1 byte         Cycles: 5
@@ -1389,9 +1476,10 @@ void Intel8080::opMOV_H_L()
     // Flags: None
 
     regs.h = regs.l;
+    return 5;
 }
 
-void Intel8080::opMOV_H_M()
+int Intel8080::opMOV_H_M()
 {
     // Opcode: 0x66         Mnemonic: MOV H, M
     // Size: 1 byte         Cycles: 7
@@ -1400,9 +1488,10 @@ void Intel8080::opMOV_H_M()
 
     readByte(regs.hl);
     regs.h = byteData;
+    return 7;
 }
 
-void Intel8080::opMOV_H_A()
+int Intel8080::opMOV_H_A()
 {
     // Opcode: 0x67         Mnemonic: MOV H, A
     // Size: 1              Cycles: 5
@@ -1410,9 +1499,10 @@ void Intel8080::opMOV_H_A()
     // Flags: None
 
     regs.h = regs.a;
+    return 5;
 }
 
-void Intel8080::opMOV_L_B()
+int Intel8080::opMOV_L_B()
 {
     // Opcode: 0x68         Mnemonic: MOV L, B
     // Size: 1 byte         Cycles: 5
@@ -1420,9 +1510,10 @@ void Intel8080::opMOV_L_B()
     // Flags: None
 
     regs.l = regs.b;
+    return 5;
 }
 
-void Intel8080::opMOV_L_C()
+int Intel8080::opMOV_L_C()
 {
     // Opcode: 0x69         Mnemonic: MOV L, C
     // Size: 1 byte         Cycles: 5
@@ -1430,9 +1521,10 @@ void Intel8080::opMOV_L_C()
     // Flags: None
 
     regs.l = regs.c;
+    return 5;
 }
 
-void Intel8080::opMOV_L_D()
+int Intel8080::opMOV_L_D()
 {
     // Opcode: 0x6A         Mnemonic: MOV L, D
     // Size: 1 byte         Cycles: 5
@@ -1440,9 +1532,10 @@ void Intel8080::opMOV_L_D()
     // Flags: None
 
     regs.l = regs.d;
+    return 5;
 }
 
-void Intel8080::opMOV_L_E()
+int Intel8080::opMOV_L_E()
 {
     // Opcode: 0x6B         Mnemonic: MOV L, E
     // Size: 1 byte         Cycles: 5
@@ -1450,9 +1543,10 @@ void Intel8080::opMOV_L_E()
     // Flags: None
 
     regs.l = regs.e;
+    return 5;
 }
 
-void Intel8080::opMOV_L_H()
+int Intel8080::opMOV_L_H()
 {
     // Opcode: 0x6C         Mnemonic: MOV L, H
     // Size: 1 byte         Cycles: 5
@@ -1460,9 +1554,10 @@ void Intel8080::opMOV_L_H()
     // Flags: None
 
     regs.l = regs.h;
+    return 5;
 }
 
-void Intel8080::opMOV_L_L()
+int Intel8080::opMOV_L_L()
 {
     // Opcode: 0x6D         Mnemonic: MOV L, L
     // Size: 1 byte         Cycles: 5
@@ -1470,9 +1565,10 @@ void Intel8080::opMOV_L_L()
     // Flags: None
 
     regs.l = regs.l;
+    return 5;
 }
 
-void Intel8080::opMOV_L_M()
+int Intel8080::opMOV_L_M()
 {
     // Opcode: 0x6E         Mnemonic: MOV L, M
     // Size: 1 byte         Cycles: 7
@@ -1480,9 +1576,10 @@ void Intel8080::opMOV_L_M()
 
     readByte(regs.hl);
     regs.l = byteData;
+    return 7;
 }
 
-void Intel8080::opMOV_L_A()
+int Intel8080::opMOV_L_A()
 {
     // Opcode: 0x6F         Mmnemonic: MOV L, A
     // Size: 1  byte        Cycles: 5
@@ -1490,9 +1587,10 @@ void Intel8080::opMOV_L_A()
     // Flags: None
 
     regs.l = regs.a;
+    return 5;
 }
 
-void Intel8080::opMOV_M_B()
+int Intel8080::opMOV_M_B()
 {
     // Opcode: 0x70         Mnemonic: MOV M, B
     // Size: 1 byte         Cycles: 7
@@ -1500,9 +1598,10 @@ void Intel8080::opMOV_M_B()
     // Flags: None
 
     writeByte(regs.hl, regs.b);
+    return 7;
 }
 
-void Intel8080::opMOV_M_C()
+int Intel8080::opMOV_M_C()
 {
     // Opcode: 0x71         Mnemonic: MOV M, C
     // Size: 1 byte         Cycles: 7
@@ -1510,9 +1609,10 @@ void Intel8080::opMOV_M_C()
     // Flags: None
 
     writeByte(regs.hl, regs.c);
+    return 7;
 }
 
-void Intel8080::opMOV_M_D()
+int Intel8080::opMOV_M_D()
 {
     // Opcode: 0x72         Mnemonic: MOV M, D
     // Size: 1 byte         Cycles: 7
@@ -1520,9 +1620,10 @@ void Intel8080::opMOV_M_D()
     // Flags: None
 
     writeByte(regs.hl, regs.d);
+    return 7;
 }
 
-void Intel8080::opMOV_M_E()
+int Intel8080::opMOV_M_E()
 {
     // Opcode: 0x73         Mnemonic: MOV M, E
     // Size: 1 byte         Cycles: 7
@@ -1530,9 +1631,10 @@ void Intel8080::opMOV_M_E()
     // Flags: None
 
     writeByte(regs.hl, regs.e);
+    return 7;
 }
 
-void Intel8080::opMOV_M_H()
+int Intel8080::opMOV_M_H()
 {
     // Opcode: 0x74         Mnemonic: MOV M, H
     // Size: 1 byte         Cycles: 7
@@ -1540,9 +1642,10 @@ void Intel8080::opMOV_M_H()
     // Flags: None
 
     writeByte(regs.hl, regs.h);
+    return 7;
 }
 
-void Intel8080::opMOV_M_L()
+int Intel8080::opMOV_M_L()
 {
     // Opcode: 0x75         Mnemonic: MOV M, L
     // Size: 1 byte         Cycles: 7
@@ -1550,9 +1653,10 @@ void Intel8080::opMOV_M_L()
     // Flags: None
 
     writeByte(regs.hl, regs.l);
+    return 7;
 }
 
-void Intel8080::opHLT()
+int Intel8080::opHLT()
 {
     // Opcode: 0x76         Mnemonic: HLT
     // Size: 1 byte         Cycles: 7
@@ -1560,9 +1664,10 @@ void Intel8080::opHLT()
     // Flags: None
 
     isHalted = true;
+    return 7;
 }
 
-void Intel8080::opMOV_M_A()
+int Intel8080::opMOV_M_A()
 {
     // Opcode: 0x77         Mnemonic: MOV M,A
     // Size: 1  byte        Cycles: 7
@@ -1570,9 +1675,10 @@ void Intel8080::opMOV_M_A()
     // Flags: None
 
     writeByte(regs.hl, regs.a);
+    return 7;
 }   
 
-void Intel8080::opMOV_A_B()
+int Intel8080::opMOV_A_B()
 {
     // Opcode: 0x78         Mnemonic: MOV A, B
     // Size: 1 byte         Cycles: 5
@@ -1580,9 +1686,10 @@ void Intel8080::opMOV_A_B()
     // Flags: None
 
     regs.a = regs.b;
+    return 5;
 }
 
-void Intel8080::opMOV_A_C()
+int Intel8080::opMOV_A_C()
 {
     // Opcode: 0x79         Mnemonic: MOV A, C
     // Size: 1 byte         Cycles: 5
@@ -1590,9 +1697,10 @@ void Intel8080::opMOV_A_C()
     // Flags: None
 
     regs.a = regs.c;
+    return 5;
 }
 
-void Intel8080::opMOV_A_D()
+int Intel8080::opMOV_A_D()
 {
     // Opcode: 0x7A         Mnemonic: MOV A, D
     // Size: 1 byte         Cycles: 5
@@ -1600,9 +1708,10 @@ void Intel8080::opMOV_A_D()
     // Flags: None  
 
     regs.a = regs.d;
+    return 5;
 }
 
-void Intel8080::opMOV_A_E()
+int Intel8080::opMOV_A_E()
 {
     // Opcode: 0x7B         Mnemonic: MOV A, E
     // Size: 1 byte         Cycles: 5
@@ -1610,9 +1719,10 @@ void Intel8080::opMOV_A_E()
     // Flags: None
 
     regs.a = regs.e;
+    return 5;
 }
 
-void Intel8080::opMOV_A_H()
+int Intel8080::opMOV_A_H()
 {
     // Opcode: 0x7C         Mnemonic: MOV A,H
     // Size: 1  byte        Cycles: 5
@@ -1620,9 +1730,10 @@ void Intel8080::opMOV_A_H()
     // Flags: None
 
     regs.a = regs.h;
+    return 5;
 }
 
-void Intel8080::opMOV_A_L()
+int Intel8080::opMOV_A_L()
 {
     // Opcode: 0x7D         Mnemonic: MOV A, L
     // Size: 1 byte         Cycles: 5
@@ -1630,9 +1741,10 @@ void Intel8080::opMOV_A_L()
     // Flags: None
 
     regs.a = regs.l;
+    return 5;
 }
 
-void Intel8080::opMOV_A_M()
+int Intel8080::opMOV_A_M()
 {
     // Opcode: 0x7E         Mnemonic: MOV A, M
     // Size: 1 byte         Cycles 7
@@ -1641,9 +1753,10 @@ void Intel8080::opMOV_A_M()
 
     readByte(regs.hl);
     regs.a = byteData;
+    return 7;
 }
 
-void Intel8080::opMOV_A_A()
+int Intel8080::opMOV_A_A()
 {
     // Opcode: 0x7F         Mnemonic: MOV A, A
     // Size: 1 byte         Cycles: 5
@@ -1651,9 +1764,10 @@ void Intel8080::opMOV_A_A()
     // Flags: None
 
     regs.a = regs.a;
+    return 5;
 }
 
-void Intel8080::opADD_B()
+int Intel8080::opADD_B()
 {
     // Opcode: 0x80         Mnemonic: ADD B
     // Size: 1 byte         Cycles: 4
@@ -1661,9 +1775,10 @@ void Intel8080::opADD_B()
     // Flags: S, Z, AC, P, CY
 
     performAdd(regs.b, false);
+    return 4;
 }
 
-void Intel8080::opADD_C()
+int Intel8080::opADD_C()
 {
     // Opcode: 0x81         Mnemonic: ADD C
     // Size: 1 byte         Cycles: 4
@@ -1671,9 +1786,10 @@ void Intel8080::opADD_C()
     // Flags: S, Z, AC, P, CY
 
     performAdd(regs.c, false);
+    return 4;
 }
 
-void Intel8080::opADD_D()
+int Intel8080::opADD_D()
 {
     // Opcode: 0x82         Mnemonic: ADD D
     // Size: 1 byte         Cycles: 4
@@ -1681,9 +1797,10 @@ void Intel8080::opADD_D()
     // Flags: S, Z, AC, P, CY
 
     performAdd(regs.d, false);
+    return 4;
 }
 
-void Intel8080::opADD_E()
+int Intel8080::opADD_E()
 {
     // Opcode: 0x83         Mnemonic: ADD E
     // Size: 1 byte         Cycles: 4
@@ -1691,9 +1808,10 @@ void Intel8080::opADD_E()
     // Flags: S, Z, AC, P, CY
 
     performAdd(regs.e, false);
+    return 4;
 }
 
-void Intel8080::opADD_H()
+int Intel8080::opADD_H()
 {
     // Opcode: 0x84         Mnemonic: ADD H
     // Size: 1 byte         Cycles: 4
@@ -1701,9 +1819,10 @@ void Intel8080::opADD_H()
     // Flags: S, Z, AC, P, CY
 
     performAdd(regs.h, false);
+    return 4;
 }
 
-void Intel8080::opADD_L()
+int Intel8080::opADD_L()
 {
     // Opcode: 0x85         Mnemonic: ADD L
     // Size: 1 byte         Cycles: 4
@@ -1711,9 +1830,10 @@ void Intel8080::opADD_L()
     // Flags: S, Z, AC, P, CY
 
     performAdd(regs.l, false);
+    return 4;
 }
 
-void Intel8080::opADD_M()
+int Intel8080::opADD_M()
 {
     // Opcode: 0x86         Mnemonic: ADD M
     // Size: 1 byte         Cycles: 7
@@ -1722,9 +1842,10 @@ void Intel8080::opADD_M()
 
     readByte(regs.hl);
     performAdd(byteData, false);
+    return 7;
 }
 
-void Intel8080::opADD_A()
+int Intel8080::opADD_A()
 {
     // Opcode: 0x87         Mnemonic: ADD A
     // Size: 1 byte         Cycles: 4
@@ -1732,9 +1853,10 @@ void Intel8080::opADD_A()
     // Flags: S, Z, AC, P, CY
 
     performAdd(regs.a, false);
+    return 4;
 }
 
-void Intel8080::opADC_B()
+int Intel8080::opADC_B()
 {
     // Opcode: 0x88         Mnemonic: ADC B
     // Size: 1 byte         Cycles: 4
@@ -1742,9 +1864,10 @@ void Intel8080::opADC_B()
     // Flags: S, Z, AC, P, CY
 
     performAdd(regs.b, true);
+    return 4;
 }
 
-void Intel8080::opADC_C()
+int Intel8080::opADC_C()
 {
     // Opcode: ox89         Mnemonic: ADC C
     // Size: 1 byte         Cycles: 4
@@ -1752,9 +1875,10 @@ void Intel8080::opADC_C()
     // Flags: S, Z, AC, P, CY
 
     performAdd(regs.c, true);
+    return 4;
 }
 
-void Intel8080::opADC_D()
+int Intel8080::opADC_D()
 {
     // Opcode: 0x8A         Mnemonic: ADC D
     // Size: 1 byte         Cycles: 4
@@ -1762,9 +1886,10 @@ void Intel8080::opADC_D()
     // Flags: S, Z, AC, P, CY
 
     performAdd(regs.d, true);
+    return 4;
 }
 
-void Intel8080::opADC_E()
+int Intel8080::opADC_E()
 {
     // Opcode: 0x8B         Mnemonic: ADC H
     // Size: 1 byte         Cycles: 4
@@ -1772,9 +1897,10 @@ void Intel8080::opADC_E()
     // Flags: S, Z, AC, P, CY
 
     performAdd(regs.e, true);
+    return 4;
 }
 
-void Intel8080::opADC_H()
+int Intel8080::opADC_H()
 {
     // Opcode: 0x8C         Mnemonic: ADC H
     // Size: 1 byte         Cycles: 4
@@ -1782,9 +1908,10 @@ void Intel8080::opADC_H()
     // Flags: S, Z, AC, P, CY
 
     performAdd(regs.h, true);
+    return 4;
 }
 
-void Intel8080::opADC_L()
+int Intel8080::opADC_L()
 {
     // Opcode: 0x8D         Mnemonic: ADC L
     // Size: 1 byte         Cycles: 4
@@ -1792,9 +1919,10 @@ void Intel8080::opADC_L()
     // Flags: S, Z, AC, P, CY
 
     performAdd(regs.l, true);
+    return 4;
 }
 
-void Intel8080::opADC_M()
+int Intel8080::opADC_M()
 {
     // Opcode: 0x8E         Mnemonic: ADC M
     // Size: 1 byte         Cycles: 7
@@ -1803,9 +1931,10 @@ void Intel8080::opADC_M()
 
     readByte(regs.hl);
     performAdd(byteData, true);
+    return 7;
 }
 
-void Intel8080::opADC_A()
+int Intel8080::opADC_A()
 {
     // Opcode: 0x8F         Mnemonic: ADC A
     // Size: 1 byte         Cycles: 4
@@ -1813,9 +1942,10 @@ void Intel8080::opADC_A()
     // Flags: S, Z, AC, P, CY
 
     performAdd(regs.a, true);
+    return 4;
 }
 
-void Intel8080::opSUB_B()
+int Intel8080::opSUB_B()
 {
     // Opcode: 0x90         Mnemonic: SUB B
     // Size: 1 byte         Cycles: 4
@@ -1823,9 +1953,10 @@ void Intel8080::opSUB_B()
     // Flags: S, Z, AC, P, CY
 
     performSub(regs.b, false);
+    return 4;
 }
 
-void Intel8080::opSUB_C()
+int Intel8080::opSUB_C()
 {
     // Opcode: 0x91         Mnemonic: SUB C
     // Size: 1 byte         Cycles: 4
@@ -1833,9 +1964,10 @@ void Intel8080::opSUB_C()
     // Flags: S, Z, AC, P, CY
 
     performSub(regs.c, false);
+    return 4;
 }
 
-void Intel8080::opSUB_D()
+int Intel8080::opSUB_D()
 {
     // Opcode: 0x92         Mnemonic: SUB D
     // Size: 1 byte         Cycles: 4
@@ -1843,9 +1975,10 @@ void Intel8080::opSUB_D()
     // Flags: S, Z, AC, P, CY
 
     performSub(regs.d, false);
+    return 4;
 }
 
-void Intel8080::opSUB_E()
+int Intel8080::opSUB_E()
 {
     // Opcode: 0x93         Mnemonic: SUB E
     // Size: 1 byte         Cycles: 4
@@ -1853,9 +1986,10 @@ void Intel8080::opSUB_E()
     // Flags: S, Z, AC, P, CY
 
     performSub(regs.e, false);
+    return 4;
 }
 
-void Intel8080::opSUB_H()
+int Intel8080::opSUB_H()
 {
     // Opcode: 0x94         Mnemonic: SUB H
     // Size: 1 byte         Cycles: 4
@@ -1863,9 +1997,10 @@ void Intel8080::opSUB_H()
     // Flags: S, Z, AC, P, CY
 
     performSub(regs.h, false);
+    return 4;
 }
 
-void Intel8080::opSUB_L()
+int Intel8080::opSUB_L()
 {
     // Opcode: 0x95         Mnemonic: SUB L
     // Size: 1 byte         Cycles: 4
@@ -1873,9 +2008,10 @@ void Intel8080::opSUB_L()
     // Flags: S, Z, AC, P, CY
 
     performSub(regs.l, false);
+    return 4;
 }
 
-void Intel8080::opSUB_M()
+int Intel8080::opSUB_M()
 {
     // Opcode: 0x96         Mnemonic: SUB M
     // Size: 1 byte         Cycles: 7
@@ -1884,9 +2020,10 @@ void Intel8080::opSUB_M()
 
     readByte(regs.hl);
     performSub(byteData, false);
+    return 7;
 }
 
-void Intel8080::opSUB_A()
+int Intel8080::opSUB_A()
 {
     // Opcode: 0x97         Mnemonic: SUB A
     // Size: 1 byte         Cycles: 4
@@ -1894,9 +2031,10 @@ void Intel8080::opSUB_A()
     // Flags: S, Z, AC, P, CY
 
     performSub(regs.a, false);
+    return 4;
 }
 
-void Intel8080::opSBB_B()
+int Intel8080::opSBB_B()
 {
     // Opcode: 0x98         Mnemonic: SBB B
     // Size: 1 byte         Cycles: 4
@@ -1904,9 +2042,10 @@ void Intel8080::opSBB_B()
     // Flags: S, Z, AC, P, CY
 
     performSub(regs.b, true);
+    return 4;
 }
 
-void Intel8080::opSBB_C()
+int Intel8080::opSBB_C()
 {
     // Opcode: 0x99         Mnemonic: SBB C
     // Size: 1 byte         Cycles: 4
@@ -1914,9 +2053,10 @@ void Intel8080::opSBB_C()
     // Flags: S, Z, AC, P, CY
 
     performSub(regs.c, true);
+    return 4;
 }
 
-void Intel8080::opSBB_D()
+int Intel8080::opSBB_D()
 {
     // Opcode: 0x9A         Mnemonic: SBB D
     // Size: 1 byte         Cycles: 4
@@ -1924,9 +2064,10 @@ void Intel8080::opSBB_D()
     // Flags: S, Z, AC, P, CY
 
     performSub(regs.d, true);
+    return 4;
 }
 
-void Intel8080::opSBB_E()
+int Intel8080::opSBB_E()
 {
     // Opcode: 0x9B         Mnemonic: SBB E
     // Size: 1 byte         Cycles: 4
@@ -1934,9 +2075,10 @@ void Intel8080::opSBB_E()
     // Flags: S, Z, AC, P, CY
 
     performSub(regs.e, true);
+    return 4;
 }
 
-void Intel8080::opSBB_H()
+int Intel8080::opSBB_H()
 {
     // Opcode: 0x9C         Mnemonic: SBB H
     // Size: 1 byte         Cycles: 4
@@ -1944,9 +2086,10 @@ void Intel8080::opSBB_H()
     // Flags: S, Z, AC, P, CY
 
     performSub(regs.h, true);
+    return 4;
 }
 
-void Intel8080::opSBB_L()
+int Intel8080::opSBB_L()
 {
     // Opcode: 0x9D         Mnemonic: SBB L
     // Size: 1 byte         Cycles: 4
@@ -1954,9 +2097,10 @@ void Intel8080::opSBB_L()
     // Flags: S, Z, AC, P, CY
 
     performSub(regs.l, true);
+    return 4;
 }
 
-void Intel8080::opSBB_M()
+int Intel8080::opSBB_M()
 {
     // Opcode: 0x9E         Mnemonic: SBB M
     // Size: 1 byte         Cycles: 7
@@ -1965,9 +2109,10 @@ void Intel8080::opSBB_M()
 
     readByte(regs.hl);
     performSub(byteData, true);
+    return 7;
 }
 
-void Intel8080::opSBB_A()
+int Intel8080::opSBB_A()
 {
     // Opcode: 0x9F         Mnemonic: SBB A
     // Size: 1 byte         Cycles: 4
@@ -1975,9 +2120,10 @@ void Intel8080::opSBB_A()
     // Flags: S, Z, AC, P, CY
 
     performSub(regs.a, true);
+    return 4;
 }
 
-void Intel8080::opANA_B()
+int Intel8080::opANA_B()
 {
     // Opcode: 0xA0         Mnemonic: ANA B
     // Size: 1 byte         Cycles: 4
@@ -1989,9 +2135,10 @@ void Intel8080::opANA_B()
     regs.f.cy = 0;
     regs.f.ac = 0;
     regs.a = result;
+    return 4;
 }
 
-void Intel8080::opANA_C()
+int Intel8080::opANA_C()
 {
     // Opcode: 0xA1         Mnemonic: ANA C
     // Size: 1 byte         Cycles: 4
@@ -2003,9 +2150,10 @@ void Intel8080::opANA_C()
     regs.f.cy = 0;
     regs.f.ac = 0;
     regs.a = result;
+    return 4;
 }
 
-void Intel8080::opANA_D()
+int Intel8080::opANA_D()
 {
     // Opcode: 0xA2         Mnemonic: ANA D
     // Size: 1 byte         Cycles: 4
@@ -2017,9 +2165,10 @@ void Intel8080::opANA_D()
     regs.f.cy = 0;
     regs.f.ac = 0;
     regs.a = result;
+    return 4;
 }
 
-void Intel8080::opANA_E()
+int Intel8080::opANA_E()
 {
     // Opcode: 0xA3         Mnemonic: ANA E
     // Size: 1 byte         Cycles: 4
@@ -2031,9 +2180,10 @@ void Intel8080::opANA_E()
     regs.f.cy = 0;
     regs.f.ac = 0;
     regs.a = result;
+    return 4;
 }
 
-void Intel8080::opANA_H()
+int Intel8080::opANA_H()
 {
     // Opcode: 0xA4         Mnemonic: ANA H
     // Size: 1 byte         Cycles: 4
@@ -2045,9 +2195,10 @@ void Intel8080::opANA_H()
     regs.f.cy = 0;
     regs.f.ac = 0;
     regs.a = result;
+    return 4;
 }
 
-void Intel8080::opANA_L()
+int Intel8080::opANA_L()
 {
     // Opcode: 0xA5         Mnemonic: ANA L
     // Size: 1 byte         Cycles: 4
@@ -2059,9 +2210,10 @@ void Intel8080::opANA_L()
     regs.f.cy = 0;
     regs.f.ac = 0;
     regs.a = result;
+    return 4;
 }
 
-void Intel8080::opANA_M()
+int Intel8080::opANA_M()
 {
     // Opcode: 0xA6         Mnemonic: ANA M
     // Size: 1 byte         Cycles: 7
@@ -2074,9 +2226,10 @@ void Intel8080::opANA_M()
     regs.f.cy = 0;
     regs.f.ac = 0;
     regs.a = result;
+    return 7;
 }
 
-void Intel8080::opANA_A()
+int Intel8080::opANA_A()
 {
     // Opcode: 0xA7         Mnemonic: ANA A
     // Size: 1 byte         Cycles: 4
@@ -2088,9 +2241,10 @@ void Intel8080::opANA_A()
     regs.f.cy = 0;
     regs.f.ac = 0;
     regs.a = result;
+    return 4;
 }
 
-void Intel8080::opXRA_B()
+int Intel8080::opXRA_B()
 {
     // Opcode: 0xA8         Mnemonic: XRA B
     // Size: 1 byte         Cycles: 4
@@ -2102,9 +2256,10 @@ void Intel8080::opXRA_B()
     regs.f.cy = 0;
     regs.f.ac = 0;
     regs.a = result;
+    return 4;
 }
 
-void Intel8080::opXRA_C()
+int Intel8080::opXRA_C()
 {
     // Opcode: 0xA9         Mnemonic: XRA C
     // Size: 1 byte         Cycles: 4
@@ -2116,9 +2271,10 @@ void Intel8080::opXRA_C()
     regs.f.cy = 0;
     regs.f.ac = 0;
     regs.a = result;
+    return 4;
 }
 
-void Intel8080::opXRA_D()
+int Intel8080::opXRA_D()
 {
     // Opcode: 0xAA         Mnemonic: XRA D
     // Size: 1 byte         Cycles: 4
@@ -2129,9 +2285,10 @@ void Intel8080::opXRA_D()
     regs.f.cy = 0;
     regs.f.ac = 0;
     regs.a = result;
+    return 4;
 }
 
-void Intel8080::opXRA_E()
+int Intel8080::opXRA_E()
 {
     // Opcode: 0xAB         Mnemonic: XRA E
     // Size: 1 byte         Cycles: 4
@@ -2143,9 +2300,10 @@ void Intel8080::opXRA_E()
     regs.f.cy = 0;
     regs.f.ac = 0;
     regs.a = result;
+    return 4;
 }
 
-void Intel8080::opXRA_H()
+int Intel8080::opXRA_H()
 {
     // Opcode: 0xAC         Mnemonic: XRA H
     // Size: 1 byte         Cycles: 4
@@ -2157,9 +2315,10 @@ void Intel8080::opXRA_H()
     regs.f.cy = 0;
     regs.f.ac = 0;
     regs.a = result;
+    return 4;
 }
 
-void Intel8080::opXRA_L()
+int Intel8080::opXRA_L()
 {
     // Opcode: 0xAD         Mnemonic: XRA L
     // Size: 1 byte         Cycles: 4
@@ -2171,9 +2330,10 @@ void Intel8080::opXRA_L()
     regs.f.cy = 0;
     regs.f.ac = 0;
     regs.a = result;
+    return 4;
 }
 
-void Intel8080::opXRA_M()
+int Intel8080::opXRA_M()
 {
     // Opcode: 0xAE         Mnemonic: XRA M
     // Size: 1 byte         Cycles: 7
@@ -2186,9 +2346,10 @@ void Intel8080::opXRA_M()
     regs.f.cy = 0;
     regs.f.ac = 0;
     regs.a = result;
+    return 7;
 }
 
-void Intel8080::opXRA_A()
+int Intel8080::opXRA_A()
 {
     // Opcode: 0xAF         Mnemonic: XRA A
     // Size: 1 byte         Cycles: 4
@@ -2201,9 +2362,10 @@ void Intel8080::opXRA_A()
     regs.f.ac = 0;
     regs.f.p = 1;
     regs.f.cy = 0;
+    return 4;
 }
 
-void Intel8080::opORA_B()
+int Intel8080::opORA_B()
 {
     // Opcode: 0xB0         Mnemonic: ORA B
     // Size: 1 byte         Cycles: 4
@@ -2213,9 +2375,10 @@ void Intel8080::opORA_B()
     BYTE result = regs.a | regs.b;
     regFlagsSZP(result);
     regs.a = result;
+    return 4;
 }
 
-void Intel8080::opORA_C()
+int Intel8080::opORA_C()
 {
     // Opcode: 0xB1         Mnemonic: ORA C
     // Size: 1 byte         Cycles: 4
@@ -2225,9 +2388,10 @@ void Intel8080::opORA_C()
     BYTE result = regs.a | regs.c;
     regFlagsSZP(result);
     regs.a = result;
+    return 4;
 }
 
-void Intel8080::opORA_D()
+int Intel8080::opORA_D()
 {
     // Opcode: 0xB2         Mnemonic: ORA D
     // Size: 1 byte         Cycles: 4
@@ -2237,9 +2401,10 @@ void Intel8080::opORA_D()
     BYTE result = regs.a | regs.d;
     regFlagsSZP(result);
     regs.a = result;
+    return 4;
 }
 
-void Intel8080::opORA_E()
+int Intel8080::opORA_E()
 {
     // Opcode: 0xB3         Mnemonic: ORA E
     // Size: 1 byte         Cycles: 4
@@ -2249,9 +2414,10 @@ void Intel8080::opORA_E()
     BYTE result = regs.a | regs.e;
     regFlagsSZP(result);
     regs.a = result;
+    return 4;
 }
 
-void Intel8080::opORA_H()
+int Intel8080::opORA_H()
 {
     // Opcode: 0xB4         Mnemonic: ORA H
     // Size: 1 byte         Cycles: 4
@@ -2261,9 +2427,10 @@ void Intel8080::opORA_H()
     BYTE result = regs.a | regs.h;
     regFlagsSZP(result);
     regs.a = result;
+    return 4;
 }
 
-void Intel8080::opORA_L()
+int Intel8080::opORA_L()
 {
     // Opcode: 0xB5         Mnemonic: ORA L
     // Size: 1 byte         Cycles: 4
@@ -2273,9 +2440,10 @@ void Intel8080::opORA_L()
     BYTE result = regs.a | regs.l;
     regFlagsSZP(result);
     regs.a = result;
+    return 4;
 }
 
-void Intel8080::opORA_M()
+int Intel8080::opORA_M()
 {
     // Opcode: 0xB6         Mnemonic: ORA M
     // Size: 1 byte         Cycles: 7
@@ -2286,9 +2454,10 @@ void Intel8080::opORA_M()
     BYTE result = regs.a | byteData;
     regFlagsSZP(result);
     regs.a = result;
+    return 7;
 }
 
-void Intel8080::opORA_A()
+int Intel8080::opORA_A()
 {
     // Opcode: 0xB7         Mnemonic: ORA A
     // Size: 1 byte         Cycles: 4
@@ -2298,9 +2467,10 @@ void Intel8080::opORA_A()
     BYTE result = regs.a | regs.a;
     regFlagsSZP(result);
     regs.a = result;
+    return 4;
 }
 
-void Intel8080::opCMP_B()
+int Intel8080::opCMP_B()
 {
     // Opcode: 0xB8         Mnemonic: CMP B
     // Size: 1 byte         Cycles: 4
@@ -2310,9 +2480,10 @@ void Intel8080::opCMP_B()
     BYTE accumulator = regs.a;
     performSub(regs.b, false);
     regs.a = accumulator;
+    return 4;
 }
 
-void Intel8080::opCMP_C()
+int Intel8080::opCMP_C()
 {
     // Opcode: 0xB9         Mnemonic: CMP C
     // Size: 1 byte         Cycles: 4
@@ -2322,9 +2493,10 @@ void Intel8080::opCMP_C()
     BYTE accumulator = regs.a;
     performSub(regs.c, false);
     regs.a = accumulator;
+    return 4;
 }
 
-void Intel8080::opCMP_D()
+int Intel8080::opCMP_D()
 {
     // Opcode: 0xBA         Mnemonic: CMP D
     // Size: 1 byte         Cycles: 4
@@ -2334,9 +2506,10 @@ void Intel8080::opCMP_D()
     BYTE accumulator = regs.a;
     performSub(regs.d, false);
     regs.a = accumulator;
+    return 4;
 }
 
-void Intel8080::opCMP_E()
+int Intel8080::opCMP_E()
 {
     // Opcode: 0xBB         Mnemonic: CMP E
     // Size: 1 byte         Cycles: 4
@@ -2346,9 +2519,10 @@ void Intel8080::opCMP_E()
     BYTE accumulator = regs.a;
     performSub(regs.e, false);
     regs.a = accumulator;
+    return 4;
 }
 
-void Intel8080::opCMP_H()
+int Intel8080::opCMP_H()
 {
     // Opcode: 0xBC         Mnemonic: CMP H
     // Size: 1 byte         Cycles: 4
@@ -2358,9 +2532,10 @@ void Intel8080::opCMP_H()
     BYTE accumulator = regs.a;
     performSub(regs.h, false);
     regs.a = accumulator;
+    return 4;
 }
 
-void Intel8080::opCMP_L()
+int Intel8080::opCMP_L()
 {
     // Opcode: 0xBD         Mnemonic: CMP L
     // Size: 1 byte         Cycles: 4
@@ -2370,9 +2545,10 @@ void Intel8080::opCMP_L()
     BYTE accumulator = regs.a;
     performSub(regs.l, false);
     regs.a = accumulator;
+    return 4;
 }
 
-void Intel8080::opCMP_M()
+int Intel8080::opCMP_M()
 {
     // Opcode: 0xBE         Mnemonic: CMP M
     // Size: 1 byte         Cycles: 7
@@ -2382,9 +2558,10 @@ void Intel8080::opCMP_M()
     readByte(regs.hl);
     performSub(byteData, false);
     regs.a = accumulator;
+    return 7;
 }
 
-void Intel8080::opCMP_A()
+int Intel8080::opCMP_A()
 {
     // Opcode: 0xBF         Mnemonic: CMP A
     // Size: 1 byte         Cycles: 4
@@ -2394,9 +2571,10 @@ void Intel8080::opCMP_A()
     BYTE accumulator = regs.a;
     performSub(regs.b, false);
     regs.a = accumulator;
+    return 4;
 }
 
-void Intel8080::opRNZ()
+int Intel8080::opRNZ()
 {
     // Opcode: 0xC0         Mnemonic: RNZ
     // Size: 1  byte        Cycles: 11/5
@@ -2407,10 +2585,12 @@ void Intel8080::opRNZ()
         readWord(regs.sp);
         regs.pc = wordData;
         regs.sp += 2;
+        return 11;
     }
+    return 5;
 }
 
-void Intel8080::opPOP_B()
+int Intel8080::opPOP_B()
 {
     // Opcode: 0xC1         Mnemonic: POP B
     // Size: 1 byte         Cycles: 10
@@ -2420,9 +2600,10 @@ void Intel8080::opPOP_B()
     readWord(regs.sp);
     regs.bc = wordData;
     regs.sp += 2;
+    return 10;
 }
 
-void Intel8080::opJNZ()
+int Intel8080::opJNZ()
 {
     // Opcode: 0xC2         Mnemonic: JNZ addr
     // Size: 3  bytes       Cycles: 10
@@ -2433,9 +2614,10 @@ void Intel8080::opJNZ()
     if (regs.f.z == 0) {
         regs.pc = wordData;
     }
+    return 10;
 }
 
-void Intel8080::opJMP()
+int Intel8080::opJMP()
 {
     // Opcode: 0xC3         Mnemonic: JMP addr
     // Size: 3  bytes       Cycles: 10
@@ -2444,9 +2626,10 @@ void Intel8080::opJMP()
 
     fetchWord();
     regs.pc = wordData;
+    return 10;
 } 
 
-void Intel8080::opCNZ()
+int Intel8080::opCNZ()
 {
     // Opcode: 0xC4         Mnemonic: CNZ addr
     // Size: 3  bytes       Cycles: 17/11
@@ -2458,10 +2641,12 @@ void Intel8080::opCNZ()
         regs.sp -= 2;
         writeWord(regs.sp, regs.pc);
         regs.pc = wordData;
+        return 17;
     }
+    return 11;
 }
 
-void Intel8080::opPUSH_B()
+int Intel8080::opPUSH_B()
 {
     // Opcode: 0xC5         Mnemonic: PUSH B
     // Size: 1  byte        Cycles: 11
@@ -2470,9 +2655,10 @@ void Intel8080::opPUSH_B()
 
     regs.sp -= 2;
     writeWord(regs.sp, regs.bc);
+    return 11;
 }
 
-void Intel8080::opADI_D8()
+int Intel8080::opADI_D8()
 {
     // Opcode: 0xC6         Mnemonic: ADI D8
     // Size: 2  bytes       Cycles: 7
@@ -2481,9 +2667,19 @@ void Intel8080::opADI_D8()
 
     fetchByte();
     performAdd(byteData, false);
+    return 7;
 }
 
-void Intel8080::opRZ()
+int Intel8080::opRST_0()
+{
+    // Opcode: 0xC7         Mnemonic: RST 0
+    // Size: 1  byte        Cycles: 15
+    // Description: Restart 0 - Interrupt handler 0
+
+    return 15;
+}
+
+int Intel8080::opRZ()
 {
     // Opcode: 0xC8         Mnemonic: RZ
     // Size: 1  byte        Cycles: 11/5
@@ -2494,12 +2690,12 @@ void Intel8080::opRZ()
         readWord(regs.sp);
         regs.pc = wordData;
         regs.sp += 2;
+        return 11;
     }
+    return 5;
 }
 
-
-
-void Intel8080::opRET()
+int Intel8080::opRET()
 {
     // Opcode: 0xC9         Mnemonic: RET
     // Size: 1  byte        Cycles: 10
@@ -2509,9 +2705,10 @@ void Intel8080::opRET()
     readWord(regs.sp);
     regs.pc = wordData;
     regs.sp += 2;
+    return 10;
 }
 
-void Intel8080::opJZ()
+int Intel8080::opJZ()
 {
     // Opcode: 0xCA         Mnemonic: JZ
     // Size: 3  bytes       Cycles: 10
@@ -2522,9 +2719,10 @@ void Intel8080::opJZ()
     if (regs.f.z) {
         regs.pc = wordData;
     }
+    return 10;
 }
 
-void Intel8080::opCZ()
+int Intel8080::opCZ()
 {
     // Opcode: 0xCC         Mnemonic: CZ addr
     // Size: 3  bytes       Cycles: 17/11
@@ -2536,10 +2734,12 @@ void Intel8080::opCZ()
         regs.sp -= 2;
         writeWord(regs.sp, regs.pc);
         regs.pc = wordData;
+        return 17;
     }
+    return 11;
 }
 
-void Intel8080::opCALL()
+int Intel8080::opCALL()
 {
     // Opcode: 0xCD         Mnemonic: CALL addr
     // Size: 3  bytes       Cycles: 17
@@ -2550,9 +2750,10 @@ void Intel8080::opCALL()
     regs.sp -= 2;
     writeWord(regs.sp, regs.pc);
     regs.pc = wordData;
+    return 17;
 }  
 
-void Intel8080::opACI_D8()
+int Intel8080::opACI_D8()
 {
     // Opcode: 0xCE         Mnemonic: ACI D8
     // Size: 2  bytes       Cycles: 7
@@ -2561,9 +2762,19 @@ void Intel8080::opACI_D8()
 
     fetchByte();
     performAdd(byteData, true);
+    return 7;
 }
 
-void Intel8080::opRNC()
+int Intel8080::opRST_1()
+{
+    // Opcode: 0xCF         Mnemonic: RST 1
+    // Size: 1  byte        Cycles: 15
+    // Description: Restart 1
+
+    return 15;
+}
+
+int Intel8080::opRNC()
 {
     // Opcode: 0xD0         Mnemonic: RNC
     // Size: 1  byte        Cycles: 11/5
@@ -2574,11 +2785,13 @@ void Intel8080::opRNC()
         readWord(regs.sp);
         regs.pc = wordData;
         regs.sp += 2;
+        return 11;
     }
+    return 5;
 }
 
 
-void Intel8080::opPOP_D()
+int Intel8080::opPOP_D()
 {
     // Opcode: 0xD1         Mnemonic: POP D
     // Size: 1  byte        Cycles: 10
@@ -2588,9 +2801,10 @@ void Intel8080::opPOP_D()
     readWord(regs.sp);
     regs.de = wordData;
     regs.sp += 2;
+    return 10;
 }
 
-void Intel8080::opJNC()
+int Intel8080::opJNC()
 {
     // Opcode: 0xD2         Mnemonic: JNC addr
     // Size: 3  bytes       Cycles: 10
@@ -2600,11 +2814,11 @@ void Intel8080::opJNC()
     fetchWord();
     if (!regs.f.cy) {
         regs.pc = wordData;
-    } 
+    }
+    return 10;
 }
 
-
-void Intel8080::opOUT_D8()
+int Intel8080::opOUT_D8()
 {
     // Opcode: 0xD3         Mnemonic: OUT D8
     // Size: 2 bytes        Cycles: 10
@@ -2612,9 +2826,10 @@ void Intel8080::opOUT_D8()
     // Flags: None  
 
     fetchByte();
+    return 10;
 }
 
-void Intel8080::opCNC()
+int Intel8080::opCNC()
 {
     // Opcode: 0xD4         Mnemonic: CNC addr
     // Size: 3  bytes       Cycles: 17/11
@@ -2626,10 +2841,12 @@ void Intel8080::opCNC()
         regs.sp -= 2;
         writeWord(regs.sp, regs.pc);
         regs.pc = wordData;
+        return 17;
     }
+    return 11;
 }
 
-void Intel8080::opPUSH_D()
+int Intel8080::opPUSH_D()
 {
     // Opcode: 0xD5         Mnemonic: PUSH D
     // Size: 1  byte        Cycles: 11
@@ -2638,9 +2855,10 @@ void Intel8080::opPUSH_D()
 
     regs.sp -= 2;
     writeWord(regs.sp, regs.de);
+    return 11;
 }
 
-void Intel8080::opSUI_D8()
+int Intel8080::opSUI_D8()
 {
     // Opcode: 0xD6         Mnemonic: SUI D8
     // Size: 2  bytes       Cycles: 7
@@ -2648,9 +2866,19 @@ void Intel8080::opSUI_D8()
 
     fetchByte();
     performSub(byteData, false);
+    return 7;
 }
 
-void Intel8080::opRC()
+int Intel8080::opRST_2()
+{
+    // Opcode: 0xD7         Mnemonic: RST 2
+    // Size: 1  byte        Cycles: 15
+    // Description: Restart 2
+
+    return 15;
+}
+
+int Intel8080::opRC()
 {
     // Opcode: 0xD8         Mnemonic: RC
     // Size: 1  byte        Cycles: 11/5
@@ -2661,11 +2889,13 @@ void Intel8080::opRC()
         readWord(regs.sp);
         regs.pc = wordData;
         regs.sp += 2;
+        return 11;
     }
+    return 5;
 }
 
 
-void Intel8080::opJC()
+int Intel8080::opJC()
 {
     // Opcde: 0xDA          Mnemonic: JC addr
     // Size: 3  bytes       Cycles: 10
@@ -2676,9 +2906,10 @@ void Intel8080::opJC()
     if (regs.f.cy) {
         regs.pc = wordData;
     }
+    return 10;
 }
 
-void Intel8080::opCC()
+int Intel8080::opCC()
 {
     // Opcode: 0xDC         Mnemonic: CC addr
     // Size: 3  bytes       Cycles: 17/11
@@ -2690,10 +2921,12 @@ void Intel8080::opCC()
         regs.sp -= 2;
         writeWord(regs.sp, regs.pc);
         regs.pc = wordData;
+        return 17;
     }
+    return 11;
 }
 
-void Intel8080::opSBI_D8()
+int Intel8080::opSBI_D8()
 {
     // Opcode: 0xDE         Mnemonic: SBI D8
     // Size: 2 bytes        Cycles: 7
@@ -2702,9 +2935,19 @@ void Intel8080::opSBI_D8()
 
     fetchByte();
     performSub(byteData, true);
+    return 7;
 }
 
-void Intel8080::opRPO()
+int Intel8080::opRST_3()
+{
+    // Opcode: 0xDF         Mnemonic: RST 3
+    // Size: 1  byte        Cycles: 15
+    // Description: Restart 3
+
+    return 15;
+}
+
+int Intel8080::opRPO()
 {
     // Opcode: 0xE0         Mnemonic: RPO
     // Size: 1  byte        Cycles: 11/5
@@ -2715,11 +2958,13 @@ void Intel8080::opRPO()
         readWord(regs.sp);
         regs.pc = wordData;
         regs.sp += 2;
+        return 11;
     }
+    return 5;
 }
 
 
-void Intel8080::opPOP_H()
+int Intel8080::opPOP_H()
 {
     // Opcode: 0xE1         Mnemonic: POP H
     // Size: 1 byte         Cycles: 10
@@ -2729,9 +2974,10 @@ void Intel8080::opPOP_H()
     readWord(regs.sp);
     regs.hl = wordData;
     regs.sp += 2;
+    return 10;
 }
 
-void Intel8080::opJPO()
+int Intel8080::opJPO()
 {
     // Opcode: 0xE2         Mnemonic: JPO addr
     // Size: 3 bytes        Cycles: 10
@@ -2742,9 +2988,10 @@ void Intel8080::opJPO()
     if (!regs.f.p) {
         regs.pc = wordData;
     }
+    return 10;
 }
 
-void Intel8080::opXTHL()
+int Intel8080::opXTHL()
 {
     // Opcode: 0xE3         Mnemonic: XTHL
     // Size: 1              Cycles: 18
@@ -2755,9 +3002,10 @@ void Intel8080::opXTHL()
     WORD tmp = regs.hl;
     regs.hl = wordData;
     writeWord(regs.sp, tmp);
+    return 18;
 }
 
-void Intel8080::opCPO()
+int Intel8080::opCPO()
 {
     // Opcode: 0xE4         Mnemonic: CPO addr
     // Size: 3  bytes       Cycles: 17/11
@@ -2768,10 +3016,12 @@ void Intel8080::opCPO()
         regs.sp -= 2;
         writeWord(regs.sp, regs.pc);
         regs.pc = wordData;
+        return 17;
     }
+    return 11;
 }
 
-void Intel8080::opPUSH_H()
+int Intel8080::opPUSH_H()
 {
     // Opcode: 0xE5         Mnemonic: PUSH H
     // Size: 1  byte        Cycles: 11
@@ -2780,9 +3030,10 @@ void Intel8080::opPUSH_H()
 
     regs.sp -= 2;
     writeWord(regs.sp, regs.hl);
+    return 11;
 }
 
-void Intel8080::opANI_D8()
+int Intel8080::opANI_D8()
 {
     // Opcode: 0xE6         Mnemonic: ANI D8
     // Size: 2  bytes       Cycles: 7
@@ -2795,9 +3046,19 @@ void Intel8080::opANI_D8()
     regs.f.cy = 0;
     regs.a &= byteData;
     regFlagsSZP(regs.a);
+    return 7;
 }
 
-void Intel8080::opRPE()
+int Intel8080::opRST_4()
+{
+    // Opcode: 0xE7         Mnemonic: RST 4
+    // Size: 1  byte        Cycles: 15
+    // Description: Restart 4
+
+    return 15;
+}
+
+int Intel8080::opRPE()
 {
     // Opcode: 0xE8         Mnemonic: RPE
     // Size: 1  byte        Cycles: 11/5
@@ -2808,10 +3069,12 @@ void Intel8080::opRPE()
         readWord(regs.sp);
         regs.pc = wordData;
         regs.sp += 2;
+        return 11;
     }
+    return 5;
 }
 
-void Intel8080::opPCHL()
+int Intel8080::opPCHL()
 {
     // Opcode: 0xE9         Mnemonic: PCHL
     // Size: 1  byte        Cycles: 5
@@ -2819,9 +3082,10 @@ void Intel8080::opPCHL()
     // Flags: None  
 
     regs.pc = regs.hl;
+    return 5;
 }
 
-void Intel8080::opJPE()
+int Intel8080::opJPE()
 {
     // Opcode: 0xEA         Mnemonic: JPE addr
     // Size: 3  bytes       Cycles: 10
@@ -2832,10 +3096,11 @@ void Intel8080::opJPE()
     if (regs.f.p) {
         regs.pc = wordData;
     }
+    return 10;
 }
 
 
-void Intel8080::opXCHG()
+int Intel8080::opXCHG()
 {
     // Opcode: 0xEB         Mnemonic: XCHG
     // Size: 1  byte        Cycles: 5
@@ -2845,9 +3110,10 @@ void Intel8080::opXCHG()
     wordData = regs.de;
     regs.de = regs.hl;
     regs.hl = wordData;
+    return 5;
 }
 
-void Intel8080::opCPE()
+int Intel8080::opCPE()
 {
     // Opcode: 0xEC         Mnemonic: CPE addr
     // Size: 3 bytes        Cycles 17/11
@@ -2859,10 +3125,12 @@ void Intel8080::opCPE()
         regs.sp -= 2;
         writeWord(regs.sp, regs.pc);
         regs.pc = wordData;
+        return 17;
     }
+    return 11;
 }
 
-void Intel8080::opXRI_D8()
+int Intel8080::opXRI_D8()
 {
     // Opcode: 0xEE         Mnemonic: XRI D8
     // Size: 2  bytes       Cycles: 7
@@ -2874,9 +3142,19 @@ void Intel8080::opXRI_D8()
     regFlagsSZP(regs.a);
     regs.f.cy = 0;
     regs.f.ac = 0;
+    return 7;
 }
 
-void Intel8080::opRP()
+int Intel8080::opRST_5()
+{
+    // Opcode: 0xEF         Mnemonic: RST 5
+    // Size: 1  byte        Cycles: 15
+    // Description: Restart 5
+
+    return 15;
+}
+
+int Intel8080::opRP()
 {
     // Opcode: 0xF0         Mnemonic: RP
     // Size: 1  byte        Cycles: 11/5
@@ -2887,11 +3165,13 @@ void Intel8080::opRP()
         readWord(regs.sp);
         regs.pc = wordData;
         regs.sp += 2;
+        return 11;
     }
+    return 5;
 }
 
 
-void Intel8080::opPOP_PSW()
+int Intel8080::opPOP_PSW()
 {
     // Opcode: 0xF1         Mnemonic: POP PSW
     // Size: 1  byte        Cycles: 10
@@ -2906,9 +3186,10 @@ void Intel8080::opPOP_PSW()
     regs.f.one = 1;
     regs.f.zero = 0;
     regs.f.zero2 = 0;
+    return 10;
 }
 
-void Intel8080::opJP()
+int Intel8080::opJP()
 {
     // Opcode: 0xF2         Mnemonic: JP addr
     // Size: 3 bytes        Cycles: 10
@@ -2919,9 +3200,10 @@ void Intel8080::opJP()
     if (!regs.f.s) {
         regs.pc = wordData;
     }
+    return 10;
 }
 
-void Intel8080::opDI()
+int Intel8080::opDI()
 {
     // Opcode: 0xF3         Mnemonic: DI
     // Size: 1 byte         Cycles: 4
@@ -2929,9 +3211,10 @@ void Intel8080::opDI()
     // Flags: None  
 
     interruptsEnabled = false;
+    return 4;
 }
 
-void Intel8080::opCP()
+int Intel8080::opCP()
 {
     // Opcode: 0xF4         Mnemonic: CP addr
     // Size: 3  bytes       Cycles: 17/11
@@ -2942,10 +3225,12 @@ void Intel8080::opCP()
         regs.sp -= 2;
         writeWord(regs.sp, regs.pc);
         regs.pc = wordData;
+        return 17;
     }
+    return 11;
 }
 
-void Intel8080::opPUSH_PSW()
+int Intel8080::opPUSH_PSW()
 {
     // Opcode: 0xF5         Mnemonic: PUSH PSW
     // Size: 1  byte        Cycles: 11
@@ -2954,9 +3239,10 @@ void Intel8080::opPUSH_PSW()
 
     regs.sp -= 2;
     writeWord(regs.sp, regs.af);
+    return 11;
 }
 
-void Intel8080::opORI_D8()
+int Intel8080::opORI_D8()
 {
     // Opcode: 0xF6         Mnemonic: ORI D8
     // Size: 2  bytes       Cycles: 7
@@ -2968,9 +3254,19 @@ void Intel8080::opORI_D8()
     regFlagsSZP(regs.a);
     regs.f.cy = 0;
     regs.f.ac = 0;
+    return 7;
 }
 
-void Intel8080::opRM()
+int Intel8080::opRST_6()
+{
+    // Opcode: 0xF7         Mnemonic: RST 6
+    // Size: 1  byte        Cycles: 15
+    // Description: Restart 6
+
+    return 15;
+}
+
+int Intel8080::opRM()
 {
     // Opcode: 0xF8         Mnemonic: RM
     // Size: 1  byte        Cycles: 11/5
@@ -2981,10 +3277,12 @@ void Intel8080::opRM()
         readWord(regs.sp);
         regs.pc = wordData;
         regs.sp += 2;
+        return 11;
     }
+    return 5;
 }
 
-void Intel8080::opSPHL()
+int Intel8080::opSPHL()
 {
     // Opcode: 0xF9         Mnemonic: SPHL
     // Size: 1  byte        Cycles: 5
@@ -2992,10 +3290,11 @@ void Intel8080::opSPHL()
     // Flags: None  
 
     regs.sp = regs.hl;
+    return 5;
 }
 
 
-void Intel8080::opJM()
+int Intel8080::opJM()
 {
     // Opcode: 0xFA         Mnemonic: JM
     // Size: 3  bytes       Cycles: 10
@@ -3006,9 +3305,10 @@ void Intel8080::opJM()
     if (regs.f.s) {
         regs.pc = wordData;
     }
+    return 10;
 }
 
-void Intel8080::opEI()
+int Intel8080::opEI()
 {
     // Opcode: 0xFB         Mnemonic: EI
     // Size: 1 byte         Cycles: 4
@@ -3017,11 +3317,12 @@ void Intel8080::opEI()
 
 
     interruptsEnabled = true;
+    return 4;
 }
 
-void Intel8080::opCM()
+int Intel8080::opCM()
 {
-    // Opcode: 0cFC         Mnemonic: CM addr
+    // Opcode: 0xFC         Mnemonic: CM addr
     // Size: 3  bytes       Cycles: 17/11
     // Description: Call subroutine at addr if minus (sign bit is set)
     // Flags: None  
@@ -3031,11 +3332,13 @@ void Intel8080::opCM()
         regs.sp -= 2;
         writeWord(regs.sp, regs.pc);
         regs.pc = wordData;
-    } 
+        return 17;
+    }
+    return 11;
 }
 
 
-void Intel8080::opCPI_D8()
+int Intel8080::opCPI_D8()
 {
     // Opcode:  0xFE        Mnemonic: CPI D8
     // Size: 2 bytes        Cycles: 7
@@ -3046,4 +3349,15 @@ void Intel8080::opCPI_D8()
     BYTE accumulator = regs.a;
     performSub(byteData, false);
     regs.a = accumulator;
+    return 7;
 }
+
+int Intel8080::opRST_7()
+{
+    // Opcode: 0xFF         Mnemonic: RST 
+    // Size: 1  byte        Cycles: 15
+    // Description: Restart 7
+
+    return 15;
+}
+

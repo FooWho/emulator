@@ -11,7 +11,7 @@ class CPU
     virtual ~CPU() = default;
     virtual CPU *attachBus(Bus *bus) = 0;
     virtual void fetchOpcode() = 0;
-    virtual void execute() = 0;
+    virtual int execute() = 0;
 
  protected:
     virtual void fetchByte() = 0;
