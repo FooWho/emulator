@@ -7,7 +7,7 @@ class CPU
 {
  public:
     virtual void reset() = 0;
-    virtual void step() = 0;
+    virtual int step() = 0;
     virtual ~CPU() = default;
     virtual CPU *attachBus(Bus *bus) = 0;
     virtual void fetchOpcode() = 0;

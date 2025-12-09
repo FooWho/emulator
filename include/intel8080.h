@@ -84,7 +84,7 @@ class Intel8080 : public CPU {
     int opDCR_B();         // 0x05
     int opMVI_B_D8();      // 0x06
     int opRLC();           // 0x07 
-                            // 0x08 *NOP*
+                           // 0x08 *NOP*
     int opDAD_B();         // 0x09
     int opLDAX_B();        // 0x0A
     int opDCX_B();         // 0x0B
@@ -93,7 +93,7 @@ class Intel8080 : public CPU {
     int opMVI_C_D8();      // 0x0E
     int opRRC();           // 0x0F
 
-                            // 0x10 *NOP*    
+                           // 0x10 *NOP*    
     int opLXI_D_D16();     // 0x11
     int opSTAX_D();        // 0x12
     int opINX_D();         // 0x13
@@ -101,7 +101,7 @@ class Intel8080 : public CPU {
     int opDCR_D();         // 0x15
     int opMVI_D_D8();      // 0x16
     int opRAL();           // 0x17
-                            // 0x18 *NOP*
+                           // 0x18 *NOP*
     int opDAD_D();         // 0x19
     int opLDAX_D();        // 0x1A
     int opDCX_D();         // 0x1B
@@ -110,7 +110,7 @@ class Intel8080 : public CPU {
     int opMVI_E_D8();      // 0x1E
     int opRAR();           // 0x1F
 
-                            // 0x20 *NOP*
+                           // 0x20 *NOP*
     int opLXI_H_D16();     // 0x21
     int opSHLD();          // 0x22
     int opINX_H();         // 0x23
@@ -118,7 +118,7 @@ class Intel8080 : public CPU {
     int opDCR_H();         // 0x25
     int opMVI_H_D8();      // 0x26
     int opDAA();           // 0x27
-                            // 0x28 *NOP*
+                           // 0x28 *NOP*
     int opDAD_H();         // 0x29
     int opLHLD();          // 0x2A
     int opDCX_H();         // 0x2B
@@ -127,7 +127,7 @@ class Intel8080 : public CPU {
     int opMVI_L_D8();      // 0x2E
     int opCMA();           // 0x2F
 
-                            // 0x30 *NOP*
+                           // 0x30 *NOP*
     int opLXI_SP_D16();    // 0x31
     int opSTA();           // 0x32
     int opINX_SP();        // 0x33
@@ -135,7 +135,7 @@ class Intel8080 : public CPU {
     int opDCR_M();         // 0x35
     int opMVI_M_D8();      // 0x36
     int opSTC();           // 0x37
-                            // 0x38 *NOP*
+                           // 0x38 *NOP*
     int opDAD_SP();        // 0x39
     int opLDA();           // 0x3A
     int opDCX_SP();        // 0x3B
@@ -291,7 +291,7 @@ class Intel8080 : public CPU {
     int opRZ();            // 0xC8
     int opRET();           // 0xC9  
     int opJZ();            // 0xCA
-                            // 0XCB *JMP
+                           // 0XCB *JMP
     int opCZ();            // 0xCC
     int opCALL();          // 0xCD
     int opACI_D8();        // 0xCE
@@ -306,11 +306,11 @@ class Intel8080 : public CPU {
     int opSUI_D8();        // 0xD6
     int opRST_2();         // 0xD7 *** Not yet implimented ***
     int opRC();            // 0xD8
-                            // 0xD9 *RET*
+                           // 0xD9 *RET*
     int opJC();            // 0xDA
     int opIN_D8();         // 0xDB *** Not yet implimented ***
     int opCC();            // 0xDC
-                            // 0xDD *CALL*
+                           // 0xDD *CALL*
     int opSBI_D8();        // 0xDE
     int opRST_3();         // 0xDF *** Not yet implimented ***
 
@@ -327,7 +327,7 @@ class Intel8080 : public CPU {
     int opJPE();           // 0xEA
     int opXCHG();          // 0xEB
     int opCPE();           // 0xEC
-                            // 0xED *CALL*
+                           // 0xED *CALL*
     int opXRI_D8();        // 0xEE
     int opRST_5();         // 0xEF *** Not yet implimented ***
 
@@ -344,7 +344,7 @@ class Intel8080 : public CPU {
     int opJM();            // 0xFA
     int opEI();            // 0xFB
     int opCM();            // 0xFC
-                            // 0xFD *CALL*
+                           // 0xFD *CALL*
     int opCPI_D8();        // 0xFE
     int opRST_7();         // 0xFF *** Not yet implimented ***
 
@@ -363,7 +363,7 @@ class Intel8080 : public CPU {
  public:
     Intel8080();
     void reset() override;
-    void step() override;
+    int step() override;
     Intel8080 *attachBus(Bus *bus) override;
     void fetchOpcode() override;
     int execute() override;

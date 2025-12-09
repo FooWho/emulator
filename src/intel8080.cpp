@@ -97,10 +97,10 @@ int Intel8080::execute()
     return (this->*pOpcodeLookup[opcode])();
 }
 
-void Intel8080::step()
+int Intel8080::step()
 {
     fetchOpcode();
-    execute();
+    return execute();
 }
 
 void Intel8080::printState()
