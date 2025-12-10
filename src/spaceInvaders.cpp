@@ -12,10 +12,12 @@ SpaceInvaders::SpaceInvaders()
     videoRam = new Ram(0x1C00);
     bus = new Bus();
     cpu = new Intel8080();
+    myDevice = new PeripheralDevice(0x01);
     bus->attachMemory(programRom, 0x0000, 0x1FFF);
     bus->attachMemory(workingRam, 0x2000, 0x23FF);
     bus->attachMemory(videoRam, 0x2400, 0x3FFF);
     cpu->attachBus(bus); 
+    cpu->attachInputPeripheral(myDevice, myDevice->getID());
 }
 
 SpaceInvaders::~SpaceInvaders()
@@ -44,7 +46,12 @@ void SpaceInvaders::Initialize()
     }
     fclose(file);
 
+    programRomData[0] = 0xDB;
+    programRomData[1] = 0x01;
+
     programRom->romLoad(programRomData);
+
+    myDevice->setData(0x69);
 
     cpu->reset();
     clock.restart();

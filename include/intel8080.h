@@ -1,9 +1,8 @@
 #pragma once
 #include <array>
 #include "cpu.h"
+#include "peripheralDevice.h"
 #include "types.h"
-
-class Bus;
 
 class Intel8080TestHelper; // Forward declaration
 
@@ -71,6 +70,9 @@ class Intel8080 : public CPU {
     void regFlagsDoubleCarry(WORD op1, WORD op2);
 
     Bus *bus;
+    std::array<PeripheralDevice*, 256> inPeripheralDevices;
+    std::array<PeripheralDevice*, 256> outPeripheralDevices;
+
 
     std::array<int (Intel8080::*)(), 256> pOpcodeLookup;
 
@@ -350,7 +352,6 @@ class Intel8080 : public CPU {
 
     void buildOpcodeTable();
 
- protected:
     void fetchByte() override;
     void fetchWord() override;
     void readOpcode(WORD address) override;
@@ -365,6 +366,9 @@ class Intel8080 : public CPU {
     void reset() override;
     int step() override;
     Intel8080 *attachBus(Bus *bus) override;
+    Intel8080 *attachInputPeripheral(PeripheralDevice *device, BYTE deviceID);
+    Intel8080 *attachOutputPeripheral(PeripheralDevice *device, BYTE deviceID);
+
     void fetchOpcode() override;
     int execute() override;
     void printState();

@@ -215,14 +215,14 @@ void Intel8080::buildOpcodeTable()
     pOpcodeLookup[0xC4] = &Intel8080::opCNZ;            // CNZ instruction
     pOpcodeLookup[0xC5] = &Intel8080::opPUSH_B;         // PUSH B instruction
     pOpcodeLookup[0xC6] = &Intel8080::opADI_D8;         // ADI D8 instruction
-    pOpcodeLookup[0xC7] = &Intel8080::opRST_0;            // RST 0 instruction
+    pOpcodeLookup[0xC7] = &Intel8080::opRST_0;          // RST 0 instruction
     pOpcodeLookup[0xC8] = &Intel8080::opRZ;             // Return if Zero instruction
     pOpcodeLookup[0xC9] = &Intel8080::opRET;            // RET instruction
     pOpcodeLookup[0xCA] = &Intel8080::opJZ;             // JZ instruction
     pOpcodeLookup[0xCC] = &Intel8080::opCZ;             // Call subroutine if Zero instruction
     pOpcodeLookup[0xCD] = &Intel8080::opCALL;           // CALL instruction
     pOpcodeLookup[0xCE] = &Intel8080::opACI_D8;         // ACI D8 instruction
-    pOpcodeLookup[0xCF] = &Intel8080::opRST_1;            // RST 1 instruction
+    pOpcodeLookup[0xCF] = &Intel8080::opRST_1;          // RST 1 instruction
 
     pOpcodeLookup[0xD0] = &Intel8080::opRNC;            // Return if No Carry instruction
     pOpcodeLookup[0xD1] = &Intel8080::opPOP_D;          // POP D instruction
@@ -231,12 +231,13 @@ void Intel8080::buildOpcodeTable()
     pOpcodeLookup[0xD4] = &Intel8080::opCNC;            // CNC instruction
     pOpcodeLookup[0xD5] = &Intel8080::opPUSH_D;         // PUSH D instruction
     pOpcodeLookup[0xD6] = &Intel8080::opSUI_D8;         // SUI D8
-    pOpcodeLookup[0xD7] = &Intel8080::opRST_2;            // RST 2 instruction
+    pOpcodeLookup[0xD7] = &Intel8080::opRST_2;          // RST 2 instruction
     pOpcodeLookup[0xD8] = &Intel8080::opRC;             // Return if Carry instruction
     pOpcodeLookup[0xDA] = &Intel8080::opJC;             // JC instruction
+    pOpcodeLookup[0xDB] = &Intel8080::opIN_D8;          // IN D8 instruction
     pOpcodeLookup[0xDC] = &Intel8080::opCC;             // CC instruction
     pOpcodeLookup[0xDE] = &Intel8080::opSBI_D8;         // SBI D8
-    pOpcodeLookup[0xDF] = &Intel8080::opRST_3;            // RST 3 instruction
+    pOpcodeLookup[0xDF] = &Intel8080::opRST_3;          // RST 3 instruction
 
     pOpcodeLookup[0xE0] = &Intel8080::opRPO;            // Return if Parity Odd instruction
     pOpcodeLookup[0xE1] = &Intel8080::opPOP_H;          // POP H instruction
@@ -245,14 +246,14 @@ void Intel8080::buildOpcodeTable()
     pOpcodeLookup[0XE4] = &Intel8080::opCPO;            // Call if Parity Odd instruction
     pOpcodeLookup[0xE5] = &Intel8080::opPUSH_H;         // PUSH H instruction
     pOpcodeLookup[0xE6] = &Intel8080::opANI_D8;         // ANI D8 instruction
-    pOpcodeLookup[0xE7] = &Intel8080::opRST_4;            // RST 4 instruction
+    pOpcodeLookup[0xE7] = &Intel8080::opRST_4;          // RST 4 instruction
     pOpcodeLookup[0xE8] = &Intel8080::opRPE;            // Return if Parity Even instruction
     pOpcodeLookup[0xE9] = &Intel8080::opPCHL;           // PC <- HL instruction
     pOpcodeLookup[0xEA] = &Intel8080::opJPE;            // JPE instruction
     pOpcodeLookup[0xEB] = &Intel8080::opXCHG;           // eXCHanGe instruction
     pOpcodeLookup[0xEC] = &Intel8080::opCPE;            // Call if Parity Even instruction
     pOpcodeLookup[0xEE] = &Intel8080::opXRI_D8;         // eXclusive oR Immediate D8
-    pOpcodeLookup[0xEF] = &Intel8080::opRST_5;            // RST 5 instruction
+    pOpcodeLookup[0xEF] = &Intel8080::opRST_5;          // RST 5 instruction
 
     pOpcodeLookup[0xF0] = &Intel8080::opRP;             // Return if Positive instruction
     pOpcodeLookup[0xF1] = &Intel8080::opPOP_PSW;        // POP PSW instruction
@@ -261,14 +262,14 @@ void Intel8080::buildOpcodeTable()
     pOpcodeLookup[0xF4] = &Intel8080::opCP;             // Call if Positive instruction
     pOpcodeLookup[0xF5] = &Intel8080::opPUSH_PSW;       // PUSH PSW instruction
     pOpcodeLookup[0xF6] = &Intel8080::opORI_D8;         // OR Immediate data
-    pOpcodeLookup[0xF7] = &Intel8080::opRST_6;            // RST 6 instruction
+    pOpcodeLookup[0xF7] = &Intel8080::opRST_6;          // RST 6 instruction
     pOpcodeLookup[0xF8] = &Intel8080::opRM;             // Return if Minus instruction
     pOpcodeLookup[0xF9] = &Intel8080::opSPHL;           // SP <- HL instruction
     pOpcodeLookup[0xFA] = &Intel8080::opJM;             // Jump if Minus instruction
     pOpcodeLookup[0xFB] = &Intel8080::opEI;             // Enable Interrupts instruction
     pOpcodeLookup[0xFC] = &Intel8080::opCM;             // Call if Minus instruction
     pOpcodeLookup[0xFE] = &Intel8080::opCPI_D8;         // ComPare Immediate instruction
-    pOpcodeLookup[0xFF] = &Intel8080::opRST_7;            // RST 7 instruction
+    pOpcodeLookup[0xFF] = &Intel8080::opRST_7;          // RST 7 instruction
 
 
 
@@ -2908,6 +2909,19 @@ int Intel8080::opJC()
     }
     return 10;
 }
+
+int Intel8080::opIN_D8()
+{
+    // Opcode: 0xDB         Mnemonic: IN D8
+    // Size: 2  bytes       Cycles: 10
+    // Description: Register A will contain data from device D8
+    // Flags: None  
+
+    fetchByte();
+    regs.a = inPeripheralDevices[byteData]->getData();
+    return 10;
+}
+
 
 int Intel8080::opCC()
 {

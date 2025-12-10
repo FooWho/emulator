@@ -1,7 +1,6 @@
 #pragma once
+#include "bus.h"
 #include "types.h"
-
-class Bus; // Forward declaration
 
 class CPU 
 {

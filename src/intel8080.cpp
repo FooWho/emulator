@@ -12,6 +12,8 @@ Intel8080::Intel8080()
     reset();
     buildOpcodeTable();
     bus = nullptr;
+    inPeripheralDevices.fill(nullptr);
+    outPeripheralDevices.fill(nullptr);
 }
 
 void Intel8080::reset()
@@ -41,6 +43,18 @@ void Intel8080::reset()
 Intel8080 *Intel8080::attachBus(Bus *bus)
 {
     this->bus = bus;
+    return this;
+}
+
+Intel8080 *Intel8080::attachInputPeripheral(PeripheralDevice *device, BYTE deviceID)
+{
+    inPeripheralDevices[deviceID] = device;
+    return this;
+}
+
+Intel8080 *Intel8080::attachOutputPeripheral(PeripheralDevice *device, BYTE deviceID)
+{
+    outPeripheralDevices[deviceID] = device;
     return this;
 }
 
