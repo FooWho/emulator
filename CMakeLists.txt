@@ -11,6 +11,7 @@ add_executable(Intel8080
     src/rom.cpp
     src/ram.cpp
     src/bus.cpp
+    src/invadersShiftRegister.cpp
     src/spaceInvaders.cpp
 )
 target_include_directories(Intel8080 PRIVATE 
