@@ -1,8 +1,8 @@
 #pragma once
 #include <array>
-#include "cpu.h"
-#include "intel8080PeripheralDevice.h"
-#include "types.h"
+#include "cpu.hpp"
+#include "intel8080PeripheralDevice.hpp"
+#include "types.hpp"
 
 class Intel8080TestHelper; // Forward declaration
 

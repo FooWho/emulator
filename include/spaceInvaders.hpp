@@ -1,11 +1,12 @@
 #pragma once
-#include "types.h"
-#include "intel8080.h"
-#include "bus.h"
-#include "ram.h"
-#include "rom.h"
-#include "invadersShiftRegister.h"
-#include "intel8080Interrupt.h"
+#include "types.hpp"
+#include "intel8080.hpp"
+#include "bus.hpp"
+#include "ram.hpp"
+#include "rom.hpp"
+#include "invadersShiftRegister.hpp"
+#include "dummyPeripheral.hpp"
+#include "intel8080Interrupt.hpp"
 #include <SFML/Graphics.hpp>
 
 class SpaceInvaders {
@@ -18,6 +19,9 @@ class SpaceInvaders {
         Ram *videoRam;
         Rom *programRom;
         invadersShiftRegister *shiftRegister;
+        DummyPeripheral *dummyPeripheral;
+
+
 
         sf::Clock clock;
         sf::Time elapsedTime;

@@ -2,7 +2,7 @@
 #include <vector>
 #include <memory>
 #include <optional>
-#include "types.h"
+#include "types.hpp"
 
 class VirtualMemory; // Forward declaration
 

@@ -1,6 +1,6 @@
 #include <cstdio>
 #include <stdexcept>
-#include "ram.h"
+#include "ram.hpp"
 
 Ram::Ram(WORD size)
 {

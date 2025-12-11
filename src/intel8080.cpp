@@ -2,9 +2,10 @@
 #include <cstdlib>
 #include <stdexcept>
 #include <array>
-#include "intel8080.h"
-#include "virtualMemory.h"
-#include "bus.h"
+#include "intel8080.hpp"
+#include "virtualMemory.hpp"
+#include "bus.hpp"
+#include "intel8080TestHelper.hpp"
 
 
 Intel8080::Intel8080()
@@ -123,10 +124,9 @@ int Intel8080::step()
     if (interruptsEnabled && interruptFlag) {
         switch (interruptFlag) {
             case 0x01:
-                break;
+                return opRST_1();
             case 0x02:
-                opRST_2();
-                break;
+                return opRST_2();
             case 0x04:
                 break;
             case 0x08:

@@ -1,7 +1,7 @@
 #include <stdexcept>
-#include "bus.h"
-#include "virtualMemory.h"
-#include "intel8080.h"
+#include "bus.hpp"
+#include "virtualMemory.hpp"
+#include "intel8080.hpp"
 
 Bus::Bus()
 {

@@ -1,6 +1,6 @@
 #pragma once
-#include "bus.h"
-#include "types.h"
+#include "bus.hpp"
+#include "types.hpp"
 
 class CPU 
 {

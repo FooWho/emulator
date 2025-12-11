@@ -4,12 +4,12 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include "intel8080.h"
-#include "rom.h"
-#include "ram.h"
-#include "bus.h"
-#include "spaceInvaders.h"
-#include "intel8080TestHelper.h"
+#include "intel8080.hpp"
+#include "rom.hpp"
+#include "ram.hpp"
+#include "bus.hpp"
+#include "spaceInvaders.hpp"
+#include "intel8080TestHelper.hpp"
 
 int main(int argc, char *argv[])
 {

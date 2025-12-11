@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
-#include "types.h"
-#include "virtualMemory.h"
+#include "types.hpp"
+#include "virtualMemory.hpp"
 
 class Rom : public VirtualMemory
 {

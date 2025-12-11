@@ -1,5 +1,5 @@
 #pragma once
-#include "intel8080.h"
+#include "intel8080.hpp"
 
 
 class Intel8080TestHelper {
@@ -143,20 +143,18 @@ class Intel8080TestHelper {
     }
 
     static inline BYTE getByteAtAddress(Intel8080& cpu, WORD address) {
-        cpu.readByte(address);
-        return cpu.byteData;
+        return cpu.bus->readByte(address);
     }
 
     static inline void setByteAtAddress(Intel8080& cpu, WORD address, BYTE value) {
-        cpu.writeByte(address, value);
+        cpu.bus->writeByte(address, value);
     }
 
     static inline WORD getWordAtAddress(Intel8080& cpu, WORD address) {
-        cpu.readWord(address);
-        return cpu.wordData;
+        return cpu.bus->readWord(address);
     }
 
     static inline void setWordAtAddress(Intel8080& cpu, WORD address, WORD value) {
-        cpu.writeWord(address, value);
+        cpu.bus->writeWord(address, value);
     }
 };

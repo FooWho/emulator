@@ -1,7 +1,7 @@
 #include <cstdio>
 #include <stdexcept>
-#include "types.h"
-#include "intel8080.h"
+#include "types.hpp"
+#include "intel8080.hpp"
 
 void Intel8080::buildOpcodeTable()
 {
@@ -2772,6 +2772,10 @@ int Intel8080::opRST_1()
     // Size: 1  byte        Cycles: 15
     // Description: Restart 1
 
+    regs.sp -= 2;
+    writeWord(regs.sp, regs.pc);
+    regs.pc = 0x0008;   
+    interrupt(0x00);
     return 15;
 }
 
@@ -2879,7 +2883,6 @@ int Intel8080::opRST_2()
     regs.sp -= 2;
     writeWord(regs.sp, regs.pc);
     regs.pc = 0x0010;   
-    printf("Yes\n");
     interrupt(0x00);
     return 15;
 }
@@ -2924,6 +2927,7 @@ int Intel8080::opIN_D8()
 
     fetchByte();
     regs.a = inPeripheralDevices[byteData]->readData(byteData);
+    //printf("Read: %d from port %d\n", regs.a, byteData);
     return 10;
 }
 

@@ -1,6 +1,6 @@
 #include <cstdio>
 #include <stdexcept>
-#include "rom.h"
+#include "rom.hpp"
 
 Rom::Rom(WORD size)
 {
