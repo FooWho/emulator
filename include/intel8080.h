@@ -1,7 +1,7 @@
 #pragma once
 #include <array>
 #include "cpu.h"
-#include "peripheralDevice.h"
+#include "intel8080PeripheralDevice.h"
 #include "types.h"
 
 class Intel8080TestHelper; // Forward declaration
@@ -58,6 +58,7 @@ class Intel8080 : public CPU {
 
     bool interruptsEnabled;
     bool isHalted;
+    BYTE interruptFlag;
     BYTE opcode;
     BYTE byteData;
     WORD wordData;
@@ -70,8 +71,8 @@ class Intel8080 : public CPU {
     void regFlagsDoubleCarry(WORD op1, WORD op2);
 
     Bus *bus;
-    std::array<PeripheralDevice*, 256> inPeripheralDevices;
-    std::array<PeripheralDevice*, 256> outPeripheralDevices;
+    std::array<intel8080PeripheralDevice*, 256> inPeripheralDevices;
+    std::array<intel8080PeripheralDevice*, 256> outPeripheralDevices;
 
 
     std::array<int (Intel8080::*)(), 256> pOpcodeLookup;
@@ -365,9 +366,10 @@ class Intel8080 : public CPU {
     Intel8080();
     void reset() override;
     int step() override;
+    void interrupt(BYTE isrVector);
     Intel8080 *attachBus(Bus *bus) override;
-    Intel8080 *attachInputPeripheral(PeripheralDevice *device, BYTE deviceID);
-    Intel8080 *attachOutputPeripheral(PeripheralDevice *device, BYTE deviceID);
+    Intel8080 *attachInputPeripheral(intel8080PeripheralDevice *device, BYTE port);
+    Intel8080 *attachOutputPeripheral(intel8080PeripheralDevice *device, BYTE port);
 
     void fetchOpcode() override;
     int execute() override;

@@ -1,4 +1,6 @@
 #include "spaceInvaders.h"
+#include "intel8080TestHelper.h"
+#include "invadersShiftRegister.h"
 #include <fstream>
 #include <cstdio>
 #include <SFML/Graphics.hpp>
@@ -12,12 +14,13 @@ SpaceInvaders::SpaceInvaders()
     videoRam = new Ram(0x1C00);
     bus = new Bus();
     cpu = new Intel8080();
-    myDevice = new PeripheralDevice(0x01);
+    shiftRegister = new invadersShiftRegister();
     bus->attachMemory(programRom, 0x0000, 0x1FFF);
     bus->attachMemory(workingRam, 0x2000, 0x23FF);
     bus->attachMemory(videoRam, 0x2400, 0x3FFF);
     cpu->attachBus(bus); 
-    cpu->attachInputPeripheral(myDevice, myDevice->getID());
+    cpu->attachOutputPeripheral(shiftRegister, 0x02);
+    cpu->attachOutputPeripheral(shiftRegister, 0x04);
 }
 
 SpaceInvaders::~SpaceInvaders()
@@ -51,8 +54,6 @@ void SpaceInvaders::Initialize()
 
     programRom->romLoad(programRomData);
 
-    myDevice->setData(0x69);
-
     cpu->reset();
     clock.restart();
 }
@@ -66,18 +67,22 @@ void SpaceInvaders::Run()
     int cycle_count = 0;
     clock.restart();
     elapsedTime = sf::Time::Zero;
+    interruptTimer = sf::Time::Zero;
     while (window.isOpen())
     {
         elapsedTime += clock.restart();
-        if (elapsedTime.asMicroseconds() > 16666) {
+        interruptTimer += (elapsedTime + clock.restart());
+        if (interruptTimer.asMicroseconds() > 16666) {
             // Video Interrupt
-
+            cpu->interrupt(0x02);
+            interruptTimer = sf::Time::Zero;
         }
         
         cycle_count = elapsedTime.asMicroseconds() * 2;
         for (int i = 0; i < cycle_count; i++) {
              i += cpu->step();
         }
+        interruptTimer += elapsedTime;
         elapsedTime = sf::Time::Zero;
 
         sf::Event event;

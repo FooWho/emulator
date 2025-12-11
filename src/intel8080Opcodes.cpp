@@ -2876,6 +2876,11 @@ int Intel8080::opRST_2()
     // Size: 1  byte        Cycles: 15
     // Description: Restart 2
 
+    regs.sp -= 2;
+    writeWord(regs.sp, regs.pc);
+    regs.pc = 0x0010;   
+    printf("Yes\n");
+    interrupt(0x00);
     return 15;
 }
 
@@ -2918,7 +2923,7 @@ int Intel8080::opIN_D8()
     // Flags: None  
 
     fetchByte();
-    regs.a = inPeripheralDevices[byteData]->getData();
+    regs.a = inPeripheralDevices[byteData]->readData(byteData);
     return 10;
 }
 

@@ -4,7 +4,8 @@
 #include "bus.h"
 #include "ram.h"
 #include "rom.h"
-#include "peripheralDevice.h"
+#include "invadersShiftRegister.h"
+#include "intel8080Interrupt.h"
 #include <SFML/Graphics.hpp>
 
 class SpaceInvaders {
@@ -16,9 +17,11 @@ class SpaceInvaders {
         Ram *workingRam;
         Ram *videoRam;
         Rom *programRom;
+        invadersShiftRegister *shiftRegister;
+
         sf::Clock clock;
         sf::Time elapsedTime;
-        PeripheralDevice *myDevice;
+        sf::Time interruptTimer;
 
     public:
         SpaceInvaders();

@@ -22,6 +22,7 @@ void Intel8080::reset()
     byteData = 0;
     opcode = 0;
     interruptsEnabled = false;
+    interruptFlag = 0;
     isHalted = false;
 
 
@@ -46,13 +47,13 @@ Intel8080 *Intel8080::attachBus(Bus *bus)
     return this;
 }
 
-Intel8080 *Intel8080::attachInputPeripheral(PeripheralDevice *device, BYTE deviceID)
+Intel8080 *Intel8080::attachInputPeripheral(intel8080PeripheralDevice *device, BYTE port)
 {
-    inPeripheralDevices[deviceID] = device;
+    inPeripheralDevices[port] = device;
     return this;
 }
 
-Intel8080 *Intel8080::attachOutputPeripheral(PeripheralDevice *device, BYTE deviceID)
+Intel8080 *Intel8080::attachOutputPeripheral(intel8080PeripheralDevice *device, BYTE deviceID)
 {
     outPeripheralDevices[deviceID] = device;
     return this;
@@ -111,8 +112,37 @@ int Intel8080::execute()
     return (this->*pOpcodeLookup[opcode])();
 }
 
+void Intel8080::interrupt(BYTE isrVector)
+{
+    interruptFlag = isrVector;
+}
+
 int Intel8080::step()
 {
+    if (isHalted) return 0;
+    if (interruptsEnabled && interruptFlag) {
+        switch (interruptFlag) {
+            case 0x01:
+                break;
+            case 0x02:
+                opRST_2();
+                break;
+            case 0x04:
+                break;
+            case 0x08:
+                break;
+            case 0x0F:
+                break;
+            case 0x20:
+                break;
+            case 0x40:
+                break;
+            case 0x80:
+                break;
+            default:
+                break;
+        }
+    }
     fetchOpcode();
     return execute();
 }
