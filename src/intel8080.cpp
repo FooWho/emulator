@@ -62,6 +62,9 @@ Intel8080 *Intel8080::attachOutputPeripheral(intel8080PeripheralDevice *device, 
 
 void Intel8080::fetchOpcode()
 {
+    //if (regs.pc == 0x15D3) {
+    //    printState();
+    //}
     opcode = bus->readByte(regs.pc++);
 }
 
@@ -120,6 +123,10 @@ void Intel8080::interrupt(BYTE isrVector)
 
 int Intel8080::step()
 {
+    if (regs.pc == 0x15D6) {
+        printState();
+    }
+    bus->incCycleCount();
     if (isHalted) return 0;
     if (interruptsEnabled && interruptFlag) {
         switch (interruptFlag) {

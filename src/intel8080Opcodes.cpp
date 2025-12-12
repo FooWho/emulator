@@ -2831,6 +2831,7 @@ int Intel8080::opOUT_D8()
     // Flags: None  
 
     fetchByte();
+    outPeripheralDevices[byteData]->writeData(byteData, regs.a);
     return 10;
 }
 

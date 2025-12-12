@@ -28,7 +28,10 @@ SpaceInvaders::SpaceInvaders()
     cpu->attachOutputPeripheral(dummyPeripheral, 0x03);
     cpu->attachOutputPeripheral(shiftRegister, 0x04);
     cpu->attachOutputPeripheral(dummyPeripheral, 0x05);
-    cpu->attachOutputPeripheral(shiftRegister, 0x06);
+    cpu->attachOutputPeripheral(dummyPeripheral, 0x06);
+    screen.create(224, 256);
+    spriteScreen.setTexture(screen);
+    spriteScreen.setPosition(0, 0);
     
 }
 
@@ -44,6 +47,17 @@ SpaceInvaders::~SpaceInvaders()
 void SpaceInvaders::Initialize()
 {
     cpu->reset();
+    sf::Uint8* pixels = new sf::Uint8[224 * 256 * 4];
+    for (int i = 0; i < 224 * 256 * 4; i += 4) {
+        pixels[i] = 0;
+        pixels[i + 1] = 0;
+        pixels[i + 2] = 0;
+        pixels[i + 3] = 255;
+    }
+    screen.update(pixels);
+    spriteScreen.setTexture(screen);
+    
+    delete[] pixels;
 
     std::vector<BYTE> programRomData(0x2000);
     FILE *file = fopen("/home/jelison/Workspace/invaders.bin", "rb");
@@ -68,8 +82,8 @@ void SpaceInvaders::Initialize()
 void SpaceInvaders::Run()
 {
     sf::RenderWindow window(sf::VideoMode(224, 256), "SFML works!");
-    sf::CircleShape shape(100.f);
-    shape.setFillColor(sf::Color::Green);
+    //sf::CircleShape shape(100.f);
+    //shape.setFillColor(sf::Color::Green);
     int cycle_count = 0;
     clock.restart();
     elapsedTime = sf::Time::Zero;
@@ -82,7 +96,7 @@ void SpaceInvaders::Run()
         
         elapsedTime += clock.restart();
         interruptTimer += (elapsedTime + clock.restart());
-        if (interruptTimer.asMicroseconds() > 16666) {
+        if (interruptTimer.asMicroseconds() > 16673) {
             // Video Interrupt
             if (flop) {
                 flop = !flop;
@@ -90,6 +104,7 @@ void SpaceInvaders::Run()
             } else {
                 flop = !flop;
                 cpu->interrupt(0x01);
+                screenUpdate();
             }
             interruptTimer = sf::Time::Zero;
         }
@@ -97,6 +112,7 @@ void SpaceInvaders::Run()
         cycle_count = elapsedTime.asMicroseconds() * 2;
         for (int i = 0; i < cycle_count; i++) {
             pc = Intel8080TestHelper::getRegisterPC(*cpu);
+            /*
             switch (pc) {
             case 0x0008:
                 //printf("ScanLine96\n");
@@ -142,7 +158,7 @@ void SpaceInvaders::Run()
             default:
                 //printf("default: 0x%04X\n", pc);
                 break;
-        }
+        }*/
              i += cpu->step();
         }
         interruptTimer += elapsedTime;
@@ -156,8 +172,30 @@ void SpaceInvaders::Run()
         }
 
         window.clear();
-        window.draw(shape);
+        window.draw(spriteScreen);
+        //window.draw(shape);
         window.display();
     
     }
+}
+
+void SpaceInvaders::screenUpdate()
+{
+    sf::Uint8* pixels = new sf::Uint8[224 * 256 * 4];
+    BYTE block = 0;
+    for (int i = 0; i <= (224 * 256 * 4)/8; i += 4) {
+        //printf("Reading: %d, %d\n", i/4, i);
+        block = videoRam->read((i / 4) / 8);
+        for (int j = 0; j < 8; j++) {
+            if (block & (1 << j)) {
+                pixels[i] = 255;
+                pixels[i + 1] = 255;
+                pixels[i + 2] = 255;
+                pixels[i + 3] = 255;
+            }
+        }
+    }
+    screen.update(pixels);
+    spriteScreen.setTexture(screen);
+    delete[] pixels;
 }

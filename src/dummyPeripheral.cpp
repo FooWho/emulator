@@ -10,6 +10,6 @@ void DummyPeripheral::writeData(BYTE port, BYTE data)
 BYTE DummyPeripheral::readData(BYTE port)
 {
     //printf("Reading from port 0x%02X\n", port);
-    if (port == 0x01) return 0x01;
+    //if (port == 0x01) return 0x01;
     return 0x00;
 }

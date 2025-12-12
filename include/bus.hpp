@@ -8,6 +8,7 @@ class VirtualMemory; // Forward declaration
 
 class Bus {
  private:
+  uint64_t cycle_count;
   struct MemoryMapping {
       WORD startAddress;
       WORD endAddress;
@@ -27,4 +28,6 @@ class Bus {
   void writeWord(WORD address, WORD data);
   Bus(const Bus&) = delete;
   Bus& operator=(const Bus&) = delete;
+  void incCycleCount() { cycle_count++; }
+  uint64_t getCycleCount() { return cycle_count; }
 };

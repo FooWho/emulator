@@ -5,6 +5,7 @@
 
 Bus::Bus()
 {
+    cycle_count = 0;
     memory_map.clear();
     return;
 }
@@ -44,6 +45,7 @@ void Bus::writeByte(WORD address, BYTE data)
             return;
         }
     }
+    //printf("Cycle count: %lu\n", cycle_count);
     throw std::runtime_error("Attempt to write to unmapped memory address " + std::to_string(address));    
 }
 

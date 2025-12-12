@@ -20,6 +20,8 @@ class SpaceInvaders {
         Rom *programRom;
         invadersShiftRegister *shiftRegister;
         DummyPeripheral *dummyPeripheral;
+        sf::Texture screen;
+        sf::Sprite spriteScreen;
 
 
 
@@ -32,6 +34,7 @@ class SpaceInvaders {
         ~SpaceInvaders();
         void Initialize();
         void Run();
+        void screenUpdate();
 
 
 };
