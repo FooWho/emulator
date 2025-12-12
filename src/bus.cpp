@@ -5,7 +5,6 @@
 
 Bus::Bus()
 {
-    cycle_count = 0;
     memory_map.clear();
     return;
 }
@@ -25,6 +24,8 @@ Bus *Bus::attachMemory(VirtualMemory *memory, WORD startAddress, WORD endAddress
 
 BYTE Bus::readByte(WORD address) const
 {
+    // Check for Mirror Effect
+    //if (address >= 0x4000) address -= 0x2000;
     for (unsigned int i = 0; i < memory_map.size(); i++) {
         const auto& mapping = memory_map[i];
         if (address >= mapping.startAddress && address <= mapping.endAddress) {
@@ -32,11 +33,16 @@ BYTE Bus::readByte(WORD address) const
             return (mapping.device->read(effectiveAddress));
         }
     }
-    throw std::runtime_error("Attempt to read from unmapped memory address " + std::to_string(address));    
+    //throw std::runtime_error("Attempt to read from unmapped memory address " + std::to_string(address));    
+    // Invalid address, return 0
+    printf("Bad read access: 0x%04X\n", address);
+    return 0;
 }
 
 void Bus::writeByte(WORD address, BYTE data)
 {
+    // Check for Mirror Effect
+    //if (address >= 0x4000) address -= 0x2000;
     for (unsigned int i = 0; i < memory_map.size(); i++) {
         const auto& mapping = memory_map[i];
         if (address >= mapping.startAddress && address <= mapping.endAddress) {
@@ -45,8 +51,10 @@ void Bus::writeByte(WORD address, BYTE data)
             return;
         }
     }
-    //printf("Cycle count: %lu\n", cycle_count);
-    throw std::runtime_error("Attempt to write to unmapped memory address " + std::to_string(address));    
+    //throw std::runtime_error("Attempt to write to unmapped memory address " + std::to_string(address));   
+    // Invalid address, do nothing
+    printf("Bad write access: 0x%04X\n", address);
+    return;
 }
 
 WORD Bus::readWord(WORD address) const

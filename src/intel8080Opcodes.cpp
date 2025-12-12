@@ -269,11 +269,7 @@ void Intel8080::buildOpcodeTable()
     pOpcodeLookup[0xFB] = &Intel8080::opEI;             // Enable Interrupts instruction
     pOpcodeLookup[0xFC] = &Intel8080::opCM;             // Call if Minus instruction
     pOpcodeLookup[0xFE] = &Intel8080::opCPI_D8;         // ComPare Immediate instruction
-    pOpcodeLookup[0xFF] = &Intel8080::opRST_7;          // RST 7 instruction
-
-
-
-    // ... Add other opcode mappings here       
+    pOpcodeLookup[0xFF] = &Intel8080::opRST_7;          // RST 7 instruction    
 
 }
 
@@ -2677,6 +2673,9 @@ int Intel8080::opRST_0()
     // Size: 1  byte        Cycles: 15
     // Description: Restart 0 - Interrupt handler 0
 
+    regs.sp -= 2;
+    writeWord(regs.sp, regs.pc);
+    regs.pc = 0x0000;
     return 15;
 }
 
@@ -2775,7 +2774,6 @@ int Intel8080::opRST_1()
     regs.sp -= 2;
     writeWord(regs.sp, regs.pc);
     regs.pc = 0x0008;   
-    interrupt(0x00);
     return 15;
 }
 
@@ -2831,7 +2829,9 @@ int Intel8080::opOUT_D8()
     // Flags: None  
 
     fetchByte();
-    outPeripheralDevices[byteData]->writeData(byteData, regs.a);
+    if (outPeripheralDevices[byteData]) {
+        outPeripheralDevices[byteData]->writeData(byteData, regs.a);
+    }
     return 10;
 }
 
@@ -2884,7 +2884,6 @@ int Intel8080::opRST_2()
     regs.sp -= 2;
     writeWord(regs.sp, regs.pc);
     regs.pc = 0x0010;   
-    interrupt(0x00);
     return 15;
 }
 
@@ -2927,8 +2926,9 @@ int Intel8080::opIN_D8()
     // Flags: None  
 
     fetchByte();
-    regs.a = inPeripheralDevices[byteData]->readData(byteData);
-    //printf("Read: %d from port %d\n", regs.a, byteData);
+    if (inPeripheralDevices[byteData]) {
+        regs.a = inPeripheralDevices[byteData]->readData(byteData);
+    }
     return 10;
 }
 
@@ -2968,6 +2968,9 @@ int Intel8080::opRST_3()
     // Size: 1  byte        Cycles: 15
     // Description: Restart 3
 
+    regs.sp -= 2;
+    writeWord(regs.sp, regs.pc);
+    regs.pc = 0x0018;
     return 15;
 }
 
@@ -3065,7 +3068,6 @@ int Intel8080::opANI_D8()
     // Flags: S, Z, AC, P, CY
 
     fetchByte();
-    // Documentation is inconsistent. Some sources state AC is unchanged, others that AC is the OR of bit 3. The standard 8080 diagnostics expect the "OR" behavior
     regs.f.ac = ((regs.a | byteData) & 0x08) != 0;
     regs.f.cy = 0;
     regs.a &= byteData;
@@ -3079,6 +3081,9 @@ int Intel8080::opRST_4()
     // Size: 1  byte        Cycles: 15
     // Description: Restart 4
 
+    regs.sp -= 2;
+    writeWord(regs.sp, regs.pc);
+    regs.pc = 0x0020;
     return 15;
 }
 
@@ -3175,6 +3180,9 @@ int Intel8080::opRST_5()
     // Size: 1  byte        Cycles: 15
     // Description: Restart 5
 
+    regs.sp -= 2;
+    writeWord(regs.sp, regs.pc);
+    regs.pc = 0x0028;
     return 15;
 }
 
@@ -3287,7 +3295,10 @@ int Intel8080::opRST_6()
     // Size: 1  byte        Cycles: 15
     // Description: Restart 6
 
-    return 15;
+    regs.sp -= 2;
+    writeWord(regs.sp, regs.pc);
+    regs.pc = 0x0030;
+    return 11;
 }
 
 int Intel8080::opRM()
@@ -3339,7 +3350,6 @@ int Intel8080::opEI()
     // Description: Enable interrupts
     // Flags: None
 
-
     interruptsEnabled = true;
     return 4;
 }
@@ -3382,6 +3392,8 @@ int Intel8080::opRST_7()
     // Size: 1  byte        Cycles: 15
     // Description: Restart 7
 
+    regs.sp -= 2;
+    writeWord(regs.sp, regs.pc);
+    regs.pc = 0x0038;
     return 15;
 }
-

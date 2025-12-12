@@ -4,6 +4,7 @@
 #include <fstream>
 #include <cstdio>
 #include <SFML/Graphics.hpp>
+#include <vector>
 
 
 
@@ -62,13 +63,11 @@ void SpaceInvaders::Initialize()
     std::vector<BYTE> programRomData(0x2000);
     FILE *file = fopen("/home/jelison/Workspace/invaders.bin", "rb");
     if (!file) {
-        printf("Oops\n");
-        return;
+        throw std::runtime_error("Failed to open ROM file");
     }
     size_t bytesRead = fread(programRomData.data(), 1, programRomData.size(), file);
     if (bytesRead != programRomData.size()) {
-        printf("Oops2\n");
-        return;
+        throw std::runtime_error("Failed to read ROM file");
     }
     fclose(file);
 
@@ -81,9 +80,8 @@ void SpaceInvaders::Initialize()
 
 void SpaceInvaders::Run()
 {
-    sf::RenderWindow window(sf::VideoMode(224, 256), "SFML works!");
-    //sf::CircleShape shape(100.f);
-    //shape.setFillColor(sf::Color::Green);
+    sf::RenderWindow window(sf::VideoMode(224, 256), "Space Invaders");
+
     int cycle_count = 0;
     clock.restart();
     elapsedTime = sf::Time::Zero;
@@ -91,12 +89,10 @@ void SpaceInvaders::Run()
     bool flop = false;
     WORD pc = 0x0000;
     while (window.isOpen())
-    {
-        //printf("Credits: %d\n", Intel8080TestHelper::getByteAtAddress(*cpu, 0x20EB));
-        
+    {   
         elapsedTime += clock.restart();
         interruptTimer += (elapsedTime + clock.restart());
-        if (interruptTimer.asMicroseconds() > 16673) {
+        if (interruptTimer.asMicroseconds() > 16666) {
             // Video Interrupt
             if (flop) {
                 flop = !flop;
@@ -110,56 +106,9 @@ void SpaceInvaders::Run()
         }
         
         cycle_count = elapsedTime.asMicroseconds() * 2;
-        for (int i = 0; i < cycle_count; i++) {
-            pc = Intel8080TestHelper::getRegisterPC(*cpu);
-            /*
-            switch (pc) {
-            case 0x0008:
-                //printf("ScanLine96\n");
-                break;
-            case 0x0010:
-                //printf("ScanLine224\n");
-                break;
-            case 0x002D:
-                //printf("Number of credits in bcd\n");
-                break;
-            case 0x0038:
-                //printf("New number of credits: %d\n", Intel8080TestHelper::getByteAtAddress(*cpu, 0x20EB));
-                break;
-            case 0x0067:
-                //printf("Mark credit as needing registering\n");
-            case 0x0765:
-                //printf("WaitForStart\n");
-                break;
-            case 0x08FF:
-                //printf("DrawChar\n");
-                break;
-            case 0x09AD:
-                //printf("Print4Digits\n");
-                break;
-            case 0x09B2:
-                //printf("DrawHexByte\n");
-                break;
-            case 0x0AD7:
-                //printf("WaitOnDelay\n");
-                break;
-            case 0x0ADA:
-                //printf("WaitOnDelay (Inner)\n");
-                break;
-            case 0x17CD:
-                //printf("CheckHandleTilt\n");
-                break;
-            case 0x18D4:
-                //printf("init\n");
-                break;
-            case 0x1947:
-                //printf("DrawNumCredits\n");
-                break;
-            default:
-                //printf("default: 0x%04X\n", pc);
-                break;
-        }*/
-             i += cpu->step();
+        int cycles_executed = 0;
+        while (cycles_executed < cycle_count) {
+             cycles_executed += cpu->step();
         }
         interruptTimer += elapsedTime;
         elapsedTime = sf::Time::Zero;
@@ -181,21 +130,29 @@ void SpaceInvaders::Run()
 
 void SpaceInvaders::screenUpdate()
 {
-    sf::Uint8* pixels = new sf::Uint8[224 * 256 * 4];
-    BYTE block = 0;
-    for (int i = 0; i <= (224 * 256 * 4)/8; i += 4) {
-        //printf("Reading: %d, %d\n", i/4, i);
-        block = videoRam->read((i / 4) / 8);
-        for (int j = 0; j < 8; j++) {
-            if (block & (1 << j)) {
-                pixels[i] = 255;
-                pixels[i + 1] = 255;
-                pixels[i + 2] = 255;
-                pixels[i + 3] = 255;
+    // 224 * 256 * 4 bytes
+    std::vector<sf::Uint8> pixels(224 * 256 * 4, 0); // Initialize to Black/Transparent
+
+    // Set Alpha to 255 (Opaque)
+    for (size_t i = 3; i < pixels.size(); i += 4) {
+        pixels[i] = 255;
+    }
+
+    for (int x = 0; x < 224; x++) {
+        for (int y = 0; y < 256; y++) {
+            // VRAM is 256x224 (rotated). Map VRAM(x,y) to Screen(x, 255-y)
+            WORD vramOffset = x * 32 + (y / 8);
+            BYTE byte = videoRam->read(vramOffset);
+            
+            if (byte & (1 << (y % 8))) {
+                int screenY = 255 - y;
+                int screenX = x;
+                int idx = (screenY * 224 + screenX) * 4;
+                pixels[idx] = 255;     // R
+                pixels[idx + 1] = 255; // G
+                pixels[idx + 2] = 255; // B
             }
         }
     }
-    screen.update(pixels);
-    spriteScreen.setTexture(screen);
-    delete[] pixels;
+    screen.update(pixels.data());
 }

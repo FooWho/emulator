@@ -21,10 +21,7 @@ class SpaceInvaders {
         invadersShiftRegister *shiftRegister;
         DummyPeripheral *dummyPeripheral;
         sf::Texture screen;
-        sf::Sprite spriteScreen;
-
-
-
+        sf::Sprite spriteScreen; 
         sf::Clock clock;
         sf::Time elapsedTime;
         sf::Time interruptTimer;

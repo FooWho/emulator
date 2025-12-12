@@ -123,29 +123,28 @@ void Intel8080::interrupt(BYTE isrVector)
 
 int Intel8080::step()
 {
-    if (regs.pc == 0x15D6) {
-        printState();
-    }
-    bus->incCycleCount();
-    if (isHalted) return 0;
+    if (isHalted) return 4; // Consume cycles while halted
+
     if (interruptsEnabled && interruptFlag) {
-        switch (interruptFlag) {
+        interruptsEnabled = false;
+        isHalted = false;
+        BYTE vector = interruptFlag;
+        interruptFlag = 0;
+        switch (vector) {
             case 0x01:
                 return opRST_1();
             case 0x02:
                 return opRST_2();
             case 0x04:
-                break;
+                return opRST_3();
             case 0x08:
-                break;
-            case 0x0F:
-                break;
+                return opRST_4();
+            case 0x10:
+                return opRST_5();
             case 0x20:
-                break;
+                return opRST_6();
             case 0x40:
-                break;
-            case 0x80:
-                break;
+                return opRST_7();
             default:
                 break;
         }
