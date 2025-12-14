@@ -2,7 +2,7 @@
 #include "intel8080PeripheralDevice.hpp"
 #include "types.hpp"
 
-class invadersShiftRegister : public intel8080PeripheralDevice {
+class invadersShiftRegister : public Intel8080PeripheralDevice {
     private:
         BYTE offset;
         union {

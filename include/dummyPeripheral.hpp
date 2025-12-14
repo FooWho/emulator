@@ -1,7 +1,7 @@
 #include "intel8080PeripheralDevice.hpp"
 #include "types.hpp"
 
-class DummyPeripheral : public intel8080PeripheralDevice {
+class DummyPeripheral : public Intel8080PeripheralDevice {
     public:
         DummyPeripheral() = default;
         ~DummyPeripheral() = default;

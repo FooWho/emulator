@@ -2,10 +2,10 @@
 #include "types.hpp"
 
 
-class intel8080PeripheralDevice {
+class Intel8080PeripheralDevice {
 
 public:
-    virtual ~intel8080PeripheralDevice() = default;
+    virtual ~Intel8080PeripheralDevice() = default;
     virtual void writeData(BYTE port, BYTE data) = 0;
     virtual BYTE readData(BYTE port) = 0;
 };

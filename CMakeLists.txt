@@ -12,6 +12,7 @@ add_executable(Intel8080
     src/ram.cpp
     src/bus.cpp
     src/invadersShiftRegister.cpp
+    src/spaceInvadersButtonDeck.cpp
     src/dummyPeripheral.cpp
     src/spaceInvaders.cpp
 )

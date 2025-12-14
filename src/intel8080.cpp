@@ -48,13 +48,13 @@ Intel8080 *Intel8080::attachBus(Bus *bus)
     return this;
 }
 
-Intel8080 *Intel8080::attachInputPeripheral(intel8080PeripheralDevice *device, BYTE port)
+Intel8080 *Intel8080::attachInputPeripheral(Intel8080PeripheralDevice *device, BYTE port)
 {
     inPeripheralDevices[port] = device;
     return this;
 }
 
-Intel8080 *Intel8080::attachOutputPeripheral(intel8080PeripheralDevice *device, BYTE deviceID)
+Intel8080 *Intel8080::attachOutputPeripheral(Intel8080PeripheralDevice *device, BYTE deviceID)
 {
     outPeripheralDevices[deviceID] = device;
     return this;

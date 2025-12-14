@@ -6,6 +6,7 @@
 #include "rom.hpp"
 #include "invadersShiftRegister.hpp"
 #include "dummyPeripheral.hpp"
+#include "spaceInvadersButtonDeck.hpp"
 #include "intel8080Interrupt.hpp"
 #include <SFML/Graphics.hpp>
 
@@ -20,6 +21,9 @@ class SpaceInvaders {
         Rom *programRom;
         invadersShiftRegister *shiftRegister;
         DummyPeripheral *dummyPeripheral;
+        SpaceInvadersButtonDeck *p1ButtonDeck;
+        SpaceInvadersButtonDeck *p2ButtonDeck;
+
         sf::Texture screen;
         sf::Sprite spriteScreen; 
         sf::Clock clock;

@@ -71,8 +71,8 @@ class Intel8080 : public CPU {
     void regFlagsDoubleCarry(WORD op1, WORD op2);
 
     Bus *bus;
-    std::array<intel8080PeripheralDevice*, 256> inPeripheralDevices;
-    std::array<intel8080PeripheralDevice*, 256> outPeripheralDevices;
+    std::array<Intel8080PeripheralDevice*, 256> inPeripheralDevices;
+    std::array<Intel8080PeripheralDevice*, 256> outPeripheralDevices;
 
 
     std::array<int (Intel8080::*)(), 256> pOpcodeLookup;
@@ -368,8 +368,8 @@ class Intel8080 : public CPU {
     int step() override;
     void interrupt(BYTE isrVector);
     Intel8080 *attachBus(Bus *bus) override;
-    Intel8080 *attachInputPeripheral(intel8080PeripheralDevice *device, BYTE port);
-    Intel8080 *attachOutputPeripheral(intel8080PeripheralDevice *device, BYTE port);
+    Intel8080 *attachInputPeripheral(Intel8080PeripheralDevice *device, BYTE port);
+    Intel8080 *attachOutputPeripheral(Intel8080PeripheralDevice *device, BYTE port);
 
     void fetchOpcode() override;
     int execute() override;

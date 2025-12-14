@@ -1,6 +1,5 @@
 #include "spaceInvaders.hpp"
 #include "intel8080TestHelper.hpp"
-#include "invadersShiftRegister.hpp"
 #include <fstream>
 #include <cstdio>
 #include <SFML/Graphics.hpp>
@@ -16,12 +15,15 @@ SpaceInvaders::SpaceInvaders()
     bus = new Bus();
     cpu = new Intel8080();
     shiftRegister = new invadersShiftRegister();
+    p1ButtonDeck = new SpaceInvadersButtonDeck();
     dummyPeripheral = new DummyPeripheral();
+
     bus->attachMemory(programRom, 0x0000, 0x1FFF);
     bus->attachMemory(workingRam, 0x2000, 0x23FF);
     bus->attachMemory(videoRam, 0x2400, 0x3FFF);
     cpu->attachBus(bus); 
-    cpu->attachInputPeripheral(dummyPeripheral, 0x01);
+
+    cpu->attachInputPeripheral(p1ButtonDeck, 0x01);
     cpu->attachInputPeripheral(dummyPeripheral, 0x02);
     cpu->attachInputPeripheral(shiftRegister, 0x03);
 
@@ -30,6 +32,7 @@ SpaceInvaders::SpaceInvaders()
     cpu->attachOutputPeripheral(shiftRegister, 0x04);
     cpu->attachOutputPeripheral(dummyPeripheral, 0x05);
     cpu->attachOutputPeripheral(dummyPeripheral, 0x06);
+
     screen.create(224, 256);
     spriteScreen.setTexture(screen);
     spriteScreen.setPosition(0, 0);
@@ -97,6 +100,7 @@ void SpaceInvaders::Run()
             if (flop) {
                 flop = !flop;
                 cpu->interrupt(0x02);
+                screenUpdate();
             } else {
                 flop = !flop;
                 cpu->interrupt(0x01);
@@ -104,7 +108,29 @@ void SpaceInvaders::Run()
             }
             interruptTimer = sf::Time::Zero;
         }
-        
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) {
+            // Insert Coin
+            p1ButtonDeck->insertCoin();
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1)) {
+            // Press P1
+            p1ButtonDeck->pressP1();
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+            // Press left
+            p1ButtonDeck->pressLeft();
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+            p1ButtonDeck->pressRight();
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
+            p1ButtonDeck->pressShot();
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+            window.close();
+        }
+  
         cycle_count = elapsedTime.asMicroseconds() * 2;
         int cycles_executed = 0;
         while (cycles_executed < cycle_count) {
@@ -122,7 +148,6 @@ void SpaceInvaders::Run()
 
         window.clear();
         window.draw(spriteScreen);
-        //window.draw(shape);
         window.display();
     
     }
@@ -155,4 +180,5 @@ void SpaceInvaders::screenUpdate()
         }
     }
     screen.update(pixels.data());
+    spriteScreen.setTexture(screen);
 }
