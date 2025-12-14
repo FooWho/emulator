@@ -16,6 +16,7 @@ SpaceInvaders::SpaceInvaders()
     cpu = new Intel8080();
     shiftRegister = new invadersShiftRegister();
     p1ButtonDeck = new SpaceInvadersButtonDeck();
+    p2ButtonDeck = new SpaceInvadersButtonDeck();
     dummyPeripheral = new DummyPeripheral();
 
     bus->attachMemory(programRom, 0x0000, 0x1FFF);
@@ -24,7 +25,7 @@ SpaceInvaders::SpaceInvaders()
     cpu->attachBus(bus); 
 
     cpu->attachInputPeripheral(p1ButtonDeck, 0x01);
-    cpu->attachInputPeripheral(dummyPeripheral, 0x02);
+    cpu->attachInputPeripheral(p2ButtonDeck, 0x02);
     cpu->attachInputPeripheral(shiftRegister, 0x03);
 
     cpu->attachOutputPeripheral(shiftRegister, 0x02);
@@ -64,7 +65,7 @@ void SpaceInvaders::Initialize()
     delete[] pixels;
 
     std::vector<BYTE> programRomData(0x2000);
-    FILE *file = fopen("/home/jelison/Workspace/invaders.bin", "rb");
+    FILE *file = fopen("/home/jasonelison/Workspace/invaders.bin", "rb");
     if (!file) {
         throw std::runtime_error("Failed to open ROM file");
     }
@@ -110,22 +111,25 @@ void SpaceInvaders::Run()
         }
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) {
-            // Insert Coin
             p1ButtonDeck->insertCoin();
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1)) {
-            // Press P1
             p1ButtonDeck->pressP1();
         }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2)) {
+            p1ButtonDeck->pressP2();
+        }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-            // Press left
             p1ButtonDeck->pressLeft();
+            p2ButtonDeck->pressLeft();
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
             p1ButtonDeck->pressRight();
+            p2ButtonDeck->pressRight();
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
             p1ButtonDeck->pressShot();
+            p2ButtonDeck->pressShot();
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
             window.close();

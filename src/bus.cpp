@@ -35,7 +35,7 @@ BYTE Bus::readByte(WORD address) const
     }
     //throw std::runtime_error("Attempt to read from unmapped memory address " + std::to_string(address));    
     // Invalid address, return 0
-    printf("Bad read access: 0x%04X\n", address);
+    //printf("Bad read access: 0x%04X\n", address);
     return 0;
 }
 
@@ -53,7 +53,7 @@ void Bus::writeByte(WORD address, BYTE data)
     }
     //throw std::runtime_error("Attempt to write to unmapped memory address " + std::to_string(address));   
     // Invalid address, do nothing
-    printf("Bad write access: 0x%04X\n", address);
+    //printf("Bad write access: 0x%04X\n", address);
     return;
 }
 

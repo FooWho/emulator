@@ -28,6 +28,10 @@ BYTE SpaceInvadersButtonDeck::readData(BYTE port)
         p1Pressed = false;
         data = data & 0xFB;
     }  
+    if (p2Pressed) {
+        p2Pressed = false;
+        data = data & 0xFD;
+    }
     if (leftPressed) {
         leftPressed = false;
         data = data & 0xDF;
