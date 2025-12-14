@@ -37,7 +37,9 @@ BYTE Rom::read(WORD address) const
 void Rom::write(WORD address, BYTE data)
 {
     // ROM is read-only; writing is not allowed
-    throw std::runtime_error("Attempt to write to ROM at address " + std::to_string(address));
+    //throw std::runtime_error("Attempt to write to ROM at address " + std::to_string(address));
+    printf("Tried to write to ROM at address 0x%04X with data 0x%02X\n", address, data);
+    return;
 }
 
 WORD Rom::memSize() const

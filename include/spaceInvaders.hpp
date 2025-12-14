@@ -1,13 +1,12 @@
 #pragma once
 #include "types.hpp"
 #include "intel8080.hpp"
-#include "bus.hpp"
+#include "spaceInvadersBus.hpp"
 #include "ram.hpp"
 #include "rom.hpp"
 #include "invadersShiftRegister.hpp"
 #include "dummyPeripheral.hpp"
 #include "spaceInvadersButtonDeck.hpp"
-#include "intel8080Interrupt.hpp"
 #include <SFML/Graphics.hpp>
 
 class SpaceInvaders {

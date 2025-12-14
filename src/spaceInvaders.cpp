@@ -65,7 +65,7 @@ void SpaceInvaders::Initialize()
     delete[] pixels;
 
     std::vector<BYTE> programRomData(0x2000);
-    FILE *file = fopen("/home/jasonelison/Workspace/invaders.bin", "rb");
+    FILE *file = fopen("/home/jelison/Workspace/invaders.bin", "rb");
     if (!file) {
         throw std::runtime_error("Failed to open ROM file");
     }

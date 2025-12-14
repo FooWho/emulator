@@ -7,13 +7,13 @@
 class VirtualMemory; // Forward declaration
 
 class Bus {
- private:
+ protected:
   struct MemoryMapping {
       WORD startAddress;
       WORD endAddress;
       VirtualMemory *device;
       MemoryMapping(WORD start, WORD end, VirtualMemory* vmDevice) : startAddress(start), endAddress(end), device(vmDevice) {};
-      //MemoryMapping() = default;
+      MemoryMapping() = default;
       ~MemoryMapping() = default;
   };
   std::vector<MemoryMapping> memory_map;
@@ -21,10 +21,8 @@ class Bus {
  public:
   Bus();
   Bus *attachMemory(VirtualMemory *memory, WORD startAddress, WORD endAddress);
-  BYTE readByte(WORD address) const;
+  virtual BYTE readByte(WORD address) const;
   WORD readWord(WORD address) const;
-  void writeByte(WORD address, BYTE data);
+  virtual void writeByte(WORD address, BYTE data);
   void writeWord(WORD address, WORD data);
-  Bus(const Bus&) = delete;
-  Bus& operator=(const Bus&) = delete;
 };
