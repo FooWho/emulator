@@ -6,7 +6,7 @@ class AbstractMemory; // Forward declaration
 
 class SpaceInvadersBus : public Bus {
   public:
-    SpaceInvadersBus() { Bus(); }
+    SpaceInvadersBus() = default;
     ~SpaceInvadersBus() = default;
     
     BYTE readByte(WORD address) const override;

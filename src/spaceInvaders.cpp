@@ -94,20 +94,19 @@ void SpaceInvaders::Run() {
     WORD pc = 0x0000;
     while (window.isOpen())
     {   
-        elapsedTime += clock.restart();
-        interruptTimer += (elapsedTime + clock.restart());
-        if (interruptTimer.asMicroseconds() > 16666) {
-            // Video Interrupt
+        sf::Time dt = clock.restart();
+        elapsedTime += dt;
+        interruptTimer += dt;
+
+        if (interruptTimer.asMicroseconds() >= 8333) {
+            interruptTimer -= sf::microseconds(8333);
             if (flop) {
-                flop = !flop;
                 cpu->interrupt(0x02);
                 screenUpdate();
             } else {
-                flop = !flop;
                 cpu->interrupt(0x01);
-                screenUpdate();
             }
-            interruptTimer = sf::Time::Zero;
+            flop = !flop;
         }
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) {
@@ -140,7 +139,6 @@ void SpaceInvaders::Run() {
         while (cycles_executed < cycle_count) {
              cycles_executed += cpu->step();
         }
-        interruptTimer += elapsedTime;
         elapsedTime = sf::Time::Zero;
 
         sf::Event event;
