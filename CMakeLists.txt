@@ -5,6 +5,7 @@ project(spaceInvaders VERSION 0.1.0 LANGUAGES C CXX)
 add_executable(spaceInvaders)
 
 target_include_directories(spaceInvaders PRIVATE 
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${CMAKE_CURRENT_SOURCE_DIR}/include/spaceInvaders
 )
 
