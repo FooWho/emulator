@@ -16,7 +16,6 @@ class SpaceInvadersButtonDeck : public Intel8080PeripheralDevice {
 
     public:
         SpaceInvadersButtonDeck();
-        ~SpaceInvadersButtonDeck() = default;
         void writeData(BYTE port, BYTE data) override;
         BYTE readData(BYTE port) override;
         void insertCoin();

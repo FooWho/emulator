@@ -1,8 +1,7 @@
 #include "spaceInvadersButtonDeck.hpp"
 #include "types.hpp"
 
-SpaceInvadersButtonDeck::SpaceInvadersButtonDeck()
-{
+SpaceInvadersButtonDeck::SpaceInvadersButtonDeck() {
     data = 0x08;
     coinInserted = false;
     p1Pressed = false;
@@ -12,13 +11,11 @@ SpaceInvadersButtonDeck::SpaceInvadersButtonDeck()
     shotPressed = false;
 }
 
-void SpaceInvadersButtonDeck::writeData(BYTE port, BYTE data)
-{
+void SpaceInvadersButtonDeck::writeData(BYTE port, BYTE data) {
     this->data = data;
 }
 
-BYTE SpaceInvadersButtonDeck::readData(BYTE port)
-{
+BYTE SpaceInvadersButtonDeck::readData(BYTE port) {
     BYTE result = data;
     if (coinInserted) {
         coinInserted = false;
@@ -47,38 +44,32 @@ BYTE SpaceInvadersButtonDeck::readData(BYTE port)
     return result;
 }
 
-void SpaceInvadersButtonDeck::insertCoin()
-{
+void SpaceInvadersButtonDeck::insertCoin() {
     coinInserted = true;
     data = data | 0x01;
 }
 
-void SpaceInvadersButtonDeck::pressP1()
-{
+void SpaceInvadersButtonDeck::pressP1() {
     p1Pressed = true;
     data = data | 0x04;
 }
 
-void SpaceInvadersButtonDeck::pressP2()
-{
+void SpaceInvadersButtonDeck::pressP2() {
     p2Pressed = true;
     data = data | 0x02;
 }
 
-void SpaceInvadersButtonDeck::pressLeft()
-{
+void SpaceInvadersButtonDeck::pressLeft() {
     leftPressed = true;
     data = data | 0x20;
 }
 
-void SpaceInvadersButtonDeck::pressRight()
-{
+void SpaceInvadersButtonDeck::pressRight() {
     rightPressed = true;
     data = data | 0x40;
 }
 
-void SpaceInvadersButtonDeck::pressShot()
-{
+void SpaceInvadersButtonDeck::pressShot() {
     shotPressed = true;
     data = data | 0x10;
 }

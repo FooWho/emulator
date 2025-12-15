@@ -3,30 +3,20 @@
 #include <cstdint>
 #include <iostream>
 #include <fstream>
-#include <vector>
 #include "intel8080.hpp"
+#include "intel8080TestHelper.hpp"
 #include "rom.hpp"
 #include "ram.hpp"
 #include "bus.hpp"
-#include "spaceInvaders.hpp"
-#include "intel8080TestHelper.hpp"
 
-int main(int argc, char *argv[])
-{
-    SpaceInvaders game;
-
-    game.Initialize();
-
-    game.Run();
-
-    /*
+int main(int argc, char *argv[]) {       
     Intel8080 cpu;
     Bus bus;
-    //Rom rom(0x2000); // 8KB ROM
+
     Ram ram(0xFFFF); // 8KB RAM
 
     cpu.attachBus(&bus);
-    //bus.attachMemory(&rom, 0x0000, 0x1FFF);
+
     bus.attachMemory(&ram, 0x0000, 0xFFFE); 
 
     std::ifstream file("/home/jelison/Workspace/TST8080.BIN", std::ios::binary | std::ios::ate);
@@ -87,8 +77,5 @@ int main(int argc, char *argv[])
             std::cout << "\n\n*** Terminated (Jumped to 0x0000) ***" << std::endl;
             finished = true;
         }
-    }*/
-
-    return 0;
-    
+    }
 }

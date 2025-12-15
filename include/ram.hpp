@@ -1,15 +1,12 @@
 #pragma once
 #include <vector>
 #include "types.hpp"
-#include "virtualMemory.hpp"
+#include "abstractMemory.hpp"
 
-class Ram : public VirtualMemory
-{
+class Ram : public AbstractMemory {
  private:
     std::vector<BYTE> rwmem;
  
- protected:
-
  public:
    Ram(WORD size);
    Ram(std::vector<BYTE> initData);

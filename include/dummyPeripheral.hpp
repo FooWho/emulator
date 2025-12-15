@@ -2,9 +2,7 @@
 #include "types.hpp"
 
 class DummyPeripheral : public Intel8080PeripheralDevice {
-    public:
-        DummyPeripheral() = default;
-        ~DummyPeripheral() = default;
-        void writeData(BYTE port, BYTE data) override;
-        BYTE readData(BYTE port) override;
+  public:
+    void writeData(BYTE port, BYTE data) override;
+    BYTE readData(BYTE port) override;
 };

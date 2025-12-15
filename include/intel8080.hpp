@@ -29,14 +29,14 @@ class Intel8080 : public CPU {
                 pFlags f; // Flags
                 BYTE a; // Accumulator
             };
-            WORD af;   // Accessed as a 16-bit pair
+            WORD af; 
         };
         union {
             struct {
                 BYTE c; // Low byte (Little Endian first)
                 BYTE b; // High byte
             };
-            WORD bc;    // Accessed as a 16-bit pair
+            WORD bc;  
         };
         union {
             struct {
@@ -52,8 +52,8 @@ class Intel8080 : public CPU {
             };
             WORD hl;
         };
-        WORD sp;        // Stack Pointer
-        WORD pc;        // Program Counter
+        WORD sp;
+        WORD pc;
     } regs;
 
     bool interruptsEnabled;
@@ -63,19 +63,17 @@ class Intel8080 : public CPU {
     BYTE byteData;
     WORD wordData;
 
+    Bus *bus;
+    std::array<Intel8080PeripheralDevice*, 256> inPeripheralDevices;
+    std::array<Intel8080PeripheralDevice*, 256> outPeripheralDevices;
+
+    std::array<int (Intel8080::*)(), 256> pOpcodeLookup;
 
     void regFlagsSZP(BYTE result);
     void performAdd(BYTE operand, bool withCarry);
     void performSub(BYTE operand, bool withCarry);
     void regFlagsAuxCarry(BYTE op1, BYTE op2, BYTE result);
     void regFlagsDoubleCarry(WORD op1, WORD op2);
-
-    Bus *bus;
-    std::array<Intel8080PeripheralDevice*, 256> inPeripheralDevices;
-    std::array<Intel8080PeripheralDevice*, 256> outPeripheralDevices;
-
-
-    std::array<int (Intel8080::*)(), 256> pOpcodeLookup;
 
     int opILLEGAL();       // 0x--
 
@@ -290,7 +288,7 @@ class Intel8080 : public CPU {
     int opCNZ();           // 0xC4
     int opPUSH_B();        // 0xC5
     int opADI_D8();        // 0xC6
-    int opRST_0();         // 0xC7 *** Not yet implimented ***
+    int opRST_0();         // 0xC7 
     int opRZ();            // 0xC8
     int opRET();           // 0xC9  
     int opJZ();            // 0xCA
@@ -298,7 +296,7 @@ class Intel8080 : public CPU {
     int opCZ();            // 0xCC
     int opCALL();          // 0xCD
     int opACI_D8();        // 0xCE
-    int opRST_1();         // 0xCF *** Not yet implimented ***
+    int opRST_1();         // 0xCF 
 
     int opRNC();           // 0xD0
     int opPOP_D();         // 0xD1
@@ -307,15 +305,15 @@ class Intel8080 : public CPU {
     int opCNC();           // 0xD4
     int opPUSH_D();        // 0xD5
     int opSUI_D8();        // 0xD6
-    int opRST_2();         // 0xD7 *** Not yet implimented ***
+    int opRST_2();         // 0xD7
     int opRC();            // 0xD8
                            // 0xD9 *RET*
     int opJC();            // 0xDA
-    int opIN_D8();         // 0xDB *** Not yet implimented ***
+    int opIN_D8();         // 0xDB
     int opCC();            // 0xDC
                            // 0xDD *CALL*
     int opSBI_D8();        // 0xDE
-    int opRST_3();         // 0xDF *** Not yet implimented ***
+    int opRST_3();         // 0xDF
 
     int opRPO();           // 0xE0
     int opPOP_H();         // 0xE1
@@ -324,7 +322,7 @@ class Intel8080 : public CPU {
     int opCPO();           // 0xE4
     int opPUSH_H();        // 0xE5
     int opANI_D8();        // 0xE6
-    int opRST_4();         // 0xE7 *** Not yet implimented ***
+    int opRST_4();         // 0xE7
     int opRPE();           // 0xE8
     int opPCHL();          // 0xE9
     int opJPE();           // 0xEA
@@ -332,7 +330,7 @@ class Intel8080 : public CPU {
     int opCPE();           // 0xEC
                            // 0xED *CALL*
     int opXRI_D8();        // 0xEE
-    int opRST_5();         // 0xEF *** Not yet implimented ***
+    int opRST_5();         // 0xEF
 
     int opRP();            // 0xF0
     int opPOP_PSW();       // 0xF1
@@ -341,7 +339,7 @@ class Intel8080 : public CPU {
     int opCP();            // 0xF4
     int opPUSH_PSW();      // 0xF5
     int opORI_D8();        // 0xF6
-    int opRST_6();         // 0xF7 *** Not yet implimented ***
+    int opRST_6();         // 0xF7
     int opRM();            // 0xF8
     int opSPHL();          // 0xF9
     int opJM();            // 0xFA
@@ -349,7 +347,7 @@ class Intel8080 : public CPU {
     int opCM();            // 0xFC
                            // 0xFD *CALL*
     int opCPI_D8();        // 0xFE
-    int opRST_7();         // 0xFF *** Not yet implimented ***
+    int opRST_7();         // 0xFF
 
     void buildOpcodeTable();
 

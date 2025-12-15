@@ -5,14 +5,12 @@
 #include <cstdio>
 #include <stdexcept>
 
-invadersShiftRegister::invadersShiftRegister()
-{
+invadersShiftRegister::invadersShiftRegister() {
     offset = 0x00;
     data.xy = 0x00;
 }
 
-void invadersShiftRegister::writeData(BYTE port, BYTE data)
-{   
+void invadersShiftRegister::writeData(BYTE port, BYTE data) {   
     switch (port) {
         case 0x02:
             offset = data;
@@ -27,8 +25,7 @@ void invadersShiftRegister::writeData(BYTE port, BYTE data)
     
 }
 
-BYTE invadersShiftRegister::readData(BYTE port)
-{
+BYTE invadersShiftRegister::readData(BYTE port) {
     if (port == 0x03) {
         WORD result = (data.xy >> (8 - offset)) & 0xFF;
         return (BYTE)result;

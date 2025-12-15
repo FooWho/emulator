@@ -2,7 +2,7 @@
 #include "types.hpp"
 #include "bus.hpp"
 
-class VirtualMemory; // Forward declaration
+class AbstractMemory; // Forward declaration
 
 class SpaceInvadersBus : public Bus {
   public:

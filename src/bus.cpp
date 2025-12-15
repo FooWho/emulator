@@ -1,16 +1,14 @@
 #include <stdexcept>
 #include "bus.hpp"
-#include "virtualMemory.hpp"
+#include "abstractMemory.hpp"
 #include "intel8080.hpp"
 
-Bus::Bus()
-{
+Bus::Bus() {
     memory_map.clear();
     return;
 }
 
-Bus *Bus::attachMemory(VirtualMemory *memory, WORD startAddress, WORD endAddress)
-{
+Bus *Bus::attachMemory(AbstractMemory *memory, WORD startAddress, WORD endAddress) {
     MemoryMapping mappedMemory(startAddress, endAddress, memory);
     if (mappedMemory.startAddress > mappedMemory.endAddress) {
         throw std::invalid_argument("Start address cannot be greater than end address");
@@ -22,11 +20,7 @@ Bus *Bus::attachMemory(VirtualMemory *memory, WORD startAddress, WORD endAddress
     return this;
 } 
 
-BYTE Bus::readByte(WORD address) const
-{
-    if (address > 0x4000) {
-        address = address - 0x2000;
-    }
+BYTE Bus::readByte(WORD address) const {
     for (unsigned int i = 0; i < memory_map.size(); i++) {
         const auto& mapping = memory_map[i];
         if (address >= mapping.startAddress && address <= mapping.endAddress) {
@@ -34,16 +28,10 @@ BYTE Bus::readByte(WORD address) const
             return (mapping.device->read(effectiveAddress));
         }
     }
-    return 0;
-    //throw std::runtime_error("Attempt to read from unmapped memory address " + std::to_string(address));    
+    throw std::runtime_error("Attempt to read from unmapped memory address " + std::to_string(address));    
 }
 
-void Bus::writeByte(WORD address, BYTE data)
-{
-    // Space Invaders might reference out of bounds memory that it expects to overflow style map into the correct RAM address
-    if (address > 0x4000) {
-        address = address - 0x2000;
-    }
+void Bus::writeByte(WORD address, BYTE data) {
     for (unsigned int i = 0; i < memory_map.size(); i++) {
         const auto& mapping = memory_map[i];
         if (address >= mapping.startAddress && address <= mapping.endAddress) {
@@ -52,20 +40,17 @@ void Bus::writeByte(WORD address, BYTE data)
             return;
         }
     }
-    return;
-    //throw std::runtime_error("Attempt to write to unmapped memory address " + std::to_string(address));   
+    throw std::runtime_error("Attempt to write to unmapped memory address " + std::to_string(address));   
 }
 
-WORD Bus::readWord(WORD address) const
-{
+WORD Bus::readWord(WORD address) const {
     BYTE low = readByte(address);
     BYTE high = readByte(address + 1);
     WORD data = (static_cast<WORD>(high) << 8) | static_cast<WORD>(low);
     return data;
 }
 
-void Bus::writeWord(WORD address, WORD data)
-{
+void Bus::writeWord(WORD address, WORD data) {
     BYTE low = static_cast<BYTE>(data & 0x00FF);
     BYTE high = static_cast<BYTE>((data & 0xFF00) >> 8);
     writeByte(address, low);

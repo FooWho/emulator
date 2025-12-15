@@ -16,7 +16,6 @@ class invadersShiftRegister : public Intel8080PeripheralDevice {
 
     public:
         invadersShiftRegister();
-        ~invadersShiftRegister() = default;
         void writeData(BYTE port, BYTE data) override;
         BYTE readData(BYTE port) override;
 };

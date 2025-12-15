@@ -2,19 +2,16 @@
 #include <stdexcept>
 #include "ram.hpp"
 
-Ram::Ram(WORD size)
-{
+Ram::Ram(WORD size) {
     rwmem = std::vector<BYTE>(size, 0);
 } 
 
-Ram::Ram(std::vector<BYTE> initData)
-{
+Ram::Ram(std::vector<BYTE> initData) {
     rwmem = std::vector<BYTE>(initData.size(), 0);
     rwmem.assign(initData.begin(), initData.end());
 }
 
-Ram::Ram(WORD size, std::vector<BYTE> initData)
-{
+Ram::Ram(WORD size, std::vector<BYTE> initData) {
     if (initData.size() > size) {
         throw std::runtime_error("Initial data size exceeds RAM size");
     }
@@ -24,28 +21,21 @@ Ram::Ram(WORD size, std::vector<BYTE> initData)
     }
 }
 
-BYTE Ram::read(WORD address) const
-{
-    // Implementation for reading from ROM
-    // Should throw runtime_error if address is out of bounds
+BYTE Ram::read(WORD address) const {
     if (address >= rwmem.size()) {
         throw std::runtime_error("Attempt to read from invalid RAM address " + std::to_string(address));
     }
     return rwmem[address];
 }
 
-void Ram::write(WORD address, BYTE data)
-{
-    // Write data to RAM
-        // Should throw runtime_error if address is out of bounds
+void Ram::write(WORD address, BYTE data) {
     if (address >= rwmem.size()) {
         throw std::runtime_error("Attempt to write to invalid RAM address " + std::to_string(address));
     }
     rwmem[address] = data;
 }
 
-WORD Ram::memSize() const
-{
+WORD Ram::memSize() const {
     return static_cast<WORD>(rwmem.size());
 }
 

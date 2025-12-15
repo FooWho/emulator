@@ -3,8 +3,7 @@
 #include "types.hpp"
 #include "intel8080.hpp"
 
-void Intel8080::buildOpcodeTable()
-{
+void Intel8080::buildOpcodeTable() {
     pOpcodeLookup.fill(&Intel8080::opILLEGAL);          // Initialize with a dummy opcode
     pOpcodeLookup[0x00] = &Intel8080::opNOP;            // No OPeration
     pOpcodeLookup[0x01] = &Intel8080::opLXI_B_D16;      // Load eXtended register B with Immediate WORD value
@@ -273,8 +272,7 @@ void Intel8080::buildOpcodeTable()
 
 }
 
-void Intel8080::regFlagsDoubleCarry(WORD op1, WORD op2)
-{   
+void Intel8080::regFlagsDoubleCarry(WORD op1, WORD op2) {   
     uint32_t result = op1 + op2;
     if (result > 0xFFFF) {
         regs.f.cy = 1;
@@ -283,15 +281,13 @@ void Intel8080::regFlagsDoubleCarry(WORD op1, WORD op2)
     }
 }
 
-void Intel8080::regFlagsSZP(BYTE result)
-{
+void Intel8080::regFlagsSZP(BYTE result) {
     regs.f.s = (result & 0x80) ? 1 : 0;
     regs.f.z = (result == 0) ? 1 : 0;
     regs.f.p = __builtin_popcount(result) % 2 == 0;
 } 
 
-void Intel8080::regFlagsAuxCarry(BYTE op1, BYTE op2, BYTE result)
-{
+void Intel8080::regFlagsAuxCarry(BYTE op1, BYTE op2, BYTE result) {
     regs.f.ac = ((op1 ^ op2 ^ result) & 0x10) != 0;
 }
 
@@ -318,15 +314,13 @@ void Intel8080::performSub(BYTE val, bool withBorrow) {
     regs.a = result & 0xFF;
 }
 
-int Intel8080::opILLEGAL()
-{
+int Intel8080::opILLEGAL() {
     printf("Illegal opcode executed at address 0x%04X\n", regs.pc - 1);
     printState();
     throw std::runtime_error("Illegal opcode executed");
 }
 
-int Intel8080::opNOP()
-{
+int Intel8080::opNOP() {
     // Opcode: 0x00         Mnemonic: NOP
     // Size: 1  byte        Cycles: 4
     // Description: No Operation
@@ -336,8 +330,7 @@ int Intel8080::opNOP()
     return 4;
 }
 
-int Intel8080::opLXI_B_D16()
-{
+int Intel8080::opLXI_B_D16() {
     // Opcode: 0x01         Mnemonic: LXI B,D16
     // Size: 3  bytes       Cycles: 10
     // Description: Load immediate 16-bit data into BC register pair
@@ -348,8 +341,7 @@ int Intel8080::opLXI_B_D16()
     return 10;
 }
 
-int Intel8080::opSTAX_B()
-{
+int Intel8080::opSTAX_B() {
     // Opcode: 0x02         Mnemonic: STAX B
     // Size: 1  byte        Cycles: 7
     // Description: Store Accumulator into memory location pointed by BC register pair
@@ -360,8 +352,7 @@ int Intel8080::opSTAX_B()
     return 7;
 }   
 
-int Intel8080::opINX_B()
-{
+int Intel8080::opINX_B() {
     // Opcode: 0x03         Mnemonic: INX B
     // Size: 1 byte         Cycles: 5
     // Description: Increment the BC register pair
@@ -371,8 +362,7 @@ int Intel8080::opINX_B()
     return 5;
 }
 
-int Intel8080::opINR_B()
-{
+int Intel8080::opINR_B() {
     // Opcode: 0x04         Mnemonic: INR B
     // Size: 1              Cycles: 5
     // Description: Increment the B register
@@ -385,8 +375,7 @@ int Intel8080::opINR_B()
     return 5;
 }
 
-int Intel8080::opDCR_B()
-{
+int Intel8080::opDCR_B() {
     // Opcode: 0x05         Mnemonic: DCR B
     // Size: 1              Cycles: 5
     // Description: Decrement the B register
@@ -399,8 +388,7 @@ int Intel8080::opDCR_B()
     return 5;
 }
 
-int Intel8080::opMVI_B_D8()
-{
+int Intel8080::opMVI_B_D8() {
     // Opcode: 0x06          Mnemonic: MVI B, D8
     // Size: 2  bytes       Cycles: 7
     // Description: Move immediate 8-bit data into B
@@ -411,8 +399,7 @@ int Intel8080::opMVI_B_D8()
     return 7;
 }
 
-int Intel8080::opRLC()
-{
+int Intel8080::opRLC() {
     // Opcode: 0x07         Mnemonic: RLC
     // Size: 1              Cycles: 4
     // Description: Rotate Accumulator Left with Carry
@@ -424,8 +411,7 @@ int Intel8080::opRLC()
     return 4;
 }
 
-int Intel8080::opDAD_B()
-{
+int Intel8080::opDAD_B() {
     // Opcode: 0x09         Mnemonic: DAD B
     // Size: 1              Cycles: 10
     // Description: Add the contents of the register pair BC to the register pair HL.
@@ -437,8 +423,7 @@ int Intel8080::opDAD_B()
     return 10;
 }
 
-int Intel8080::opLDAX_B()
-{
+int Intel8080::opLDAX_B() {
     // Opcode: 0x0A         Mnemonic: LDAX B
     // Size: 1  byte        Cycles: 7
     // Description: Load Accumulator from memory location pointed by BC register pair
@@ -449,8 +434,7 @@ int Intel8080::opLDAX_B()
     return 7;
 }
 
-int Intel8080::opDCX_B()
-{
+int Intel8080::opDCX_B() {
     // Opcode: 0x0B         Mnemonic: DCX B
     // Size: 1 byte         Cycles: 5
     // Description: Decrement the BC register pair
@@ -460,8 +444,7 @@ int Intel8080::opDCX_B()
     return 5;
 }
 
-int Intel8080::opINR_C()
-{
+int Intel8080::opINR_C() {
     // Opcode: 0x0C         Mnemonic: INR C
     // Size: 1              Cycles: 5
     // Description: Increment the C register
@@ -474,8 +457,7 @@ int Intel8080::opINR_C()
     return 5;
 }
 
-int Intel8080::opDCR_C()
-{
+int Intel8080::opDCR_C() {
     // Opcode: 0x0D         Mnemonic: DCR C
     // Size: 1              Cycles: 5
     // Description: Decrement the C register
@@ -488,8 +470,7 @@ int Intel8080::opDCR_C()
     return 5;
 }
 
-int Intel8080::opMVI_C_D8()
-{
+int Intel8080::opMVI_C_D8() {
     // Opcode: 0x0E          Mnemonic: MVI C, D8
     // Size: 2  bytes       Cycles: 7
     // Description: Move immediate 8-bit data into C
@@ -500,8 +481,7 @@ int Intel8080::opMVI_C_D8()
     return 7;
 }
 
-int Intel8080::opRRC()
-{
+int Intel8080::opRRC() {
     // Opcode: 0x0F         Mnemonic: RRC
     // Size: 1              Cycles: 4
     // Description: Rotate Accumulator right through carry
@@ -513,8 +493,7 @@ int Intel8080::opRRC()
     return 4;
 }   
 
-int Intel8080::opLXI_D_D16()
-{
+int Intel8080::opLXI_D_D16() {
     // Opcode: 0x11         Mnemonic: LXI D,D16
     // Size: 3  bytes       Cycles: 10
     // Description: Load immediate 16-bit data into DE register pair
@@ -525,8 +504,7 @@ int Intel8080::opLXI_D_D16()
     return 10;
 } 
 
-int Intel8080::opSTAX_D()
-{
+int Intel8080::opSTAX_D() {
     // Opcode: 0x12         Mnemonic: STAX D
     // Size: 1  byte        Cycles: 7
     // Description: Store Accumulator into memory location pointed by DE register pair
@@ -536,8 +514,7 @@ int Intel8080::opSTAX_D()
     return 7;
 }
 
-int Intel8080::opINX_D()
-{
+int Intel8080::opINX_D() {
     // Opcode: 0x13         Mnemonic: INX D
     // Size: 1 byte         Cycles: 5
     // Description: Increment the DE register pair
@@ -547,8 +524,7 @@ int Intel8080::opINX_D()
     return 5;
 }
 
-int Intel8080::opINR_D()
-{
+int Intel8080::opINR_D() {
     // Opcode: 0x14         Mnemonic: INR D
     // Size: 1              Cycles: 5
     // Description: Increment the D register
@@ -561,8 +537,7 @@ int Intel8080::opINR_D()
     return 5;
 }
 
-int Intel8080::opDCR_D()
-{
+int Intel8080::opDCR_D() {
     // Opcode: 0x15         Mnemonic: DCR D
     // Size: 1              Cycles: 5
     // Description: Decrement the D register
@@ -575,8 +550,7 @@ int Intel8080::opDCR_D()
     return 5;
 }
 
-int Intel8080::opMVI_D_D8()
-{
+int Intel8080::opMVI_D_D8() {
     // Opcode: 0x16          Mnemonic: MVI D, D8
     // Size: 2 bytes        Cycles: 7
     // Description: Move immediate 8-bit data into register D
@@ -587,8 +561,7 @@ int Intel8080::opMVI_D_D8()
     return 7;
 }
 
-int Intel8080::opRAL()
-{
+int Intel8080::opRAL() {
     // Opcode: 0x17         Mnemonic: RAL
     // Size: 1              Cycles: 4
     // Description: Rotate Accumulator Left through Carry
@@ -600,8 +573,7 @@ int Intel8080::opRAL()
     return 4;
 }
 
-int Intel8080::opDAD_D()
-{
+int Intel8080::opDAD_D() {
     // Opcode: 0x19         Mnemonic: DAD D
     // Size: 1              Cycles: 10
     // Description: Add the contents of the register pair DE to the register pair HL.
@@ -613,8 +585,7 @@ int Intel8080::opDAD_D()
     return 10;
 }
 
-int Intel8080::opLDAX_D()
-{
+int Intel8080::opLDAX_D() {
     // Opcode: 0x1A         Mnemonic: LDAX D
     // Size: 1              Cycles: 7
     // Description: Load Accumulator from memory location pointed by DE register pair
@@ -626,8 +597,7 @@ int Intel8080::opLDAX_D()
     return 7;
 }
 
-int Intel8080::opDCX_D()
-{
+int Intel8080::opDCX_D() {
     // Opcode: 0x1B         Mnemonic: DCX D
     // Size: 1 byte         Cycles: 5
     // Description: Decrement the DE register pair
@@ -637,8 +607,7 @@ int Intel8080::opDCX_D()
     return 5;
 }
 
-int Intel8080::opINR_E()
-{
+int Intel8080::opINR_E() {
     // Opcode: 0x1C         Mnemonic: INR E
     // Size: 1              Cycles: 5
     // Description: Increment the E register
@@ -651,8 +620,7 @@ int Intel8080::opINR_E()
     return 5;
 }
 
-int Intel8080::opDCR_E()
-{
+int Intel8080::opDCR_E() {
     // Opcode: 0x1D         Mnemonic: DCR E
     // Size: 1              Cycles: 5
     // Description: Decrement the E register
@@ -665,8 +633,7 @@ int Intel8080::opDCR_E()
     return 5;
 }
 
-int Intel8080::opMVI_E_D8()
-{
+int Intel8080::opMVI_E_D8() {
     // Opcode: 0x1E         Mnemonic: MVI E, D8
     // Size: 2  bytes       Cycles: 7
     // Description: Move immediate byte data into E register
@@ -677,8 +644,7 @@ int Intel8080::opMVI_E_D8()
     return 7;
 }
 
-int Intel8080::opRAR()
-{
+int Intel8080::opRAR() {
     // Opcode: 0x1F         Mnemonic: RAR
     // Size: 1              Cycles: 4
     // Description: Rotate Accumulator right through Carry
@@ -690,8 +656,7 @@ int Intel8080::opRAR()
     return 4;
 }
 
-int Intel8080::opLXI_H_D16()
-{
+int Intel8080::opLXI_H_D16() {
     // Opcode: 0x21         Mnemonic: LXI H,D16
     // Size: 3  bytes       Cycles: 10
     // Description: Load immediate 16-bit data into HL register pair
@@ -702,8 +667,7 @@ int Intel8080::opLXI_H_D16()
     return 10;
 }
 
-int Intel8080::opSHLD()
-{
+int Intel8080::opSHLD() {
     // Opcode: 0x22         Mnemonic: SHLD addr
     // Size: 3 bytes        Cycles: 16
     // Description: Store H and L direct to memory address
@@ -715,8 +679,7 @@ int Intel8080::opSHLD()
 }
 
 
-int Intel8080::opINX_H()
-{
+int Intel8080::opINX_H() {
     // Opcode: 0x23         Mnemonic: INX H
     // Size: 1 byte         Cycles: 5
     // Description: Increment the HL register pair
@@ -726,8 +689,7 @@ int Intel8080::opINX_H()
     return 5;
 }
 
-int Intel8080::opINR_H()
-{
+int Intel8080::opINR_H() {
     // Opcode: 0x24         Mnemonic: INR H
     // Size: 1              Cycles: 5
     // Description: Increment the H register
@@ -740,8 +702,7 @@ int Intel8080::opINR_H()
     return 5;
 }
 
-int Intel8080::opDCR_H()
-{
+int Intel8080::opDCR_H() {
     // Opcode: 0x25         Mnemonic: DCR H
     // Size: 1              Cycles: 5
     // Description: Decrement the H register
@@ -755,8 +716,7 @@ int Intel8080::opDCR_H()
 }
 
 
-int Intel8080::opMVI_H_D8()
-{
+int Intel8080::opMVI_H_D8() {
     // Opcode: 0x26         Mnemonic: MVI H, D8
     // Size 2 bytes         Cycles: 7
     // Description: Move immediate 8-bit data into H
@@ -767,8 +727,7 @@ int Intel8080::opMVI_H_D8()
     return 7;
 }
 
-int Intel8080::opDAA()
-{
+int Intel8080::opDAA() {
     // Opcode: 0x27         Mnemonic: DAA
     // Size: 1              Cycles: 4
     // Description: Decimal Adjust Accumulator
@@ -787,8 +746,7 @@ int Intel8080::opDAA()
     return 4;
 }
 
-int Intel8080::opDAD_H()
-{
+int Intel8080::opDAD_H() {
     // Opcode: 0x29         Mnemonic: DAD H
     // Size: 1              Cycles: 10
     // Description: Add the contents of the register pair HL to the register pair HL.
@@ -800,8 +758,7 @@ int Intel8080::opDAD_H()
     return 10;
 }
 
-int Intel8080::opLHLD()
-{
+int Intel8080::opLHLD() {
     // Opcode: 0x2A         Mnemonic: LHLD addr
     // Size: 3 bytes        Cycles: 16
     // Description: Load H and L direct from memory address
@@ -813,8 +770,7 @@ int Intel8080::opLHLD()
     return 16;
 }
 
-int Intel8080::opDCX_H()
-{
+int Intel8080::opDCX_H() {
     // Opcode: 0x2B         Mnemonic: DCX H
     // Size: 1 byte         Cycles: 5
     // Description: Decrement the HL register pair
@@ -824,8 +780,7 @@ int Intel8080::opDCX_H()
     return 5;
 }
 
-int Intel8080::opINR_L()
-{
+int Intel8080::opINR_L() {
     // Opcode: 0x2C         Mnemonic: INR L
     // Size: 1 byte         Cycles: 5
     // Description: Increment the L register
@@ -838,8 +793,7 @@ int Intel8080::opINR_L()
     return 5;
 }
 
-int Intel8080::opDCR_L()
-{
+int Intel8080::opDCR_L() {
     // Opcode: 0x2D         Mnemonic: DRC L
     // Size: 1 byte         Cycles: 5
     // Description: Decrement the L register
@@ -852,8 +806,7 @@ int Intel8080::opDCR_L()
     return 5;
 }
 
-int Intel8080::opMVI_L_D8()
-{
+int Intel8080::opMVI_L_D8() {
     // Opcode: 0x2E         Mnemonic: MVI L, D8
     // Size: 2 bytes        Cycles: 7
     // Description: Move immediate 8-bit data into L register
@@ -864,8 +817,7 @@ int Intel8080::opMVI_L_D8()
     return 7;
 }
 
-int Intel8080::opCMA()
-{
+int Intel8080::opCMA() {
     // Opcode: 0x2F         Mnemonic: CMA
     // Size: 1              Cycles: 4
     // Description: Complement the Accumulator
@@ -876,8 +828,7 @@ int Intel8080::opCMA()
 }
 
 
-int Intel8080::opLXI_SP_D16()
-{
+int Intel8080::opLXI_SP_D16() {
     // Opcode: 0x31         Mnemonic: LXI SP,D16
     // Size: 3  bytes       Cycles: 10
     // Description: Load immediate 16-bit data into Stack Pointer
@@ -888,8 +839,7 @@ int Intel8080::opLXI_SP_D16()
     return 10;
 }
 
-int Intel8080::opSTA()
-{
+int Intel8080::opSTA() {
     // Opcode: 0x32         Mnemonic: STA
     // Size: 3  bytes       Cycles: 13
     // Description: Store the accumulator in the address from WORD operand
@@ -900,8 +850,7 @@ int Intel8080::opSTA()
     return 13;
 }
 
-int Intel8080::opINX_SP()
-{
+int Intel8080::opINX_SP() {
     // Opcode: 0x33         Mnemonic: INX SP
     // Size: 1 byte         Cycles: 5
     // Description: Increment the Stack Pointer
@@ -911,8 +860,7 @@ int Intel8080::opINX_SP()
     return 5;
 }
 
-int Intel8080::opINR_M()
-{
+int Intel8080::opINR_M() {
     // Opcode: 0x34         Mnemonic: INR M
     // Size: 1 byte         Cycles: 10
     // Description: Increment the memory location pointed by HL register pair
@@ -926,8 +874,7 @@ int Intel8080::opINR_M()
     return 10;
 }
 
-int Intel8080::opDCR_M()
-{
+int Intel8080::opDCR_M() {
     // Opcode: 0x35         Mnemonic: DCR M
     // Size: 1 byte         Cycles: 10
     // Description: Decrement the memory location pointed by HL register pair
@@ -941,8 +888,7 @@ int Intel8080::opDCR_M()
     return 10;
 }
 
-int Intel8080::opMVI_M_D8()
-{
+int Intel8080::opMVI_M_D8() {
     // Opcode: 0x36         Mnemonic: MVI M, D8
     // Size: 2  bytes       Cycles: 10
     // Description: Move immediate byte data into the memory address pointed by HL register pair
@@ -953,8 +899,7 @@ int Intel8080::opMVI_M_D8()
     return 10;
 }
 
-int Intel8080::opSTC()
-{
+int Intel8080::opSTC() {
     // Opcode: 0x37         Mnemonic: STC
     // Size: 1 byte         Cycles: 4
     // Description: Set the carry flag
@@ -964,8 +909,7 @@ int Intel8080::opSTC()
     return 4;
 }
 
-int Intel8080::opDAD_SP()
-{
+int Intel8080::opDAD_SP() {
     // Opcode: 0x39         Mnemonic: DAD SP
     // Size: 1              Cycles: 10
     // Description: Add the contents of the Stack Pointer to the register pair HL.
@@ -977,8 +921,7 @@ int Intel8080::opDAD_SP()
     return 10;
 }
 
-int Intel8080::opLDA()
-{
+int Intel8080::opLDA() {
     // Opcode: 0x3A         Mnemonic: LDA
     // Size: 3 bytes        Cycles: 13
     // Description: Load the accumulator with the contents of the memory address provided by the WORD operand
@@ -990,8 +933,7 @@ int Intel8080::opLDA()
     return 13;
 }
 
-int Intel8080::opDCX_SP()
-{
+int Intel8080::opDCX_SP() {
     // Opcode: 0x3B         Mnemonic: DCX SP
     // Size: 1 byte         Cycles: 5
     // Description: Decrement the Stack Pointer
@@ -1001,8 +943,7 @@ int Intel8080::opDCX_SP()
     return 5;
 }
 
-int Intel8080::opINR_A()
-{
+int Intel8080::opINR_A() {
     // Opcode: 0x3C         Mnemonic: INR A
     // Size: 1 byte         Cycles: 5
     // Description: Increment the Accumulator
@@ -1015,8 +956,7 @@ int Intel8080::opINR_A()
     return 5;
 }
 
-int Intel8080::opDCR_A()
-{
+int Intel8080::opDCR_A() {
     // Opcode: 0x3D         Mnemonic: DCR A
     // Size: 1 byte         Cycles: 5
     // Description: Decrement the Accumulator
@@ -1029,8 +969,7 @@ int Intel8080::opDCR_A()
     return 5;
 }
 
-int Intel8080::opMVI_A_D8()
-{
+int Intel8080::opMVI_A_D8() {
     // Opcode: 0x3E         Mnemonic: MVI A, D8
     // Size: 2 bytes        Cycles: 7
     // Description: Move immediate byte data into the accumulator
@@ -1041,8 +980,7 @@ int Intel8080::opMVI_A_D8()
     return 7;
 }
 
-int Intel8080::opCMC()
-{
+int Intel8080::opCMC() {
     // Opcode: 0x3F         Mnemonic: CMC
     // Size: 1              Cycles: 4
     // Description: Complement the carry flag
@@ -1052,8 +990,7 @@ int Intel8080::opCMC()
     return 4;
 }
 
-int Intel8080::opMOV_B_B()
-{
+int Intel8080::opMOV_B_B() {
     // Opcode: 0x40         Mnemonic: MOV B, B
     // Size: 1 byte         Cycles: 5
     // Description: Move contents of B register into B register
@@ -1063,8 +1000,7 @@ int Intel8080::opMOV_B_B()
     return 5;
 }
 
-int Intel8080::opMOV_B_C()
-{
+int Intel8080::opMOV_B_C() {
     // Opcode: 0x41         Mnemonic: MOV B, C
     // Size: 1 byte         Cycles: 5
     // Description: Move contents of C register into B register
@@ -1074,8 +1010,7 @@ int Intel8080::opMOV_B_C()
     return 5;
 }
 
-int Intel8080::opMOV_B_D()
-{
+int Intel8080::opMOV_B_D() {
     // Opcode: 0x42         Mnemonic: MOV B, D
     // Size: 1 byte         Cycles: 5
     // Description: Move contents of D register into B register
@@ -1085,8 +1020,7 @@ int Intel8080::opMOV_B_D()
     return 5;
 }
 
-int Intel8080::opMOV_B_E()
-{
+int Intel8080::opMOV_B_E() {
     // Opcode: 0x43         Mnemonic: MOV B, E
     // Size: 1 byte         Cycles: 5
     // Description: Move contents of E register into B register
@@ -1096,8 +1030,7 @@ int Intel8080::opMOV_B_E()
     return 5;
 }
 
-int Intel8080::opMOV_B_H()
-{
+int Intel8080::opMOV_B_H() {
     // Opcode: 0x44         Mnemonic: MOV B, H
     // Size: 1 byte         Cycles: 5
     // Description: Move contents of H register into B register
@@ -1107,8 +1040,7 @@ int Intel8080::opMOV_B_H()
     return 5;
 }
 
-int Intel8080::opMOV_B_L()
-{
+int Intel8080::opMOV_B_L() {
     // Opcode: 0x45         Mnemonic: MOV B, L
     // Size: 1 byte         Cycles: 5
     // Description: Move contents of L register into B register
@@ -1118,8 +1050,7 @@ int Intel8080::opMOV_B_L()
     return 5;
 }
 
-int Intel8080::opMOV_B_M()
-{
+int Intel8080::opMOV_B_M() {
     // Opcode: 0x46         Mnemonic: MOV B, M
     // Size: 1 byte         Cycles: 7
     // Description: Move contents of memory address stored in HL to B
@@ -1132,8 +1063,7 @@ int Intel8080::opMOV_B_M()
 
 
 
-int Intel8080::opMOV_B_A()
-{
+int Intel8080::opMOV_B_A() {
     // Opcode: 0x47         Mnemonic: MOV B, A
     // Size: 1 byte         Cycles: 5
     // Description: Move contents of Accumulator into B register
@@ -1143,8 +1073,7 @@ int Intel8080::opMOV_B_A()
     return 5;
 }
 
-int Intel8080::opMOV_C_B()
-{
+int Intel8080::opMOV_C_B() {
     // Opcode: 0x48         Mnemonic: MOV C, B
     // Size: 1 byte         Cycles: 5
     // Description: Move contents of B register into C register
@@ -1154,8 +1083,7 @@ int Intel8080::opMOV_C_B()
     return 5;
 }
 
-int Intel8080::opMOV_C_C()
-{
+int Intel8080::opMOV_C_C() {
     // Opcode: 0x49         Mnemonic: MOV C, C
     // Size: 1              Cycles: 5
     // Description: Move contents of C register into C register
@@ -1165,8 +1093,7 @@ int Intel8080::opMOV_C_C()
     return 5;
 }
 
-int Intel8080::opMOV_C_D()
-{
+int Intel8080::opMOV_C_D() {
     // Opcode: 0x4A         Mnemonic: MOV C, D
     // Size: 1 byte         Cycles: 5
     // Description: Move contents of D register into C register
@@ -1176,8 +1103,7 @@ int Intel8080::opMOV_C_D()
     return 5;
 }
 
-int Intel8080::opMOV_C_E()
-{
+int Intel8080::opMOV_C_E() {
     // Opcode: 0x4B         Mnemonic: MOV C, E
     // Size: 1 byte         Cycles: 5
     // Description: Move contents of E register into C register
@@ -1187,8 +1113,7 @@ int Intel8080::opMOV_C_E()
     return 5;
 }
 
-int Intel8080::opMOV_C_H()
-{
+int Intel8080::opMOV_C_H() {
     // Opcode: 0x4C         Mnemonic: MOV C, H
     // Size: 1 byte         Cycles: 5
     // Description: Move contents of H register into C register
@@ -1198,8 +1123,7 @@ int Intel8080::opMOV_C_H()
     return 5;
 }
 
-int Intel8080::opMOV_C_L()
-{
+int Intel8080::opMOV_C_L() {
     // Opcode: 0x4D         Mnemonic: MOV C, L
     // Size: 1 byte         Cycles: 5
     // Description: Move contents of L register into C register
@@ -1209,8 +1133,7 @@ int Intel8080::opMOV_C_L()
     return 5;
 }
 
-int Intel8080::opMOV_C_M()
-{
+int Intel8080::opMOV_C_M() {
     // Opcode: 0x4E         Mnemonic: MOV C, M
     // Size: 1              Cycles: 7
     // Description: Move contents of memory address contained in HL to C
@@ -1221,8 +1144,7 @@ int Intel8080::opMOV_C_M()
     return 7;
 }
 
-int Intel8080::opMOV_C_A()
-{
+int Intel8080::opMOV_C_A() {
     // Opcode: 0x4F         Mnemonic: MOV C, A
     // Size: 1 byte         Cycles: 5
     // Description: Move contents of Accumulator into C register
@@ -1232,8 +1154,7 @@ int Intel8080::opMOV_C_A()
     return 5;
 }
 
-int Intel8080::opMOV_D_B()
-{
+int Intel8080::opMOV_D_B() {
     // Opcode: 0x50         Mnemonic: MOV D, B
     // Size: 1 byte         Cycles: 5
     // Description: Move contents of B register into D register
@@ -1243,8 +1164,7 @@ int Intel8080::opMOV_D_B()
     return 5;
 }
 
-int Intel8080::opMOV_D_C()
-{
+int Intel8080::opMOV_D_C() {
     // Opcode: 0x51         Mnemonic: MOV D, C
     // Size: 1 byte         Cycles: 5
     // Description: Move contents of C register into D register
@@ -1254,8 +1174,7 @@ int Intel8080::opMOV_D_C()
     return 5;
 }
 
-int Intel8080::opMOV_D_D()
-{
+int Intel8080::opMOV_D_D() {
     // Opcode: 0x52         Mnemonic: MOV D, D
     // Size: 1 byte         Cycles: 5
     // Description: Move contents of D register into D register
@@ -1265,8 +1184,7 @@ int Intel8080::opMOV_D_D()
     return 5;
 }
 
-int Intel8080::opMOV_D_E()
-{
+int Intel8080::opMOV_D_E() {
     // Opcode: 0x53         Mnemonic: MOV D, E
     // Size: 1              Cycles: 5
     // Description: Move contents of E register into D register
@@ -1276,8 +1194,7 @@ int Intel8080::opMOV_D_E()
     return 5;
 }
 
-int Intel8080::opMOV_D_H()
-{
+int Intel8080::opMOV_D_H() {
     // Opcode: 0x54         Mnemonic: MOV D, H
     // Size: 1 byte         Cycles: 5
     // Description: Move contents of H register into D register
@@ -1287,8 +1204,7 @@ int Intel8080::opMOV_D_H()
     return 5;
 }
 
-int Intel8080::opMOV_D_L()
-{
+int Intel8080::opMOV_D_L() {
     // Opcode: 0x55         Mnemonic: MOV D, L
     // Size: 1 byte         Cycles: 5
     // Description: Move contents of L register into D register
@@ -1298,8 +1214,7 @@ int Intel8080::opMOV_D_L()
     return 5;
 }
 
-int Intel8080::opMOV_D_M()
-{
+int Intel8080::opMOV_D_M() {
     // Opcode: 0x56         Mnemonic: MOV D, M
     // Size: 1 byte         Cycles: 7
     // Description: Move the conents of memory location pointed by HL register paie into D
@@ -1310,8 +1225,7 @@ int Intel8080::opMOV_D_M()
     return 7;
 }
 
-int Intel8080::opMOV_D_A()
-{
+int Intel8080::opMOV_D_A() {
     // Opcode: 0x57         Mnemonic: MOV D, A
     // Size: 1 byte         Cycles: 5
     // Description: Move contents of Accumulator into D register
@@ -1321,8 +1235,7 @@ int Intel8080::opMOV_D_A()
     return 5;
 }
 
-int Intel8080::opMOV_E_B()
-{
+int Intel8080::opMOV_E_B() {
     // Opcode: 0x58         Mnemonic: MOV E, B
     // Size: 1 byte         Cycles: 5
     // Description: Move contents of B register into E register
@@ -1332,8 +1245,7 @@ int Intel8080::opMOV_E_B()
     return 5;
 }
 
-int Intel8080::opMOV_E_C()
-{
+int Intel8080::opMOV_E_C() {
     // Opcode: 0x59         Mnemonic: MOV E, C
     // Size: 1 byte         Cycles: 5
     // Description: Move contents of C register into E register
@@ -1343,8 +1255,7 @@ int Intel8080::opMOV_E_C()
     return 5;
 }
 
-int Intel8080::opMOV_E_D()
-{
+int Intel8080::opMOV_E_D() {
     // Opcode: 0x5A         Mnemonic: MOV E, D
     // Size: 1 byte         Cycles: 5
     // Description: Move contents of D register into E register
@@ -1354,8 +1265,7 @@ int Intel8080::opMOV_E_D()
     return 5;
 }
 
-int Intel8080::opMOV_E_E()
-{
+int Intel8080::opMOV_E_E() {
     // Opcode: 0x5B         Mnemonic: MOV E, E
     // Size: 1 byte         Cycles: 5
     // Description: Move contents of E register into E register
@@ -1365,8 +1275,7 @@ int Intel8080::opMOV_E_E()
     return 5;
 }
 
-int Intel8080::opMOV_E_H()
-{
+int Intel8080::opMOV_E_H() {
     // Opcode: 0x5C         Mnemonic: MOV E, H
     // Size: 1 byte         Cycles: 5
     // Description: Move contents of H register into E register
@@ -1376,8 +1285,7 @@ int Intel8080::opMOV_E_H()
     return 5;
 }
 
-int Intel8080::opMOV_E_L()
-{
+int Intel8080::opMOV_E_L() {
     // Opcode: 0x5D         Mnemonic: MOV E, L
     // Size: 1              Cycles: 5
     // Description: Move contents of L register into E register
@@ -1387,8 +1295,7 @@ int Intel8080::opMOV_E_L()
     return 5;
 }
 
-int Intel8080::opMOV_E_M()
-{
+int Intel8080::opMOV_E_M() {
     // Opcode: 0x5E         Mnemonic: MOV E, M
     // Size: 1  byte        Cycles: 7
     // Description: Move contents of memory location pointed by HL register pair into E
@@ -1399,8 +1306,7 @@ int Intel8080::opMOV_E_M()
     return 7;
 }
 
-int Intel8080::opMOV_E_A()
-{
+int Intel8080::opMOV_E_A() {
     // Opcode: 0x5F         Mnemonic: MOV E, A
     // Size: 1 byte         Cycles: 5
     // Description: Move contents of Accumulator into E register
@@ -1410,8 +1316,7 @@ int Intel8080::opMOV_E_A()
     return 5;
 }
 
-int Intel8080::opMOV_H_B()
-{
+int Intel8080::opMOV_H_B() {
     // Opcode: 0x60         Mnemonic: MOV H, B
     // Size: 1 byte         Cycles: 5
     // Description: Move contents of B register into H register
@@ -1421,8 +1326,7 @@ int Intel8080::opMOV_H_B()
     return 5;
 }
 
-int Intel8080::opMOV_H_C()
-{
+int Intel8080::opMOV_H_C() {
     // Opcode: 0x61         Mnemonic: MOV H, C
     // Size: 1 byte         Cycles: 5
     // Description: Move contents of C register into H register
@@ -1432,8 +1336,7 @@ int Intel8080::opMOV_H_C()
     return 5;
 }
 
-int Intel8080::opMOV_H_D()
-{
+int Intel8080::opMOV_H_D() {
     // Opcode: 0x62         Mnemonic: MOV H, D
     // Size: 1 byte         Cycles: 5
     // Description: Move contents of D register into H register
@@ -1443,8 +1346,7 @@ int Intel8080::opMOV_H_D()
     return 5;
 }
 
-int Intel8080::opMOV_H_E()
-{
+int Intel8080::opMOV_H_E() {
     // Opcode: 0x63         Mnemonic: MOV H, E
     // Size: 1 byte         Cycles: 5
     // Description: Move contents of E register into H register
@@ -1454,8 +1356,7 @@ int Intel8080::opMOV_H_E()
     return 5;
 }
 
-int Intel8080::opMOV_H_H()
-{
+int Intel8080::opMOV_H_H() {
     // Opcode: 0x64         Mnemonic: MOV H, H
     // Size: 1 byte         Cycles: 5
     // Description: Move contents of H register into H register
@@ -1465,8 +1366,7 @@ int Intel8080::opMOV_H_H()
     return 5;
 }
 
-int Intel8080::opMOV_H_L()
-{
+int Intel8080::opMOV_H_L() {
     // Opcode: 0x65         Mnemonic: MOV H, L
     // Size: 1 byte         Cycles: 5
     // Description: Move contents of L register into H register
@@ -1476,8 +1376,7 @@ int Intel8080::opMOV_H_L()
     return 5;
 }
 
-int Intel8080::opMOV_H_M()
-{
+int Intel8080::opMOV_H_M() {
     // Opcode: 0x66         Mnemonic: MOV H, M
     // Size: 1 byte         Cycles: 7
     // Description: Move contents of memory location point by HL register pair into H
@@ -1488,8 +1387,7 @@ int Intel8080::opMOV_H_M()
     return 7;
 }
 
-int Intel8080::opMOV_H_A()
-{
+int Intel8080::opMOV_H_A() {
     // Opcode: 0x67         Mnemonic: MOV H, A
     // Size: 1              Cycles: 5
     // Description: Move contents of Accumulator into H register
@@ -1499,8 +1397,7 @@ int Intel8080::opMOV_H_A()
     return 5;
 }
 
-int Intel8080::opMOV_L_B()
-{
+int Intel8080::opMOV_L_B() {
     // Opcode: 0x68         Mnemonic: MOV L, B
     // Size: 1 byte         Cycles: 5
     // Description: Move contents of B register into L register
@@ -1510,8 +1407,7 @@ int Intel8080::opMOV_L_B()
     return 5;
 }
 
-int Intel8080::opMOV_L_C()
-{
+int Intel8080::opMOV_L_C() {
     // Opcode: 0x69         Mnemonic: MOV L, C
     // Size: 1 byte         Cycles: 5
     // Description: Move contents of C register into L register
@@ -1521,8 +1417,7 @@ int Intel8080::opMOV_L_C()
     return 5;
 }
 
-int Intel8080::opMOV_L_D()
-{
+int Intel8080::opMOV_L_D() {
     // Opcode: 0x6A         Mnemonic: MOV L, D
     // Size: 1 byte         Cycles: 5
     // Description: Move contents of D register into L register
@@ -1532,8 +1427,7 @@ int Intel8080::opMOV_L_D()
     return 5;
 }
 
-int Intel8080::opMOV_L_E()
-{
+int Intel8080::opMOV_L_E() {
     // Opcode: 0x6B         Mnemonic: MOV L, E
     // Size: 1 byte         Cycles: 5
     // Description: Move contents of E register into L register
@@ -1543,8 +1437,7 @@ int Intel8080::opMOV_L_E()
     return 5;
 }
 
-int Intel8080::opMOV_L_H()
-{
+int Intel8080::opMOV_L_H() {
     // Opcode: 0x6C         Mnemonic: MOV L, H
     // Size: 1 byte         Cycles: 5
     // Description: Move contents of H register into L register
@@ -1554,8 +1447,7 @@ int Intel8080::opMOV_L_H()
     return 5;
 }
 
-int Intel8080::opMOV_L_L()
-{
+int Intel8080::opMOV_L_L() {
     // Opcode: 0x6D         Mnemonic: MOV L, L
     // Size: 1 byte         Cycles: 5
     // Description: Move contents of L register into L register
@@ -1565,8 +1457,7 @@ int Intel8080::opMOV_L_L()
     return 5;
 }
 
-int Intel8080::opMOV_L_M()
-{
+int Intel8080::opMOV_L_M() {
     // Opcode: 0x6E         Mnemonic: MOV L, M
     // Size: 1 byte         Cycles: 7
     // Description: Move contents of memory location contained in HL to register L
@@ -1576,8 +1467,7 @@ int Intel8080::opMOV_L_M()
     return 7;
 }
 
-int Intel8080::opMOV_L_A()
-{
+int Intel8080::opMOV_L_A() {
     // Opcode: 0x6F         Mmnemonic: MOV L, A
     // Size: 1  byte        Cycles: 5
     // Description: Move contents of Accumulator into L register
@@ -1587,8 +1477,7 @@ int Intel8080::opMOV_L_A()
     return 5;
 }
 
-int Intel8080::opMOV_M_B()
-{
+int Intel8080::opMOV_M_B() {
     // Opcode: 0x70         Mnemonic: MOV M, B
     // Size: 1 byte         Cycles: 7
     // Description: Move contents of B register to the memory location contained in HL
@@ -1598,8 +1487,7 @@ int Intel8080::opMOV_M_B()
     return 7;
 }
 
-int Intel8080::opMOV_M_C()
-{
+int Intel8080::opMOV_M_C() {
     // Opcode: 0x71         Mnemonic: MOV M, C
     // Size: 1 byte         Cycles: 7
     // Description: Move contents of C register to the memory location contained in HL
@@ -1609,8 +1497,7 @@ int Intel8080::opMOV_M_C()
     return 7;
 }
 
-int Intel8080::opMOV_M_D()
-{
+int Intel8080::opMOV_M_D() {
     // Opcode: 0x72         Mnemonic: MOV M, D
     // Size: 1 byte         Cycles: 7
     // Description: Move contens of D register to the memory location contained in HL
@@ -1620,8 +1507,7 @@ int Intel8080::opMOV_M_D()
     return 7;
 }
 
-int Intel8080::opMOV_M_E()
-{
+int Intel8080::opMOV_M_E() {
     // Opcode: 0x73         Mnemonic: MOV M, E
     // Size: 1 byte         Cycles: 7
     // Description: Move contents of E register to the memory location contained in HL
@@ -1631,8 +1517,7 @@ int Intel8080::opMOV_M_E()
     return 7;
 }
 
-int Intel8080::opMOV_M_H()
-{
+int Intel8080::opMOV_M_H() {
     // Opcode: 0x74         Mnemonic: MOV M, H
     // Size: 1 byte         Cycles: 7
     // Description: Move contents of H register to the memory location contained in HL
@@ -1642,8 +1527,7 @@ int Intel8080::opMOV_M_H()
     return 7;
 }
 
-int Intel8080::opMOV_M_L()
-{
+int Intel8080::opMOV_M_L() {
     // Opcode: 0x75         Mnemonic: MOV M, L
     // Size: 1 byte         Cycles: 7
     // Description: Move contents of register L to the memory location contained in HL
@@ -1653,8 +1537,7 @@ int Intel8080::opMOV_M_L()
     return 7;
 }
 
-int Intel8080::opHLT()
-{
+int Intel8080::opHLT() {
     // Opcode: 0x76         Mnemonic: HLT
     // Size: 1 byte         Cycles: 7
     // Description: Advance PC to the next address. CPU enters stopped state and executes no more instructions until an interrupt ocurrs.
@@ -1664,8 +1547,7 @@ int Intel8080::opHLT()
     return 7;
 }
 
-int Intel8080::opMOV_M_A()
-{
+int Intel8080::opMOV_M_A() {
     // Opcode: 0x77         Mnemonic: MOV M,A
     // Size: 1  byte        Cycles: 7
     // Description: Move contents of Accumulator into memory location pointed by HL register pair
@@ -1675,8 +1557,7 @@ int Intel8080::opMOV_M_A()
     return 7;
 }   
 
-int Intel8080::opMOV_A_B()
-{
+int Intel8080::opMOV_A_B() {
     // Opcode: 0x78         Mnemonic: MOV A, B
     // Size: 1 byte         Cycles: 5
     // Description: Move contents of B register into Accumulator
@@ -1686,8 +1567,7 @@ int Intel8080::opMOV_A_B()
     return 5;
 }
 
-int Intel8080::opMOV_A_C()
-{
+int Intel8080::opMOV_A_C() {
     // Opcode: 0x79         Mnemonic: MOV A, C
     // Size: 1 byte         Cycles: 5
     // Description: Move contents of C register into Accumulator
@@ -1697,8 +1577,7 @@ int Intel8080::opMOV_A_C()
     return 5;
 }
 
-int Intel8080::opMOV_A_D()
-{
+int Intel8080::opMOV_A_D() {
     // Opcode: 0x7A         Mnemonic: MOV A, D
     // Size: 1 byte         Cycles: 5
     // Description: Move contents of D register into Accumulator
@@ -1708,8 +1587,7 @@ int Intel8080::opMOV_A_D()
     return 5;
 }
 
-int Intel8080::opMOV_A_E()
-{
+int Intel8080::opMOV_A_E() {
     // Opcode: 0x7B         Mnemonic: MOV A, E
     // Size: 1 byte         Cycles: 5
     // Description: Move contents of E register into Accumulator
@@ -1719,8 +1597,7 @@ int Intel8080::opMOV_A_E()
     return 5;
 }
 
-int Intel8080::opMOV_A_H()
-{
+int Intel8080::opMOV_A_H() {
     // Opcode: 0x7C         Mnemonic: MOV A,H
     // Size: 1  byte        Cycles: 5
     // Description: Move contents of H register into Accumulator
@@ -1730,8 +1607,7 @@ int Intel8080::opMOV_A_H()
     return 5;
 }
 
-int Intel8080::opMOV_A_L()
-{
+int Intel8080::opMOV_A_L() {
     // Opcode: 0x7D         Mnemonic: MOV A, L
     // Size: 1 byte         Cycles: 5
     // Description: Move contents of L register into Accumulator
@@ -1741,8 +1617,7 @@ int Intel8080::opMOV_A_L()
     return 5;
 }
 
-int Intel8080::opMOV_A_M()
-{
+int Intel8080::opMOV_A_M() {
     // Opcode: 0x7E         Mnemonic: MOV A, M
     // Size: 1 byte         Cycles 7
     // Description: Move contents of memory location pointed by HL into register A
@@ -1753,8 +1628,7 @@ int Intel8080::opMOV_A_M()
     return 7;
 }
 
-int Intel8080::opMOV_A_A()
-{
+int Intel8080::opMOV_A_A() {
     // Opcode: 0x7F         Mnemonic: MOV A, A
     // Size: 1 byte         Cycles: 5
     // Description: Move contents of Accumulator into Accumulator
@@ -1764,8 +1638,7 @@ int Intel8080::opMOV_A_A()
     return 5;
 }
 
-int Intel8080::opADD_B()
-{
+int Intel8080::opADD_B() {
     // Opcode: 0x80         Mnemonic: ADD B
     // Size: 1 byte         Cycles: 4
     // Description: Add contents of B register to Accumulator
@@ -1775,8 +1648,7 @@ int Intel8080::opADD_B()
     return 4;
 }
 
-int Intel8080::opADD_C()
-{
+int Intel8080::opADD_C() {
     // Opcode: 0x81         Mnemonic: ADD C
     // Size: 1 byte         Cycles: 4
     // Description: Add contents of C register to Accumulator
@@ -1786,8 +1658,7 @@ int Intel8080::opADD_C()
     return 4;
 }
 
-int Intel8080::opADD_D()
-{
+int Intel8080::opADD_D() {
     // Opcode: 0x82         Mnemonic: ADD D
     // Size: 1 byte         Cycles: 4
     // Description: Add contents of D register to Accumulator
@@ -1797,8 +1668,7 @@ int Intel8080::opADD_D()
     return 4;
 }
 
-int Intel8080::opADD_E()
-{
+int Intel8080::opADD_E() {
     // Opcode: 0x83         Mnemonic: ADD E
     // Size: 1 byte         Cycles: 4
     // Description: Add contents of E register to Accumulator
@@ -1808,8 +1678,7 @@ int Intel8080::opADD_E()
     return 4;
 }
 
-int Intel8080::opADD_H()
-{
+int Intel8080::opADD_H() {
     // Opcode: 0x84         Mnemonic: ADD H
     // Size: 1 byte         Cycles: 4
     // Description: Add contents of H register to Accumulator
@@ -1819,8 +1688,7 @@ int Intel8080::opADD_H()
     return 4;
 }
 
-int Intel8080::opADD_L()
-{
+int Intel8080::opADD_L() {
     // Opcode: 0x85         Mnemonic: ADD L
     // Size: 1 byte         Cycles: 4
     // Description: Add contents of L register to Accumulator
@@ -1830,8 +1698,7 @@ int Intel8080::opADD_L()
     return 4;
 }
 
-int Intel8080::opADD_M()
-{
+int Intel8080::opADD_M() {
     // Opcode: 0x86         Mnemonic: ADD M
     // Size: 1 byte         Cycles: 7
     // Description: Add contents of memory location pointed by HL to Accumulator
@@ -1842,8 +1709,7 @@ int Intel8080::opADD_M()
     return 7;
 }
 
-int Intel8080::opADD_A()
-{
+int Intel8080::opADD_A() {
     // Opcode: 0x87         Mnemonic: ADD A
     // Size: 1 byte         Cycles: 4
     // Description: Add contents of Accumulator to Accumulator
@@ -1853,8 +1719,7 @@ int Intel8080::opADD_A()
     return 4;
 }
 
-int Intel8080::opADC_B()
-{
+int Intel8080::opADC_B() {
     // Opcode: 0x88         Mnemonic: ADC B
     // Size: 1 byte         Cycles: 4
     // Description: Add contents of B register to Accumulator with carry
@@ -1864,8 +1729,7 @@ int Intel8080::opADC_B()
     return 4;
 }
 
-int Intel8080::opADC_C()
-{
+int Intel8080::opADC_C() {
     // Opcode: ox89         Mnemonic: ADC C
     // Size: 1 byte         Cycles: 4
     // Description: Add contents of C register to Accumulator with carry
@@ -1875,8 +1739,7 @@ int Intel8080::opADC_C()
     return 4;
 }
 
-int Intel8080::opADC_D()
-{
+int Intel8080::opADC_D() {
     // Opcode: 0x8A         Mnemonic: ADC D
     // Size: 1 byte         Cycles: 4
     // Description: Add contents of D register to Accumulator with carry
@@ -1886,8 +1749,7 @@ int Intel8080::opADC_D()
     return 4;
 }
 
-int Intel8080::opADC_E()
-{
+int Intel8080::opADC_E() {
     // Opcode: 0x8B         Mnemonic: ADC H
     // Size: 1 byte         Cycles: 4
     // Description: Add contents of E register to Accumulator with carry
@@ -1897,8 +1759,7 @@ int Intel8080::opADC_E()
     return 4;
 }
 
-int Intel8080::opADC_H()
-{
+int Intel8080::opADC_H() {
     // Opcode: 0x8C         Mnemonic: ADC H
     // Size: 1 byte         Cycles: 4
     // Description: Add contents of H register to Accumulator with carry
@@ -1908,8 +1769,7 @@ int Intel8080::opADC_H()
     return 4;
 }
 
-int Intel8080::opADC_L()
-{
+int Intel8080::opADC_L() {
     // Opcode: 0x8D         Mnemonic: ADC L
     // Size: 1 byte         Cycles: 4
     // Description: Add contents of L register to Accumulator with carry
@@ -1919,8 +1779,7 @@ int Intel8080::opADC_L()
     return 4;
 }
 
-int Intel8080::opADC_M()
-{
+int Intel8080::opADC_M() {
     // Opcode: 0x8E         Mnemonic: ADC M
     // Size: 1 byte         Cycles: 7
     // Description: Add contents of byte in memory location contained in HL register to A with carry
@@ -1931,8 +1790,7 @@ int Intel8080::opADC_M()
     return 7;
 }
 
-int Intel8080::opADC_A()
-{
+int Intel8080::opADC_A() {
     // Opcode: 0x8F         Mnemonic: ADC A
     // Size: 1 byte         Cycles: 4
     // Description: Add contents of Accumulator to Accumulator with carry
@@ -1942,8 +1800,7 @@ int Intel8080::opADC_A()
     return 4;
 }
 
-int Intel8080::opSUB_B()
-{
+int Intel8080::opSUB_B() {
     // Opcode: 0x90         Mnemonic: SUB B
     // Size: 1 byte         Cycles: 4
     // Description: Subtract contents of B register from Accumulator
@@ -1953,8 +1810,7 @@ int Intel8080::opSUB_B()
     return 4;
 }
 
-int Intel8080::opSUB_C()
-{
+int Intel8080::opSUB_C() {
     // Opcode: 0x91         Mnemonic: SUB C
     // Size: 1 byte         Cycles: 4
     // Description: Subtract contents of C register from Accumulator
@@ -1964,8 +1820,7 @@ int Intel8080::opSUB_C()
     return 4;
 }
 
-int Intel8080::opSUB_D()
-{
+int Intel8080::opSUB_D() {
     // Opcode: 0x92         Mnemonic: SUB D
     // Size: 1 byte         Cycles: 4
     // Description: Subtract contents of D register from Accumulator
@@ -1975,8 +1830,7 @@ int Intel8080::opSUB_D()
     return 4;
 }
 
-int Intel8080::opSUB_E()
-{
+int Intel8080::opSUB_E() {
     // Opcode: 0x93         Mnemonic: SUB E
     // Size: 1 byte         Cycles: 4
     // Description: Subtract contents of E register from Accumulator
@@ -1986,8 +1840,7 @@ int Intel8080::opSUB_E()
     return 4;
 }
 
-int Intel8080::opSUB_H()
-{
+int Intel8080::opSUB_H() {
     // Opcode: 0x94         Mnemonic: SUB H
     // Size: 1 byte         Cycles: 4
     // Description: Subtract contents of H register from Accumulator
@@ -1997,8 +1850,7 @@ int Intel8080::opSUB_H()
     return 4;
 }
 
-int Intel8080::opSUB_L()
-{
+int Intel8080::opSUB_L() {
     // Opcode: 0x95         Mnemonic: SUB L
     // Size: 1 byte         Cycles: 4
     // Description: Subtract contents of L register from Accumulator
@@ -2008,8 +1860,7 @@ int Intel8080::opSUB_L()
     return 4;
 }
 
-int Intel8080::opSUB_M()
-{
+int Intel8080::opSUB_M() {
     // Opcode: 0x96         Mnemonic: SUB M
     // Size: 1 byte         Cycles: 7
     // Description: Subtract contents of memory location pointed by HL from Accumulator 
@@ -2020,8 +1871,7 @@ int Intel8080::opSUB_M()
     return 7;
 }
 
-int Intel8080::opSUB_A()
-{
+int Intel8080::opSUB_A() {
     // Opcode: 0x97         Mnemonic: SUB A
     // Size: 1 byte         Cycles: 4
     // Description: Subtract contents of Accumulator from Accumulator
@@ -2031,8 +1881,7 @@ int Intel8080::opSUB_A()
     return 4;
 }
 
-int Intel8080::opSBB_B()
-{
+int Intel8080::opSBB_B() {
     // Opcode: 0x98         Mnemonic: SBB B
     // Size: 1 byte         Cycles: 4
     // Description: Subtract contents of register B from Accumulator with borrow
@@ -2042,8 +1891,7 @@ int Intel8080::opSBB_B()
     return 4;
 }
 
-int Intel8080::opSBB_C()
-{
+int Intel8080::opSBB_C() {
     // Opcode: 0x99         Mnemonic: SBB C
     // Size: 1 byte         Cycles: 4
     // Description: Subtract contents of register C from Accumulator with borrow
@@ -2053,8 +1901,7 @@ int Intel8080::opSBB_C()
     return 4;
 }
 
-int Intel8080::opSBB_D()
-{
+int Intel8080::opSBB_D() {
     // Opcode: 0x9A         Mnemonic: SBB D
     // Size: 1 byte         Cycles: 4
     // Description: Subtract contents of register D from Accumulator with borrow
@@ -2064,8 +1911,7 @@ int Intel8080::opSBB_D()
     return 4;
 }
 
-int Intel8080::opSBB_E()
-{
+int Intel8080::opSBB_E() {
     // Opcode: 0x9B         Mnemonic: SBB E
     // Size: 1 byte         Cycles: 4
     // Description: Subtract contents of register E from Accumulator with borrow
@@ -2075,8 +1921,7 @@ int Intel8080::opSBB_E()
     return 4;
 }
 
-int Intel8080::opSBB_H()
-{
+int Intel8080::opSBB_H() {
     // Opcode: 0x9C         Mnemonic: SBB H
     // Size: 1 byte         Cycles: 4
     // Description: Subtract contents of register H from Accumulator with borrow
@@ -2086,8 +1931,7 @@ int Intel8080::opSBB_H()
     return 4;
 }
 
-int Intel8080::opSBB_L()
-{
+int Intel8080::opSBB_L() {
     // Opcode: 0x9D         Mnemonic: SBB L
     // Size: 1 byte         Cycles: 4
     // Description: Subtract contents of register L from Accumulator with borrow
@@ -2097,8 +1941,7 @@ int Intel8080::opSBB_L()
     return 4;
 }
 
-int Intel8080::opSBB_M()
-{
+int Intel8080::opSBB_M() {
     // Opcode: 0x9E         Mnemonic: SBB M
     // Size: 1 byte         Cycles: 7
     // Description: Subtract contens of memory location address contained in HL register pair from Accumulator with Borrow
@@ -2109,8 +1952,7 @@ int Intel8080::opSBB_M()
     return 7;
 }
 
-int Intel8080::opSBB_A()
-{
+int Intel8080::opSBB_A() {
     // Opcode: 0x9F         Mnemonic: SBB A
     // Size: 1 byte         Cycles: 4
     // Description: Subtract Accumulator from Accumulator with Borrow
@@ -2120,8 +1962,7 @@ int Intel8080::opSBB_A()
     return 4;
 }
 
-int Intel8080::opANA_B()
-{
+int Intel8080::opANA_B() {
     // Opcode: 0xA0         Mnemonic: ANA B
     // Size: 1 byte         Cycles: 4
     // Description: Bitwise AND of Accumulator with register B
@@ -2135,8 +1976,7 @@ int Intel8080::opANA_B()
     return 4;
 }
 
-int Intel8080::opANA_C()
-{
+int Intel8080::opANA_C() {
     // Opcode: 0xA1         Mnemonic: ANA C
     // Size: 1 byte         Cycles: 4
     // Description: Bitwise AND of Accumulator with register C
@@ -2150,8 +1990,7 @@ int Intel8080::opANA_C()
     return 4;
 }
 
-int Intel8080::opANA_D()
-{
+int Intel8080::opANA_D() {
     // Opcode: 0xA2         Mnemonic: ANA D
     // Size: 1 byte         Cycles: 4
     // Description: Bitwise AND of Accumulator with register D
@@ -2165,8 +2004,7 @@ int Intel8080::opANA_D()
     return 4;
 }
 
-int Intel8080::opANA_E()
-{
+int Intel8080::opANA_E() {
     // Opcode: 0xA3         Mnemonic: ANA E
     // Size: 1 byte         Cycles: 4
     // Description: Bitwise AND of Accumulator with register E
@@ -2180,8 +2018,7 @@ int Intel8080::opANA_E()
     return 4;
 }
 
-int Intel8080::opANA_H()
-{
+int Intel8080::opANA_H() {
     // Opcode: 0xA4         Mnemonic: ANA H
     // Size: 1 byte         Cycles: 4
     // Description: Bitwise AND of Accumulator with register H
@@ -2195,8 +2032,7 @@ int Intel8080::opANA_H()
     return 4;
 }
 
-int Intel8080::opANA_L()
-{
+int Intel8080::opANA_L() {
     // Opcode: 0xA5         Mnemonic: ANA L
     // Size: 1 byte         Cycles: 4
     // Description: Bitwise AND of Accumulator with register L
@@ -2210,8 +2046,7 @@ int Intel8080::opANA_L()
     return 4;
 }
 
-int Intel8080::opANA_M()
-{
+int Intel8080::opANA_M() {
     // Opcode: 0xA6         Mnemonic: ANA M
     // Size: 1 byte         Cycles: 7
     // Description: Bitwise AND of Accumulator with contents of memory location pointed by HL
@@ -2226,8 +2061,7 @@ int Intel8080::opANA_M()
     return 7;
 }
 
-int Intel8080::opANA_A()
-{
+int Intel8080::opANA_A() {
     // Opcode: 0xA7         Mnemonic: ANA A
     // Size: 1 byte         Cycles: 4
     // Description: Bitwise AND of the accumulator with itself
@@ -2241,8 +2075,7 @@ int Intel8080::opANA_A()
     return 4;
 }
 
-int Intel8080::opXRA_B()
-{
+int Intel8080::opXRA_B() {
     // Opcode: 0xA8         Mnemonic: XRA B
     // Size: 1 byte         Cycles: 4
     // Description: Bitwise XOR operation of Accumulator and register B
@@ -2256,8 +2089,7 @@ int Intel8080::opXRA_B()
     return 4;
 }
 
-int Intel8080::opXRA_C()
-{
+int Intel8080::opXRA_C() {
     // Opcode: 0xA9         Mnemonic: XRA C
     // Size: 1 byte         Cycles: 4
     // Description: Bitwise XOR operation of Accumulator and register B
@@ -2271,8 +2103,7 @@ int Intel8080::opXRA_C()
     return 4;
 }
 
-int Intel8080::opXRA_D()
-{
+int Intel8080::opXRA_D() {
     // Opcode: 0xAA         Mnemonic: XRA D
     // Size: 1 byte         Cycles: 4
     // Description: Bitwise XOR operation of Accumulator and register D
@@ -2285,8 +2116,7 @@ int Intel8080::opXRA_D()
     return 4;
 }
 
-int Intel8080::opXRA_E()
-{
+int Intel8080::opXRA_E() {
     // Opcode: 0xAB         Mnemonic: XRA E
     // Size: 1 byte         Cycles: 4
     // Description: Bitwise XOR operation of Accumulator and register E
@@ -2300,8 +2130,7 @@ int Intel8080::opXRA_E()
     return 4;
 }
 
-int Intel8080::opXRA_H()
-{
+int Intel8080::opXRA_H() {
     // Opcode: 0xAC         Mnemonic: XRA H
     // Size: 1 byte         Cycles: 4
     // Description: Bitwise XOR of Accumulator and register H
@@ -2315,8 +2144,7 @@ int Intel8080::opXRA_H()
     return 4;
 }
 
-int Intel8080::opXRA_L()
-{
+int Intel8080::opXRA_L() {
     // Opcode: 0xAD         Mnemonic: XRA L
     // Size: 1 byte         Cycles: 4
     // Description: Bitwise XOR of Accumulator and register L
@@ -2330,8 +2158,7 @@ int Intel8080::opXRA_L()
     return 4;
 }
 
-int Intel8080::opXRA_M()
-{
+int Intel8080::opXRA_M() {
     // Opcode: 0xAE         Mnemonic: XRA M
     // Size: 1 byte         Cycles: 7
     // Description: Bitwise XOR of Accumulator and contents of memory location pointed by HL
@@ -2346,8 +2173,7 @@ int Intel8080::opXRA_M()
     return 7;
 }
 
-int Intel8080::opXRA_A()
-{
+int Intel8080::opXRA_A() {
     // Opcode: 0xAF         Mnemonic: XRA A
     // Size: 1 byte         Cycles: 4
     // Description: Bitwise XOR operation of Accumulator and Accumulator
@@ -2362,8 +2188,7 @@ int Intel8080::opXRA_A()
     return 4;
 }
 
-int Intel8080::opORA_B()
-{
+int Intel8080::opORA_B() {
     // Opcode: 0xB0         Mnemonic: ORA B
     // Size: 1 byte         Cycles: 4
     // Description: Bitwise OR of Accumulator and register B
@@ -2375,8 +2200,7 @@ int Intel8080::opORA_B()
     return 4;
 }
 
-int Intel8080::opORA_C()
-{
+int Intel8080::opORA_C() {
     // Opcode: 0xB1         Mnemonic: ORA C
     // Size: 1 byte         Cycles: 4
     // Description: Bitwise OR of Accumulator and register C
@@ -2388,8 +2212,7 @@ int Intel8080::opORA_C()
     return 4;
 }
 
-int Intel8080::opORA_D()
-{
+int Intel8080::opORA_D() {
     // Opcode: 0xB2         Mnemonic: ORA D
     // Size: 1 byte         Cycles: 4
     // Description: Bitwise OR of Accumulator and register D
@@ -2401,8 +2224,7 @@ int Intel8080::opORA_D()
     return 4;
 }
 
-int Intel8080::opORA_E()
-{
+int Intel8080::opORA_E() {
     // Opcode: 0xB3         Mnemonic: ORA E
     // Size: 1 byte         Cycles: 4
     // Description: Bitwise OR of Accumulator and register E
@@ -2414,8 +2236,7 @@ int Intel8080::opORA_E()
     return 4;
 }
 
-int Intel8080::opORA_H()
-{
+int Intel8080::opORA_H() {
     // Opcode: 0xB4         Mnemonic: ORA H
     // Size: 1 byte         Cycles: 4
     // Description: Bitwise OR of Accumulator and register H
@@ -2427,8 +2248,7 @@ int Intel8080::opORA_H()
     return 4;
 }
 
-int Intel8080::opORA_L()
-{
+int Intel8080::opORA_L() {
     // Opcode: 0xB5         Mnemonic: ORA L
     // Size: 1 byte         Cycles: 4
     // Description: Bitwise OR of Accumulator and register L
@@ -2440,8 +2260,7 @@ int Intel8080::opORA_L()
     return 4;
 }
 
-int Intel8080::opORA_M()
-{
+int Intel8080::opORA_M() {
     // Opcode: 0xB6         Mnemonic: ORA M
     // Size: 1 byte         Cycles: 7
     // Description: Bitwise OR of Accumulator with BYTE data  from address contained in extended HL register
@@ -2454,8 +2273,7 @@ int Intel8080::opORA_M()
     return 7;
 }
 
-int Intel8080::opORA_A()
-{
+int Intel8080::opORA_A() {
     // Opcode: 0xB7         Mnemonic: ORA A
     // Size: 1 byte         Cycles: 4
     // Description: Bitwise OR of Accumulator and Accumulator
@@ -2467,8 +2285,7 @@ int Intel8080::opORA_A()
     return 4;
 }
 
-int Intel8080::opCMP_B()
-{
+int Intel8080::opCMP_B() {
     // Opcode: 0xB8         Mnemonic: CMP B
     // Size: 1 byte         Cycles: 4
     // Description: Compare Accumulator with register B
@@ -2480,8 +2297,7 @@ int Intel8080::opCMP_B()
     return 4;
 }
 
-int Intel8080::opCMP_C()
-{
+int Intel8080::opCMP_C() {
     // Opcode: 0xB9         Mnemonic: CMP C
     // Size: 1 byte         Cycles: 4
     // Description: Compare Accumulator with register C
@@ -2493,8 +2309,7 @@ int Intel8080::opCMP_C()
     return 4;
 }
 
-int Intel8080::opCMP_D()
-{
+int Intel8080::opCMP_D() {
     // Opcode: 0xBA         Mnemonic: CMP D
     // Size: 1 byte         Cycles: 4
     // Description: Compare Accumulator with register D
@@ -2506,8 +2321,7 @@ int Intel8080::opCMP_D()
     return 4;
 }
 
-int Intel8080::opCMP_E()
-{
+int Intel8080::opCMP_E() {
     // Opcode: 0xBB         Mnemonic: CMP E
     // Size: 1 byte         Cycles: 4
     // Description: Compare Accumulator with register E
@@ -2519,8 +2333,7 @@ int Intel8080::opCMP_E()
     return 4;
 }
 
-int Intel8080::opCMP_H()
-{
+int Intel8080::opCMP_H() {
     // Opcode: 0xBC         Mnemonic: CMP H
     // Size: 1 byte         Cycles: 4
     // Description: Compare Accumulator with register H
@@ -2532,8 +2345,7 @@ int Intel8080::opCMP_H()
     return 4;
 }
 
-int Intel8080::opCMP_L()
-{
+int Intel8080::opCMP_L() {
     // Opcode: 0xBD         Mnemonic: CMP L
     // Size: 1 byte         Cycles: 4
     // Description: Compare Accumulator with register L
@@ -2545,8 +2357,7 @@ int Intel8080::opCMP_L()
     return 4;
 }
 
-int Intel8080::opCMP_M()
-{
+int Intel8080::opCMP_M() {
     // Opcode: 0xBE         Mnemonic: CMP M
     // Size: 1 byte         Cycles: 7
     // Description: Compare Accumulator with contents of memory location pointed by HL
@@ -2558,8 +2369,7 @@ int Intel8080::opCMP_M()
     return 7;
 }
 
-int Intel8080::opCMP_A()
-{
+int Intel8080::opCMP_A() {
     // Opcode: 0xBF         Mnemonic: CMP A
     // Size: 1 byte         Cycles: 4
     // Description: Compare Accumulator with Accumulator
@@ -2571,8 +2381,7 @@ int Intel8080::opCMP_A()
     return 4;
 }
 
-int Intel8080::opRNZ()
-{
+int Intel8080::opRNZ() {
     // Opcode: 0xC0         Mnemonic: RNZ
     // Size: 1  byte        Cycles: 11/5
     // Description: Return from subroutine if Zero flag is not set
@@ -2587,8 +2396,7 @@ int Intel8080::opRNZ()
     return 5;
 }
 
-int Intel8080::opPOP_B()
-{
+int Intel8080::opPOP_B() {
     // Opcode: 0xC1         Mnemonic: POP B
     // Size: 1 byte         Cycles: 10
     // Description: Pop BC register pair from the stack.
@@ -2600,8 +2408,7 @@ int Intel8080::opPOP_B()
     return 10;
 }
 
-int Intel8080::opJNZ()
-{
+int Intel8080::opJNZ() {
     // Opcode: 0xC2         Mnemonic: JNZ addr
     // Size: 3  bytes       Cycles: 10
     // Description: Jump to address if Zero flag is not set
@@ -2614,8 +2421,7 @@ int Intel8080::opJNZ()
     return 10;
 }
 
-int Intel8080::opJMP()
-{
+int Intel8080::opJMP() {
     // Opcode: 0xC3         Mnemonic: JMP addr
     // Size: 3  bytes       Cycles: 10
     // Description: Jump to address
@@ -2626,8 +2432,7 @@ int Intel8080::opJMP()
     return 10;
 } 
 
-int Intel8080::opCNZ()
-{
+int Intel8080::opCNZ() {
     // Opcode: 0xC4         Mnemonic: CNZ addr
     // Size: 3  bytes       Cycles: 17/11
     // Description: Call subroutine if Zero flag is not set
@@ -2643,8 +2448,7 @@ int Intel8080::opCNZ()
     return 11;
 }
 
-int Intel8080::opPUSH_B()
-{
+int Intel8080::opPUSH_B() {
     // Opcode: 0xC5         Mnemonic: PUSH B
     // Size: 1  byte        Cycles: 11
     // Description: Push BC register pair onto the stack.
@@ -2655,8 +2459,7 @@ int Intel8080::opPUSH_B()
     return 11;
 }
 
-int Intel8080::opADI_D8()
-{
+int Intel8080::opADI_D8() {
     // Opcode: 0xC6         Mnemonic: ADI D8
     // Size: 2  bytes       Cycles: 7
     // Description: Add immediate data to Accumulator
@@ -2667,8 +2470,7 @@ int Intel8080::opADI_D8()
     return 7;
 }
 
-int Intel8080::opRST_0()
-{
+int Intel8080::opRST_0() {
     // Opcode: 0xC7         Mnemonic: RST 0
     // Size: 1  byte        Cycles: 15
     // Description: Restart 0 - Interrupt handler 0
@@ -2679,8 +2481,7 @@ int Intel8080::opRST_0()
     return 15;
 }
 
-int Intel8080::opRZ()
-{
+int Intel8080::opRZ() {
     // Opcode: 0xC8         Mnemonic: RZ
     // Size: 1  byte        Cycles: 11/5
     // Description: Return from subroutine if Zero flag is set
@@ -2695,8 +2496,7 @@ int Intel8080::opRZ()
     return 5;
 }
 
-int Intel8080::opRET()
-{
+int Intel8080::opRET() {
     // Opcode: 0xC9         Mnemonic: RET
     // Size: 1  byte        Cycles: 10
     // Description: Return from subroutine
@@ -2708,8 +2508,7 @@ int Intel8080::opRET()
     return 10;
 }
 
-int Intel8080::opJZ()
-{
+int Intel8080::opJZ() {
     // Opcode: 0xCA         Mnemonic: JZ
     // Size: 3  bytes       Cycles: 10
     // Description: Jump to address if Zero flag is set
@@ -2722,8 +2521,7 @@ int Intel8080::opJZ()
     return 10;
 }
 
-int Intel8080::opCZ()
-{
+int Intel8080::opCZ() {
     // Opcode: 0xCC         Mnemonic: CZ addr
     // Size: 3  bytes       Cycles: 17/11
     // Description: Call subroutine if zero bit is set
@@ -2739,8 +2537,7 @@ int Intel8080::opCZ()
     return 11;
 }
 
-int Intel8080::opCALL()
-{
+int Intel8080::opCALL() {
     // Opcode: 0xCD         Mnemonic: CALL addr
     // Size: 3  bytes       Cycles: 17
     // Description: Call subroutine at address
@@ -2753,8 +2550,7 @@ int Intel8080::opCALL()
     return 17;
 }  
 
-int Intel8080::opACI_D8()
-{
+int Intel8080::opACI_D8() {
     // Opcode: 0xCE         Mnemonic: ACI D8
     // Size: 2  bytes       Cycles: 7
     // Description: Add immediate data to Accumulator with carry
@@ -2765,8 +2561,7 @@ int Intel8080::opACI_D8()
     return 7;
 }
 
-int Intel8080::opRST_1()
-{
+int Intel8080::opRST_1() {
     // Opcode: 0xCF         Mnemonic: RST 1
     // Size: 1  byte        Cycles: 15
     // Description: Restart 1
@@ -2777,8 +2572,7 @@ int Intel8080::opRST_1()
     return 15;
 }
 
-int Intel8080::opRNC()
-{
+int Intel8080::opRNC() {
     // Opcode: 0xD0         Mnemonic: RNC
     // Size: 1  byte        Cycles: 11/5
     // Description: Return from subroutine if carry bit is not set
@@ -2794,8 +2588,7 @@ int Intel8080::opRNC()
 }
 
 
-int Intel8080::opPOP_D()
-{
+int Intel8080::opPOP_D() {
     // Opcode: 0xD1         Mnemonic: POP D
     // Size: 1  byte        Cycles: 10
     // Description: Pop DE register pair from the stack.
@@ -2807,8 +2600,7 @@ int Intel8080::opPOP_D()
     return 10;
 }
 
-int Intel8080::opJNC()
-{
+int Intel8080::opJNC() {
     // Opcode: 0xD2         Mnemonic: JNC addr
     // Size: 3  bytes       Cycles: 10
     // Description: Jump to address if Carry flag is not set
@@ -2821,8 +2613,7 @@ int Intel8080::opJNC()
     return 10;
 }
 
-int Intel8080::opOUT_D8()
-{
+int Intel8080::opOUT_D8() {
     // Opcode: 0xD3         Mnemonic: OUT D8
     // Size: 2 bytes        Cycles: 10
     // Description: Special
@@ -2835,8 +2626,7 @@ int Intel8080::opOUT_D8()
     return 10;
 }
 
-int Intel8080::opCNC()
-{
+int Intel8080::opCNC() {
     // Opcode: 0xD4         Mnemonic: CNC addr
     // Size: 3  bytes       Cycles: 17/11
     // Description: Call subroutine if Carry flag is not set
@@ -2852,8 +2642,7 @@ int Intel8080::opCNC()
     return 11;
 }
 
-int Intel8080::opPUSH_D()
-{
+int Intel8080::opPUSH_D() {
     // Opcode: 0xD5         Mnemonic: PUSH D
     // Size: 1  byte        Cycles: 11
     // Description: Push DE register pair onto the stack.
@@ -2864,8 +2653,7 @@ int Intel8080::opPUSH_D()
     return 11;
 }
 
-int Intel8080::opSUI_D8()
-{
+int Intel8080::opSUI_D8() {
     // Opcode: 0xD6         Mnemonic: SUI D8
     // Size: 2  bytes       Cycles: 7
     // Description: Subtract immediate data from Accumulator
@@ -2875,8 +2663,7 @@ int Intel8080::opSUI_D8()
     return 7;
 }
 
-int Intel8080::opRST_2()
-{
+int Intel8080::opRST_2() {
     // Opcode: 0xD7         Mnemonic: RST 2
     // Size: 1  byte        Cycles: 15
     // Description: Restart 2
@@ -2887,8 +2674,7 @@ int Intel8080::opRST_2()
     return 15;
 }
 
-int Intel8080::opRC()
-{
+int Intel8080::opRC() {
     // Opcode: 0xD8         Mnemonic: RC
     // Size: 1  byte        Cycles: 11/5
     // Description: Return from subroutine if carry bit is set
@@ -2904,8 +2690,7 @@ int Intel8080::opRC()
 }
 
 
-int Intel8080::opJC()
-{
+int Intel8080::opJC() {
     // Opcde: 0xDA          Mnemonic: JC addr
     // Size: 3  bytes       Cycles: 10
     // Description: Jump to address if Carry flag is set
@@ -2918,8 +2703,7 @@ int Intel8080::opJC()
     return 10;
 }
 
-int Intel8080::opIN_D8()
-{
+int Intel8080::opIN_D8() {
     // Opcode: 0xDB         Mnemonic: IN D8
     // Size: 2  bytes       Cycles: 10
     // Description: Register A will contain data from device D8
@@ -2933,8 +2717,7 @@ int Intel8080::opIN_D8()
 }
 
 
-int Intel8080::opCC()
-{
+int Intel8080::opCC() {
     // Opcode: 0xDC         Mnemonic: CC addr
     // Size: 3  bytes       Cycles: 17/11
     // Description: Call subroutine if Carry flag is set
@@ -2950,8 +2733,7 @@ int Intel8080::opCC()
     return 11;
 }
 
-int Intel8080::opSBI_D8()
-{
+int Intel8080::opSBI_D8() {
     // Opcode: 0xDE         Mnemonic: SBI D8
     // Size: 2 bytes        Cycles: 7
     // Description: Subtract immediate data from Accumulator with carry
@@ -2962,8 +2744,7 @@ int Intel8080::opSBI_D8()
     return 7;
 }
 
-int Intel8080::opRST_3()
-{
+int Intel8080::opRST_3() {
     // Opcode: 0xDF         Mnemonic: RST 3
     // Size: 1  byte        Cycles: 15
     // Description: Restart 3
@@ -2974,8 +2755,7 @@ int Intel8080::opRST_3()
     return 15;
 }
 
-int Intel8080::opRPO()
-{
+int Intel8080::opRPO() {
     // Opcode: 0xE0         Mnemonic: RPO
     // Size: 1  byte        Cycles: 11/5
     // Description: Return from subroutine if parity bit is not set
@@ -2991,8 +2771,7 @@ int Intel8080::opRPO()
 }
 
 
-int Intel8080::opPOP_H()
-{
+int Intel8080::opPOP_H() {
     // Opcode: 0xE1         Mnemonic: POP H
     // Size: 1 byte         Cycles: 10
     // Description: Pop HL register pair from the stack.
@@ -3004,8 +2783,7 @@ int Intel8080::opPOP_H()
     return 10;
 }
 
-int Intel8080::opJPO()
-{
+int Intel8080::opJPO() {
     // Opcode: 0xE2         Mnemonic: JPO addr
     // Size: 3 bytes        Cycles: 10
     // Description: Jump to address if parity bit is odd (i.e. not set)
@@ -3018,8 +2796,7 @@ int Intel8080::opJPO()
     return 10;
 }
 
-int Intel8080::opXTHL()
-{
+int Intel8080::opXTHL() {
     // Opcode: 0xE3         Mnemonic: XTHL
     // Size: 1              Cycles: 18
     // Exchange contents of memory word pointed by SP are exchanged with contents of extended register HL
@@ -3032,8 +2809,7 @@ int Intel8080::opXTHL()
     return 18;
 }
 
-int Intel8080::opCPO()
-{
+int Intel8080::opCPO() {
     // Opcode: 0xE4         Mnemonic: CPO addr
     // Size: 3  bytes       Cycles: 17/11
     // Description: Call subroutine if parity bit is odd 
@@ -3048,8 +2824,7 @@ int Intel8080::opCPO()
     return 11;
 }
 
-int Intel8080::opPUSH_H()
-{
+int Intel8080::opPUSH_H() {
     // Opcode: 0xE5         Mnemonic: PUSH H
     // Size: 1  byte        Cycles: 11
     // Description: Push HL register pair onto the stack.
@@ -3060,8 +2835,7 @@ int Intel8080::opPUSH_H()
     return 11;
 }
 
-int Intel8080::opANI_D8()
-{
+int Intel8080::opANI_D8() {
     // Opcode: 0xE6         Mnemonic: ANI D8
     // Size: 2  bytes       Cycles: 7
     // Description: Bitwise AND operation of Accumulator and immediated data, result to accumulator
@@ -3075,8 +2849,7 @@ int Intel8080::opANI_D8()
     return 7;
 }
 
-int Intel8080::opRST_4()
-{
+int Intel8080::opRST_4() {
     // Opcode: 0xE7         Mnemonic: RST 4
     // Size: 1  byte        Cycles: 15
     // Description: Restart 4
@@ -3087,8 +2860,7 @@ int Intel8080::opRST_4()
     return 15;
 }
 
-int Intel8080::opRPE()
-{
+int Intel8080::opRPE() {
     // Opcode: 0xE8         Mnemonic: RPE
     // Size: 1  byte        Cycles: 11/5
     // Description: Return from subroutine if parity bit is set
@@ -3103,8 +2875,7 @@ int Intel8080::opRPE()
     return 5;
 }
 
-int Intel8080::opPCHL()
-{
+int Intel8080::opPCHL() {
     // Opcode: 0xE9         Mnemonic: PCHL
     // Size: 1  byte        Cycles: 5
     // Description: Load program counter with contents of HL register pair
@@ -3114,8 +2885,7 @@ int Intel8080::opPCHL()
     return 5;
 }
 
-int Intel8080::opJPE()
-{
+int Intel8080::opJPE() {
     // Opcode: 0xEA         Mnemonic: JPE addr
     // Size: 3  bytes       Cycles: 10
     // Description: Jump to address if Parity flag is even
@@ -3129,8 +2899,7 @@ int Intel8080::opJPE()
 }
 
 
-int Intel8080::opXCHG()
-{
+int Intel8080::opXCHG() {
     // Opcode: 0xEB         Mnemonic: XCHG
     // Size: 1  byte        Cycles: 5
     // Description: Exchange the HL and DE register pairs
@@ -3142,8 +2911,7 @@ int Intel8080::opXCHG()
     return 5;
 }
 
-int Intel8080::opCPE()
-{
+int Intel8080::opCPE() {
     // Opcode: 0xEC         Mnemonic: CPE addr
     // Size: 3 bytes        Cycles 17/11
     // Description: Call subroutine if Parity flag is even
@@ -3159,8 +2927,7 @@ int Intel8080::opCPE()
     return 11;
 }
 
-int Intel8080::opXRI_D8()
-{
+int Intel8080::opXRI_D8() {
     // Opcode: 0xEE         Mnemonic: XRI D8
     // Size: 2  bytes       Cycles: 7
     // Description: Bitwise XOR operation of Accumulator with immediated data
@@ -3174,8 +2941,7 @@ int Intel8080::opXRI_D8()
     return 7;
 }
 
-int Intel8080::opRST_5()
-{
+int Intel8080::opRST_5() {
     // Opcode: 0xEF         Mnemonic: RST 5
     // Size: 1  byte        Cycles: 15
     // Description: Restart 5
@@ -3186,8 +2952,7 @@ int Intel8080::opRST_5()
     return 15;
 }
 
-int Intel8080::opRP()
-{
+int Intel8080::opRP() {
     // Opcode: 0xF0         Mnemonic: RP
     // Size: 1  byte        Cycles: 11/5
     // Description: Return from subroutine if sign bit is not set
@@ -3203,8 +2968,7 @@ int Intel8080::opRP()
 }
 
 
-int Intel8080::opPOP_PSW()
-{
+int Intel8080::opPOP_PSW() {
     // Opcode: 0xF1         Mnemonic: POP PSW
     // Size: 1  byte        Cycles: 10
     // Description: Pop stack to PSW
@@ -3221,8 +2985,7 @@ int Intel8080::opPOP_PSW()
     return 10;
 }
 
-int Intel8080::opJP()
-{
+int Intel8080::opJP() {
     // Opcode: 0xF2         Mnemonic: JP addr
     // Size: 3 bytes        Cycles: 10
     // Description: Jump to address if positive (i.e. sign bit is not set)
@@ -3235,8 +2998,7 @@ int Intel8080::opJP()
     return 10;
 }
 
-int Intel8080::opDI()
-{
+int Intel8080::opDI() {
     // Opcode: 0xF3         Mnemonic: DI
     // Size: 1 byte         Cycles: 4
     // Description: Disable interrupts
@@ -3246,8 +3008,7 @@ int Intel8080::opDI()
     return 4;
 }
 
-int Intel8080::opCP()
-{
+int Intel8080::opCP() {
     // Opcode: 0xF4         Mnemonic: CP addr
     // Size: 3  bytes       Cycles: 17/11
     // Description: Call subroutine if positive (sign bit is not set)
@@ -3262,8 +3023,7 @@ int Intel8080::opCP()
     return 11;
 }
 
-int Intel8080::opPUSH_PSW()
-{
+int Intel8080::opPUSH_PSW() {
     // Opcode: 0xF5         Mnemonic: PUSH PSW
     // Size: 1  byte        Cycles: 11
     // Description: Push PSW onto the stack.
@@ -3274,8 +3034,7 @@ int Intel8080::opPUSH_PSW()
     return 11;
 }
 
-int Intel8080::opORI_D8()
-{
+int Intel8080::opORI_D8() {
     // Opcode: 0xF6         Mnemonic: ORI D8
     // Size: 2  bytes       Cycles: 7
     // Description OR immediated data with Accumulator, store result in Accumulator
@@ -3289,8 +3048,7 @@ int Intel8080::opORI_D8()
     return 7;
 }
 
-int Intel8080::opRST_6()
-{
+int Intel8080::opRST_6() {
     // Opcode: 0xF7         Mnemonic: RST 6
     // Size: 1  byte        Cycles: 15
     // Description: Restart 6
@@ -3301,8 +3059,7 @@ int Intel8080::opRST_6()
     return 11;
 }
 
-int Intel8080::opRM()
-{
+int Intel8080::opRM() {
     // Opcode: 0xF8         Mnemonic: RM
     // Size: 1  byte        Cycles: 11/5
     // Description: Return from subroutine if sign bit is set
@@ -3317,8 +3074,7 @@ int Intel8080::opRM()
     return 5;
 }
 
-int Intel8080::opSPHL()
-{
+int Intel8080::opSPHL() {
     // Opcode: 0xF9         Mnemonic: SPHL
     // Size: 1  byte        Cycles: 5
     // Description: Load SP with the contents of HL register pair
@@ -3329,8 +3085,7 @@ int Intel8080::opSPHL()
 }
 
 
-int Intel8080::opJM()
-{
+int Intel8080::opJM() {
     // Opcode: 0xFA         Mnemonic: JM
     // Size: 3  bytes       Cycles: 10
     // Description: Jump to address if minus (i.e. if sign bit is set)
@@ -3343,8 +3098,7 @@ int Intel8080::opJM()
     return 10;
 }
 
-int Intel8080::opEI()
-{
+int Intel8080::opEI() {
     // Opcode: 0xFB         Mnemonic: EI
     // Size: 1 byte         Cycles: 4
     // Description: Enable interrupts
@@ -3354,8 +3108,7 @@ int Intel8080::opEI()
     return 4;
 }
 
-int Intel8080::opCM()
-{
+int Intel8080::opCM() {
     // Opcode: 0xFC         Mnemonic: CM addr
     // Size: 3  bytes       Cycles: 17/11
     // Description: Call subroutine at addr if minus (sign bit is set)
@@ -3372,8 +3125,7 @@ int Intel8080::opCM()
 }
 
 
-int Intel8080::opCPI_D8()
-{
+int Intel8080::opCPI_D8() {
     // Opcode:  0xFE        Mnemonic: CPI D8
     // Size: 2 bytes        Cycles: 7
     // Description: Compare register A with the immediate mode BYTE data. Set flags.
@@ -3386,8 +3138,7 @@ int Intel8080::opCPI_D8()
     return 7;
 }
 
-int Intel8080::opRST_7()
-{
+int Intel8080::opRST_7() {
     // Opcode: 0xFF         Mnemonic: RST 
     // Size: 1  byte        Cycles: 15
     // Description: Restart 7

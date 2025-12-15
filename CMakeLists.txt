@@ -1,13 +1,11 @@
 cmake_minimum_required(VERSION 3.10.0)
 
-project(Intel8080 VERSION 0.1.0 LANGUAGES C CXX)
+project(spaceInvaders VERSION 0.1.0 LANGUAGES C CXX)
 
-add_executable(Intel8080 
-    src/main.cpp
+add_executable(spaceInvaders 
+    src/mainSpaceInvaders.cpp
     src/intel8080.cpp
     src/intel8080Opcodes.cpp
-    src/cpu.cpp
-    src/virtualMemory.cpp
     src/rom.cpp
     src/ram.cpp
     src/bus.cpp
@@ -17,12 +15,24 @@ add_executable(Intel8080
     src/dummyPeripheral.cpp
     src/spaceInvaders.cpp
 )
-target_include_directories(Intel8080 PRIVATE 
+
+target_include_directories(spaceInvaders PRIVATE 
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
-target_link_libraries(Intel8080 PRIVATE sfml-graphics)
-target_link_libraries(Intel8080 PRIVATE sfml-window)
-target_link_libraries(Intel8080 PRIVATE sfml-system)
+target_link_libraries(spaceInvaders PRIVATE sfml-graphics)
+target_link_libraries(spaceInvaders PRIVATE sfml-window)
+target_link_libraries(spaceInvaders PRIVATE sfml-system)
 
+add_executable(cpuTest
+    src/mainCPUTest.cpp
+    src/intel8080.cpp
+    src/intel8080Opcodes.cpp
+    src/rom.cpp
+    src/ram.cpp
+    src/bus.cpp
+)
 
+target_include_directories(cpuTest PRIVATE 
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+)

@@ -7,12 +7,11 @@
 
 
 
-SpaceInvaders::SpaceInvaders()
-{
+SpaceInvaders::SpaceInvaders() {
     programRom = new Rom(0x2000);
     workingRam = new Ram(0x400);
     videoRam = new Ram(0x1C00);
-    bus = new Bus();
+    bus = new SpaceInvadersBus();
     cpu = new Intel8080();
     shiftRegister = new invadersShiftRegister();
     p1ButtonDeck = new SpaceInvadersButtonDeck();
@@ -40,17 +39,19 @@ SpaceInvaders::SpaceInvaders()
     
 }
 
-SpaceInvaders::~SpaceInvaders()
-{
+SpaceInvaders::~SpaceInvaders() {
     delete programRom;
     delete workingRam;
     delete videoRam;
+    delete shiftRegister;
+    delete p1ButtonDeck;
+    delete p2ButtonDeck;
+    delete dummyPeripheral;
     delete bus;
     delete cpu;
 }
 
-void SpaceInvaders::Initialize()
-{
+void SpaceInvaders::Initialize() {
     cpu->reset();
     sf::Uint8* pixels = new sf::Uint8[224 * 256 * 4];
     for (int i = 0; i < 224 * 256 * 4; i += 4) {
@@ -82,8 +83,7 @@ void SpaceInvaders::Initialize()
 }
 
 
-void SpaceInvaders::Run()
-{
+void SpaceInvaders::Run() {
     sf::RenderWindow window(sf::VideoMode(224, 256), "Space Invaders");
 
     int cycle_count = 0;
@@ -157,8 +157,7 @@ void SpaceInvaders::Run()
     }
 }
 
-void SpaceInvaders::screenUpdate()
-{
+void SpaceInvaders::screenUpdate() {
     // 224 * 256 * 4 bytes
     std::vector<sf::Uint8> pixels(224 * 256 * 4, 0); // Initialize to Black/Transparent
 
