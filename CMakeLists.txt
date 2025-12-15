@@ -17,7 +17,6 @@ target_sources(spaceInvaders PRIVATE
     src/ram.cpp
     src/dummyPeripheral.cpp
     src/spaceInvaders/mainSpaceInvaders.cpp
-    src/spaceInvaders/mainSpaceInvaders.cpp
     src/spaceInvaders/spaceInvaders.cpp
     src/spaceInvaders/spaceInvadersBus.cpp
     src/spaceInvaders/invadersShiftRegister.cpp
@@ -27,6 +26,30 @@ target_sources(spaceInvaders PRIVATE
 target_link_libraries(spaceInvaders PRIVATE sfml-graphics)
 target_link_libraries(spaceInvaders PRIVATE sfml-window)
 target_link_libraries(spaceInvaders PRIVATE sfml-system)
+
+add_executable(lunarRescue)
+
+target_include_directories(lunarRescue PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/spaceInvaders
+)
+
+target_sources(lunarRescue PRIVATE
+    src/bus.cpp
+    src/intel8080.cpp
+    src/intel8080Opcodes.cpp
+    src/rom.cpp
+    src/ram.cpp
+    src/dummyPeripheral.cpp
+    src/spaceInvaders/mainLunarRescue.cpp
+    src/spaceInvaders/lunarRescue.cpp
+    src/spaceInvaders/invadersShiftRegister.cpp
+    src/spaceInvaders/spaceInvadersButtonDeck.cpp
+)
+
+target_link_libraries(lunarRescue PRIVATE sfml-graphics)
+target_link_libraries(lunarRescue PRIVATE sfml-window)
+target_link_libraries(lunarRescue PRIVATE sfml-system)
 
 add_executable(cpuTest
     src/mainCPUTest.cpp

@@ -5,19 +5,13 @@
 class SpaceInvadersButtonDeck : public Intel8080PeripheralDevice {
     private:
         BYTE data;
-        bool coinInserted;
-        bool p1Pressed;
-        bool p2Pressed;
-        bool leftPressed;
-        bool rightPressed;
-        bool shotPressed;
-        bool firePressed;
 
 
     public:
         SpaceInvadersButtonDeck();
         void writeData(BYTE port, BYTE data) override;
         BYTE readData(BYTE port) override;
+        void reset();
         void insertCoin();
         void pressP1();
         void pressP2();

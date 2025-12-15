@@ -1,4 +1,4 @@
-#include "spaceInvaders.hpp"
+#include "lunarRescue.hpp"
 #include "intel8080TestHelper.hpp"
 #include <fstream>
 #include <cstdio>
@@ -7,11 +7,12 @@
 
 
 
-SpaceInvaders::SpaceInvaders() {
+LunarRescue::LunarRescue() {
     programRom = new Rom(0x2000);
     workingRam = new Ram(0x400);
     videoRam = new Ram(0x1C00);
-    bus = new SpaceInvadersBus();
+    extendedRom = new Rom(0x1000);
+    bus = new Bus();
     cpu = new Intel8080();
     shiftRegister = new invadersShiftRegister();
     p1ButtonDeck = new SpaceInvadersButtonDeck();
@@ -21,6 +22,7 @@ SpaceInvaders::SpaceInvaders() {
     bus->attachMemory(programRom, 0x0000, 0x1FFF);
     bus->attachMemory(workingRam, 0x2000, 0x23FF);
     bus->attachMemory(videoRam, 0x2400, 0x3FFF);
+    bus->attachMemory(extendedRom, 0x4000, 0x4FFF);
     cpu->attachBus(bus); 
 
     cpu->attachInputPeripheral(p1ButtonDeck, 0x01);
@@ -39,7 +41,7 @@ SpaceInvaders::SpaceInvaders() {
     
 }
 
-SpaceInvaders::~SpaceInvaders() {
+LunarRescue::~LunarRescue() {
     delete programRom;
     delete workingRam;
     delete videoRam;
@@ -51,7 +53,7 @@ SpaceInvaders::~SpaceInvaders() {
     delete cpu;
 }
 
-void SpaceInvaders::Initialize() {
+void LunarRescue::Initialize() {
     cpu->reset();
     sf::Uint8* pixels = new sf::Uint8[224 * 256 * 4];
     for (int i = 0; i < 224 * 256 * 4; i += 4) {
@@ -66,7 +68,7 @@ void SpaceInvaders::Initialize() {
     delete[] pixels;
 
     std::vector<BYTE> programRomData(0x2000);
-    FILE *file = fopen("/home/jelison/Workspace/spacelaser.bin", "rb");
+    FILE *file = fopen("/home/jelison/Workspace/lrescue.bin", "rb");
     if (!file) {
         throw std::runtime_error("Failed to open ROM file");
     }
@@ -78,13 +80,26 @@ void SpaceInvaders::Initialize() {
 
     programRom->romLoad(programRomData);
 
+    std::vector<BYTE> extendedRomData(0x1000);
+    file = fopen("/home/jelison/Workspace/extlrescue.bin", "rb");
+    if (!file) {
+        throw std::runtime_error("Failed to open ROM file");
+    }
+    bytesRead = fread(extendedRomData.data(), 1, extendedRomData.size(), file);
+    if (bytesRead != extendedRomData.size()) {
+        throw std::runtime_error("Failed to read ROM file");
+    }
+    fclose(file);
+
+    extendedRom->romLoad(extendedRomData);
+
     cpu->reset();
     clock.restart();
 }
 
 
-void SpaceInvaders::Run() {
-    sf::RenderWindow window(sf::VideoMode(224, 256), "Space Invaders");
+void LunarRescue::Run() {
+    sf::RenderWindow window(sf::VideoMode(224, 256), "Lunar Rescue");
 
     int cycle_count = 0;
     clock.restart();
@@ -158,7 +173,7 @@ void SpaceInvaders::Run() {
     }
 }
 
-void SpaceInvaders::screenUpdate() {
+void LunarRescue::screenUpdate() {
     // 224 * 256 * 4 bytes
     std::vector<sf::Uint8> pixels(224 * 256 * 4, 0); // Initialize to Black/Transparent
 
