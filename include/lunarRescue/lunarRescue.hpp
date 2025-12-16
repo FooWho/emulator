@@ -8,6 +8,7 @@
 #include "dummyPeripheral.hpp"
 #include "spaceInvadersButtonDeck.hpp"
 #include <SFML/Graphics.hpp>
+#include <array>
 
 class LunarRescue {
   private:
@@ -15,8 +16,7 @@ class LunarRescue {
     Intel8080 *cpu;
     Ram *workingRam;
     Ram *videoRam;
-    Rom *programRom;
-    Rom *extendedRom;
+    std::array<Rom*, 6> programRom;
     invadersShiftRegister *shiftRegister;
     DummyPeripheral *dummyPeripheral;
     SpaceInvadersButtonDeck *p1ButtonDeck;

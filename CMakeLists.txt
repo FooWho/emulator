@@ -59,6 +59,8 @@ target_link_libraries(lunarRescue PRIVATE sfml-graphics)
 target_link_libraries(lunarRescue PRIVATE sfml-window)
 target_link_libraries(lunarRescue PRIVATE sfml-system)
 
+File(COPY "${CMAKE_CURRENT_SOURCE_DIR}/src/roms/lunarRescue/" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/roms/lunarRescue" FILES_MATCHING PATTERN "*.bin")
+
 add_executable(cpuTest
     src/mainCPUTest.cpp
     src/intel8080.cpp

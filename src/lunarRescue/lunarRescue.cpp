@@ -8,10 +8,14 @@
 
 
 LunarRescue::LunarRescue() {
-    programRom = new Rom(0x2000);
+    programRom[0] = new Rom(0x0800);
+    programRom[1] = new Rom(0x0800);
+    programRom[2] = new Rom(0x0800);
+    programRom[3] = new Rom(0x0800);
+    programRom[4] = new Rom(0x0800);
+    programRom[5] = new Rom(0x0800);
     workingRam = new Ram(0x400);
     videoRam = new Ram(0x1C00);
-    extendedRom = new Rom(0x1000);
     bus = new Bus();
     cpu = new Intel8080();
     shiftRegister = new invadersShiftRegister();
@@ -19,10 +23,15 @@ LunarRescue::LunarRescue() {
     p2ButtonDeck = new SpaceInvadersButtonDeck();
     dummyPeripheral = new DummyPeripheral();
 
-    bus->attachMemory(programRom, 0x0000, 0x1FFF);
+    bus->attachMemory(programRom[0], 0x0000, 0x07FF);
+    bus->attachMemory(programRom[1], 0x0800, 0x0FFF);
+    bus->attachMemory(programRom[2], 0x1000, 0x17FF);
+    bus->attachMemory(programRom[3], 0x1800, 0x1FFF);
     bus->attachMemory(workingRam, 0x2000, 0x23FF);
     bus->attachMemory(videoRam, 0x2400, 0x3FFF);
-    bus->attachMemory(extendedRom, 0x4000, 0x4FFF);
+    bus->attachMemory(programRom[4], 0x4000, 0x47FF);
+    bus->attachMemory(programRom[5], 0x4800, 0x4FFF);
+
     cpu->attachBus(bus); 
 
     cpu->attachInputPeripheral(p1ButtonDeck, 0x01);
@@ -42,7 +51,12 @@ LunarRescue::LunarRescue() {
 }
 
 LunarRescue::~LunarRescue() {
-    delete programRom;
+    delete programRom[0];
+    delete programRom[1];
+    delete programRom[2];
+    delete programRom[3];
+    delete programRom[4];
+    delete programRom[5];
     delete workingRam;
     delete videoRam;
     delete shiftRegister;
@@ -67,31 +81,21 @@ void LunarRescue::Initialize() {
     
     delete[] pixels;
 
-    std::vector<BYTE> programRomData(0x2000);
-    FILE *file = fopen("/home/jelison/Workspace/lrescue.bin", "rb");
-    if (!file) {
-        throw std::runtime_error("Failed to open ROM file");
-    }
-    size_t bytesRead = fread(programRomData.data(), 1, programRomData.size(), file);
-    if (bytesRead != programRomData.size()) {
-        throw std::runtime_error("Failed to read ROM file");
-    }
-    fclose(file);
+    for (int i = 0; i < 6; i++) {
+        std::vector<BYTE> programRomData(0x0800);
+    
+        FILE *file = fopen(("roms/lunarRescue/lrescue_" + std::to_string(i) + ".bin").c_str(), "rb");
+        if (!file) {
+            throw std::runtime_error("Failed to open ROM file");
+        }
+        size_t bytesRead = fread(programRomData.data(), 1, programRomData.size(), file);
+        if (bytesRead != programRomData.size()) {
+            throw std::runtime_error("Failed to read ROM file");
+        }
+        fclose(file);
 
-    programRom->romLoad(programRomData);
-
-    std::vector<BYTE> extendedRomData(0x1000);
-    file = fopen("/home/jelison/Workspace/extlrescue.bin", "rb");
-    if (!file) {
-        throw std::runtime_error("Failed to open ROM file");
+        programRom[i]->romLoad(programRomData);
     }
-    bytesRead = fread(extendedRomData.data(), 1, extendedRomData.size(), file);
-    if (bytesRead != extendedRomData.size()) {
-        throw std::runtime_error("Failed to read ROM file");
-    }
-    fclose(file);
-
-    extendedRom->romLoad(extendedRomData);
 
     cpu->reset();
     clock.restart();
