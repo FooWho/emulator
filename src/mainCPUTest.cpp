@@ -19,7 +19,7 @@ int main(int argc, char *argv[]) {
 
     bus.attachMemory(&ram, 0x0000, 0xFFFE); 
 
-    std::ifstream file("/home/jelison/Workspace/TST8080.BIN", std::ios::binary | std::ios::ate);
+    std::ifstream file("roms/TST8080.BIN", std::ios::binary | std::ios::ate);
 
     std::streamsize size = file.tellg();
     file.seekg(0, std::ios::beg);

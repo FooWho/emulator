@@ -21,16 +21,24 @@ target_sources(spaceInvaders PRIVATE
     src/spaceInvaders/spaceInvadersBus.cpp
     src/spaceInvaders/invadersShiftRegister.cpp
     src/spaceInvaders/spaceInvadersButtonDeck.cpp
+    src/spaceInvaders/invadersAudio.cpp
 )   
 
-target_link_libraries(spaceInvaders PRIVATE sfml-graphics)
-target_link_libraries(spaceInvaders PRIVATE sfml-window)
-target_link_libraries(spaceInvaders PRIVATE sfml-system)
+target_link_libraries(spaceInvaders PRIVATE
+    sfml-audio
+    sfml-graphics
+    sfml-window
+    sfml-system
+)
+
+file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/src/roms/spaceInvaders/" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/roms/spaceInvaders" FILES_MATCHING PATTERN "*.bin")
+file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/src/roms/spaceInvaders/audio/" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/roms/spaceInvaders/audio" FILES_MATCHING PATTERN "*.wav")
 
 add_executable(lunarRescue)
 
 target_include_directories(lunarRescue PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/lunarRescue
     ${CMAKE_CURRENT_SOURCE_DIR}/include/spaceInvaders
 )
 
@@ -41,8 +49,8 @@ target_sources(lunarRescue PRIVATE
     src/rom.cpp
     src/ram.cpp
     src/dummyPeripheral.cpp
-    src/spaceInvaders/mainLunarRescue.cpp
-    src/spaceInvaders/lunarRescue.cpp
+    src/lunarRescue/mainLunarRescue.cpp
+    src/lunarRescue/lunarRescue.cpp
     src/spaceInvaders/invadersShiftRegister.cpp
     src/spaceInvaders/spaceInvadersButtonDeck.cpp
 )
@@ -63,3 +71,5 @@ add_executable(cpuTest
 target_include_directories(cpuTest PRIVATE 
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
+
+file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/src/roms/TST8080.BIN" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/roms")

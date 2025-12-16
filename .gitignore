@@ -48,5 +48,7 @@ CTestTestfile.cmake
 # Backup files
 *.bak
 
-#
-invaders.bin
+# ROMs
+*.bin
+*.BIN
+*.wav

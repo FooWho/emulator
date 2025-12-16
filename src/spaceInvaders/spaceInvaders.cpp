@@ -2,23 +2,29 @@
 #include "intel8080TestHelper.hpp"
 #include <fstream>
 #include <cstdio>
-#include <SFML/Graphics.hpp>
+#include <cstdlib>
 #include <vector>
 
 
 
 SpaceInvaders::SpaceInvaders() {
-    programRom = new Rom(0x2000);
+    for (int i = 0; i < 4; i++) {
+        programRom[i] = new Rom(0x0800);
+    }
     workingRam = new Ram(0x400);
     videoRam = new Ram(0x1C00);
     bus = new SpaceInvadersBus();
     cpu = new Intel8080();
     shiftRegister = new invadersShiftRegister();
     p1ButtonDeck = new SpaceInvadersButtonDeck();
-    p2ButtonDeck = new SpaceInvadersButtonDeck();
+    p2ButtonDeck = new SpaceInvadersButtonDeck(0x09);
     dummyPeripheral = new DummyPeripheral();
+    audio = new InvadersAudio();
 
-    bus->attachMemory(programRom, 0x0000, 0x1FFF);
+
+    for (int i = 0; i < 4; i++) {
+        bus->attachMemory(programRom[i], 0x0000 + i * 0x0800, 0x07FF + i * 0x0800);
+    }
     bus->attachMemory(workingRam, 0x2000, 0x23FF);
     bus->attachMemory(videoRam, 0x2400, 0x3FFF);
     cpu->attachBus(bus); 
@@ -40,7 +46,9 @@ SpaceInvaders::SpaceInvaders() {
 }
 
 SpaceInvaders::~SpaceInvaders() {
-    delete programRom;
+    for (int i = 0; i < 4; i++) {
+        delete programRom[i];
+    }
     delete workingRam;
     delete videoRam;
     delete shiftRegister;
@@ -65,18 +73,24 @@ void SpaceInvaders::Initialize() {
     
     delete[] pixels;
 
-    std::vector<BYTE> programRomData(0x2000);
-    FILE *file = fopen("/home/jelison/Workspace/spacelaser.bin", "rb");
-    if (!file) {
-        throw std::runtime_error("Failed to open ROM file");
-    }
-    size_t bytesRead = fread(programRomData.data(), 1, programRomData.size(), file);
-    if (bytesRead != programRomData.size()) {
-        throw std::runtime_error("Failed to read ROM file");
-    }
-    fclose(file);
+    std::vector<BYTE> programRomData(0x0800);
+    for (int i = 0; i < 4; i++) {
+        std::string filename = "roms/spaceInvaders/invaders_" + std::to_string(i) + ".bin";
 
-    programRom->romLoad(programRomData);
+        FILE *file = fopen(filename.c_str(), "rb");
+        if (!file) {
+            throw std::runtime_error("Failed to open ROM file");
+        }
+        size_t bytesRead = fread(programRomData.data(), 1, programRomData.size(), file);
+        if (bytesRead != programRomData.size()) {
+            throw std::runtime_error("Failed to read ROM file");
+        }
+        fclose(file);
+        programRom[i]->romLoad(programRomData);
+    }
+    
+
+    
 
     cpu->reset();
     clock.restart();

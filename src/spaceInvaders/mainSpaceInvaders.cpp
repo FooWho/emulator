@@ -12,6 +12,8 @@
 #include "intel8080TestHelper.hpp"
 
 int main(int argc, char *argv[]) {
+printf("%s\n",argv[0]);
+
     SpaceInvaders game;
 
     game.Initialize();

@@ -1,8 +1,9 @@
 #include "spaceInvadersButtonDeck.hpp"
 #include "types.hpp"
 
-SpaceInvadersButtonDeck::SpaceInvadersButtonDeck() {
-    data = 0x08;
+SpaceInvadersButtonDeck::SpaceInvadersButtonDeck(BYTE resetValue) {
+    this->resetValue = resetValue;
+    data = this->resetValue;
 }
 
 void SpaceInvadersButtonDeck::writeData(BYTE port, BYTE data) {
@@ -14,7 +15,7 @@ BYTE SpaceInvadersButtonDeck::readData(BYTE port) {
 }
 
 void SpaceInvadersButtonDeck::reset() {
-    data = 0x08;
+    data = resetValue;
 }
 
 void SpaceInvadersButtonDeck::insertCoin() {

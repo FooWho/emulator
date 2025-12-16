@@ -5,10 +5,11 @@
 class SpaceInvadersButtonDeck : public Intel8080PeripheralDevice {
     private:
         BYTE data;
+        BYTE resetValue;
 
 
     public:
-        SpaceInvadersButtonDeck();
+        SpaceInvadersButtonDeck(BYTE resetValue = 0x08);
         void writeData(BYTE port, BYTE data) override;
         BYTE readData(BYTE port) override;
         void reset();
