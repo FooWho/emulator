@@ -1,5 +1,6 @@
 #pragma once
 #include <array>
+#include <memory>
 #include "cpu.hpp"
 #include "intel8080PeripheralDevice.hpp"
 #include "types.hpp"
@@ -63,7 +64,7 @@ class Intel8080 : public CPU {
     BYTE byteData;
     WORD wordData;
 
-    Bus *bus;
+    std::unique_ptr<Bus> bus;
     std::array<Intel8080PeripheralDevice*, 256> inPeripheralDevices;
     std::array<Intel8080PeripheralDevice*, 256> outPeripheralDevices;
 
@@ -365,7 +366,7 @@ class Intel8080 : public CPU {
     void reset() override;
     int step() override;
     void interrupt(BYTE isrVector);
-    Intel8080 *attachBus(Bus *bus) override;
+    Intel8080 *attachBus(std::unique_ptr<Bus> bus) override;
     Intel8080 *attachInputPeripheral(Intel8080PeripheralDevice *device, BYTE port);
     Intel8080 *attachOutputPeripheral(Intel8080PeripheralDevice *device, BYTE port);
 

@@ -35,7 +35,6 @@ void Rom::write(WORD address, BYTE data) {
 }
 
 WORD Rom::memSize() const {
-    WORD mySize = romem.size();
     return static_cast<WORD>(romem.size());
 }
 
@@ -44,7 +43,7 @@ void Rom::romLoad(const std::vector<BYTE>& buffer) {
     if (buffer.size() > romem.size()) {
         throw std::runtime_error("Buffer size exceeds ROM size");
     }
-    for (int i = 0; i < buffer.size(); ++i) {
+    for (size_t i = 0; i < buffer.size(); ++i) {
         romem[i] = buffer[i];
     }
 }

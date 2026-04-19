@@ -3,11 +3,6 @@
 #include "abstractMemory.hpp"
 #include "intel8080.hpp"
 
-Bus::Bus() {
-    memory_map.clear();
-    return;
-}
-
 Bus *Bus::attachMemory(AbstractMemory *memory, WORD startAddress, WORD endAddress) {
     MemoryMapping mappedMemory(startAddress, endAddress, memory);
     if (mappedMemory.startAddress > mappedMemory.endAddress) {
@@ -21,7 +16,7 @@ Bus *Bus::attachMemory(AbstractMemory *memory, WORD startAddress, WORD endAddres
 } 
 
 BYTE Bus::readByte(WORD address) const {
-    for (unsigned int i = 0; i < memory_map.size(); i++) {
+    for (size_t i = 0; i < memory_map.size(); i++) {
         const auto& mapping = memory_map[i];
         if (address >= mapping.startAddress && address <= mapping.endAddress) {
             WORD effectiveAddress = address - mapping.startAddress;
@@ -32,7 +27,7 @@ BYTE Bus::readByte(WORD address) const {
 }
 
 void Bus::writeByte(WORD address, BYTE data) {
-    for (unsigned int i = 0; i < memory_map.size(); i++) {
+    for (size_t i = 0; i < memory_map.size(); i++) {
         const auto& mapping = memory_map[i];
         if (address >= mapping.startAddress && address <= mapping.endAddress) {
             WORD effectiveAddress = address - mapping.startAddress;

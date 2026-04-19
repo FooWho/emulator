@@ -15,7 +15,7 @@ class Bus {
   std::vector<MemoryMapping> memory_map;
     
  public:
-  Bus();
+  Bus() = default;
   Bus *attachMemory(AbstractMemory *memory, WORD startAddress, WORD endAddress);
   virtual BYTE readByte(WORD address) const;
   WORD readWord(WORD address) const;

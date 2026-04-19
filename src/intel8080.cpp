@@ -40,8 +40,8 @@ void Intel8080::reset() {
     regs.pc = 0; // Program execution starts at 0x0000 on reset.
 }
 
-Intel8080 *Intel8080::attachBus(Bus *bus) {
-    this->bus = bus;
+Intel8080 *Intel8080::attachBus(std::unique_ptr<Bus> bus) {
+    this->bus = std::move(bus);
     return this;
 }
 
