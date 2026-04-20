@@ -1,5 +1,4 @@
 #pragma once
-#include <memory>
 #include "bus.hpp"
 #include "types.hpp"
 
@@ -7,7 +6,6 @@ class CPU {
  public:
     virtual void reset() = 0;
     virtual int step() = 0;
-    virtual CPU *attachBus(std::unique_ptr<Bus> bus) = 0;
     virtual void fetchOpcode() = 0;
     virtual int execute() = 0;
 

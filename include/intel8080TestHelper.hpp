@@ -136,18 +136,18 @@ class Intel8080TestHelper {
     }
 
     static inline BYTE getByteAtAddress(Intel8080& cpu, WORD address) {
-        return cpu.bus->readByte(address);
+        return cpu.bus.readByte(address);
     }
 
     static inline void setByteAtAddress(Intel8080& cpu, WORD address, BYTE value) {
-        cpu.bus->writeByte(address, value);
+        cpu.bus.writeByte(address, value);
     }
 
     static inline WORD getWordAtAddress(Intel8080& cpu, WORD address) {
-        return cpu.bus->readWord(address);
+        return cpu.bus.readWord(address);
     }
 
     static inline void setWordAtAddress(Intel8080& cpu, WORD address, WORD value) {
-        cpu.bus->writeWord(address, value);
+        cpu.bus.writeWord(address, value);
     }
 };

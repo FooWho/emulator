@@ -13,8 +13,8 @@ SpaceInvaders::SpaceInvaders() {
     }
     workingRam = new Ram(0x400);
     videoRam = new Ram(0x1C00);
-    std::unique_ptr<Bus> bus(new SpaceInvadersBus);
-    cpu = new Intel8080();
+    bus = new SpaceInvadersBus();
+    cpu = new Intel8080(*bus);
     shiftRegister = new invadersShiftRegister();
     p1ButtonDeck = new SpaceInvadersButtonDeck();
     p2ButtonDeck = new SpaceInvadersButtonDeck(0x09);
@@ -26,8 +26,7 @@ SpaceInvaders::SpaceInvaders() {
         bus->attachMemory(programRom[i], 0x0000 + i * 0x0800, 0x07FF + i * 0x0800);
     }
     bus->attachMemory(workingRam, 0x2000, 0x23FF);
-    bus->attachMemory(videoRam, 0x2400, 0x3FFF);
-    cpu->attachBus(std::move(bus)); 
+    bus->attachMemory(videoRam, 0x2400, 0x3FFF); 
 
     cpu->attachInputPeripheral(p1ButtonDeck, 0x01);
     cpu->attachInputPeripheral(p2ButtonDeck, 0x02);

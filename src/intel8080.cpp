@@ -8,10 +8,9 @@
 #include "intel8080TestHelper.hpp"
 
 
-Intel8080::Intel8080() {
+Intel8080::Intel8080(Bus &bus) : bus(bus) {
     reset();
     buildOpcodeTable();
-    bus = nullptr;
     inPeripheralDevices.fill(nullptr);
     outPeripheralDevices.fill(nullptr);
 }
@@ -40,11 +39,6 @@ void Intel8080::reset() {
     regs.pc = 0; // Program execution starts at 0x0000 on reset.
 }
 
-Intel8080 *Intel8080::attachBus(std::unique_ptr<Bus> bus) {
-    this->bus = std::move(bus);
-    return this;
-}
-
 Intel8080 *Intel8080::attachInputPeripheral(Intel8080PeripheralDevice *device, BYTE port) {
     inPeripheralDevices[port] = device;
     return this;
@@ -59,42 +53,42 @@ void Intel8080::fetchOpcode() {
     //if (regs.pc == 0x15D3) {
     //    printState();
     //}
-    opcode = bus->readByte(regs.pc++);
+    opcode = bus.readByte(regs.pc++);
 }
 
 void Intel8080::fetchByte() {
-    byteData = bus->readByte(regs.pc++);
+    byteData = bus.readByte(regs.pc++);
 }
 
 void Intel8080::fetchWord() {
-    BYTE low = bus->readByte(regs.pc);
-    BYTE high = bus->readByte(regs.pc + 1);
+    BYTE low = bus.readByte(regs.pc);
+    BYTE high = bus.readByte(regs.pc + 1);
     wordData = (static_cast<WORD>(high) << 8) | static_cast<WORD>(low);
     regs.pc += 2;
 }
 
 void Intel8080::readOpcode(WORD address) {
-    opcode = bus->readByte(address);
+    opcode = bus.readByte(address);
 }
 
 void Intel8080::readByte(WORD address) {
-    byteData = bus->readByte(address);
+    byteData = bus.readByte(address);
 }
 
 void Intel8080::readWord(WORD address) {
-    wordData = bus->readWord(address);
+    wordData = bus.readWord(address);
 }
 
 void Intel8080::writeOpcode(WORD address, BYTE data) {
-    bus->writeByte(address, data);
+    bus.writeByte(address, data);
 } 
 
 void Intel8080::writeByte(WORD address, BYTE data) {
-    bus->writeByte(address, data);
+    bus.writeByte(address, data);
 }
 
 void Intel8080::writeWord(WORD address, WORD data) {
-    bus->writeWord(address, data);
+    bus.writeWord(address, data);
 }
 
 int Intel8080::execute() {
