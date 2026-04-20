@@ -13,11 +13,11 @@
 
 class SpaceInvaders {
   private:
-    std::unique_ptr<SpaceInvadersBus> bus;
-    std::unique_ptr<Intel8080> cpu;
+    std::array<std::unique_ptr<Rom>, 4> programRom;
     std::unique_ptr<Ram> workingRam;
     std::unique_ptr<Ram> videoRam;
-    std::array<std::unique_ptr<Rom>, 4> programRom;
+    std::unique_ptr<SpaceInvadersBus> bus;
+    std::unique_ptr<Intel8080> cpu;
     invadersShiftRegister *shiftRegister;
     DummyPeripheral *dummyPeripheral;
     SpaceInvadersButtonDeck *p1ButtonDeck;
