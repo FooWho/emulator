@@ -13,7 +13,7 @@
 
 class SpaceInvaders {
   private:
-    Bus *bus;
+    std::unique_ptr<SpaceInvadersBus> bus;
     Intel8080 *cpu;
     Ram *workingRam;
     Ram *videoRam;

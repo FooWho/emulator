@@ -50,9 +50,6 @@ Intel8080 *Intel8080::attachOutputPeripheral(Intel8080PeripheralDevice *device, 
 }
 
 void Intel8080::fetchOpcode() {
-    //if (regs.pc == 0x15D3) {
-    //    printState();
-    //}
     opcode = bus.readByte(regs.pc++);
 }
 

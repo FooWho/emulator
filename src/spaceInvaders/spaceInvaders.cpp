@@ -13,7 +13,7 @@ SpaceInvaders::SpaceInvaders() {
     }
     workingRam = new Ram(0x400);
     videoRam = new Ram(0x1C00);
-    bus = new SpaceInvadersBus();
+    bus = std::make_unique<SpaceInvadersBus>();
     cpu = new Intel8080(*bus);
     shiftRegister = new invadersShiftRegister();
     p1ButtonDeck = new SpaceInvadersButtonDeck();
@@ -55,6 +55,7 @@ SpaceInvaders::~SpaceInvaders() {
     delete p2ButtonDeck;
     delete dummyPeripheral;
     delete cpu;
+    bus.reset();
 }
 
 void SpaceInvaders::Initialize() {
