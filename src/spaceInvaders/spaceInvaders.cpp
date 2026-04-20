@@ -9,10 +9,10 @@
 
 SpaceInvaders::SpaceInvaders() {
     for (int i = 0; i < 4; i++) {
-        programRom[i] = new Rom(0x0800);
+        programRom[i] = std::make_unique<Rom>(0x0800);
     }
-    workingRam = new Ram(0x400);
-    videoRam = new Ram(0x1C00);
+    workingRam = std::make_unique<Ram>(0x400);
+    videoRam = std::make_unique<Ram>(0x1C00);
     bus = std::make_unique<SpaceInvadersBus>();
     cpu = std::make_unique<Intel8080>(*bus);
     shiftRegister = new invadersShiftRegister();
@@ -23,10 +23,10 @@ SpaceInvaders::SpaceInvaders() {
 
 
     for (int i = 0; i < 4; i++) {
-        bus->attachMemory(programRom[i], 0x0000 + i * 0x0800, 0x07FF + i * 0x0800);
+        bus->attachMemory(*(programRom[i]), 0x0000 + i * 0x0800, 0x07FF + i * 0x0800);
     }
-    bus->attachMemory(workingRam, 0x2000, 0x23FF);
-    bus->attachMemory(videoRam, 0x2400, 0x3FFF); 
+    bus->attachMemory(*workingRam, 0x2000, 0x23FF);
+    bus->attachMemory(*videoRam, 0x2400, 0x3FFF); 
 
     cpu->attachInputPeripheral(p1ButtonDeck, 0x01);
     cpu->attachInputPeripheral(p2ButtonDeck, 0x02);
@@ -45,11 +45,6 @@ SpaceInvaders::SpaceInvaders() {
 }
 
 SpaceInvaders::~SpaceInvaders() {
-    for (int i = 0; i < 4; i++) {
-        delete programRom[i];
-    }
-    delete workingRam;
-    delete videoRam;
     delete shiftRegister;
     delete p1ButtonDeck;
     delete p2ButtonDeck;

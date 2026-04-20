@@ -3,16 +3,16 @@
 #include "abstractMemory.hpp"
 #include "intel8080.hpp"
 
-Bus *Bus::attachMemory(AbstractMemory *memory, WORD startAddress, WORD endAddress) {
+Bus &Bus::attachMemory(AbstractMemory &memory, WORD startAddress, WORD endAddress) {
     MemoryMapping mappedMemory(startAddress, endAddress, memory);
     if (mappedMemory.startAddress > mappedMemory.endAddress) {
         throw std::invalid_argument("Start address cannot be greater than end address");
     }
-    if ((mappedMemory.endAddress - mappedMemory.startAddress + 1) != mappedMemory.device->memSize()) {
+    if ((mappedMemory.endAddress - mappedMemory.startAddress + 1) != mappedMemory.device.memSize()) {
         throw std::invalid_argument("Memory device size does not match mapping range");
     }
     memory_map.push_back(mappedMemory);
-    return this;
+    return *this;
 } 
 
 BYTE Bus::readByte(WORD address) const {
@@ -20,7 +20,7 @@ BYTE Bus::readByte(WORD address) const {
         const auto& mapping = memory_map[i];
         if (address >= mapping.startAddress && address <= mapping.endAddress) {
             WORD effectiveAddress = address - mapping.startAddress;
-            return (mapping.device->read(effectiveAddress));
+            return (mapping.device.read(effectiveAddress));
         }
     }
     throw std::runtime_error("Attempt to read from unmapped memory address " + std::to_string(address));    
@@ -31,7 +31,7 @@ void Bus::writeByte(WORD address, BYTE data) {
         const auto& mapping = memory_map[i];
         if (address >= mapping.startAddress && address <= mapping.endAddress) {
             WORD effectiveAddress = address - mapping.startAddress;
-            mapping.device->write(effectiveAddress, data);
+            mapping.device.write(effectiveAddress, data);
             return;
         }
     }

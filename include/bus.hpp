@@ -9,14 +9,14 @@ class Bus {
   struct MemoryMapping {
       WORD startAddress;
       WORD endAddress;
-      AbstractMemory *device;
-      MemoryMapping(WORD start, WORD end, AbstractMemory* vmDevice) : startAddress(start), endAddress(end), device(vmDevice) {};
+      AbstractMemory &device;
+      MemoryMapping(WORD start, WORD end, AbstractMemory &vmDevice) : startAddress(start), endAddress(end), device(vmDevice) {};
   };
   std::vector<MemoryMapping> memory_map;
     
  public:
   Bus() = default;
-  Bus *attachMemory(AbstractMemory *memory, WORD startAddress, WORD endAddress);
+  Bus &attachMemory(AbstractMemory &memory, WORD startAddress, WORD endAddress);
   virtual BYTE readByte(WORD address) const;
   WORD readWord(WORD address) const;
   virtual void writeByte(WORD address, BYTE data);
