@@ -14,7 +14,7 @@
 class SpaceInvaders {
   private:
     std::unique_ptr<SpaceInvadersBus> bus;
-    Intel8080 *cpu;
+    std::unique_ptr<Intel8080> cpu;
     Ram *workingRam;
     Ram *videoRam;
     std::array<Rom*, 4> programRom;
