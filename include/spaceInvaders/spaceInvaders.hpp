@@ -18,10 +18,10 @@ class SpaceInvaders {
     std::unique_ptr<Ram> videoRam;
     std::unique_ptr<SpaceInvadersBus> bus;
     std::unique_ptr<Intel8080> cpu;
-    invadersShiftRegister *shiftRegister;
-    DummyPeripheral *dummyPeripheral;
-    SpaceInvadersButtonDeck *p1ButtonDeck;
-    SpaceInvadersButtonDeck *p2ButtonDeck;
+    std::unique_ptr<invadersShiftRegister> shiftRegister;
+    std::unique_ptr<DummyPeripheral> dummyPeripheral;
+    std::unique_ptr<SpaceInvadersButtonDeck> p1ButtonDeck;
+    std::unique_ptr<SpaceInvadersButtonDeck> p2ButtonDeck;
     InvadersAudio *audio;
 
 
@@ -33,7 +33,6 @@ class SpaceInvaders {
 
   public:
     SpaceInvaders();
-    ~SpaceInvaders();
     void Initialize();
     void Run();
     void screenUpdate();

@@ -65,8 +65,8 @@ class Intel8080 : public CPU {
     WORD wordData;
 
     Bus &bus;
-    std::array<Intel8080PeripheralDevice*, 256> inPeripheralDevices;
-    std::array<Intel8080PeripheralDevice*, 256> outPeripheralDevices;
+    std::array<Intel8080PeripheralDevice&, 256> inPeripheralDevices;
+    std::array<Intel8080PeripheralDevice&, 256> outPeripheralDevices;
 
     std::array<int (Intel8080::*)(), 256> pOpcodeLookup;
 
@@ -366,8 +366,8 @@ class Intel8080 : public CPU {
     void reset() override;
     int step() override;
     void interrupt(BYTE isrVector);
-    Intel8080 *attachInputPeripheral(Intel8080PeripheralDevice *device, BYTE port);
-    Intel8080 *attachOutputPeripheral(Intel8080PeripheralDevice *device, BYTE port);
+    Intel8080 &attachInputPeripheral(Intel8080PeripheralDevice &device, BYTE port);
+    Intel8080 &attachOutputPeripheral(Intel8080PeripheralDevice &device, BYTE port);
 
     void fetchOpcode() override;
     int execute() override;

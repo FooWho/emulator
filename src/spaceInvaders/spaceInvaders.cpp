@@ -15,10 +15,10 @@ SpaceInvaders::SpaceInvaders() {
     videoRam = std::make_unique<Ram>(0x1C00);
     bus = std::make_unique<SpaceInvadersBus>();
     cpu = std::make_unique<Intel8080>(*bus);
-    shiftRegister = new invadersShiftRegister();
-    p1ButtonDeck = new SpaceInvadersButtonDeck();
-    p2ButtonDeck = new SpaceInvadersButtonDeck(0x09);
-    dummyPeripheral = new DummyPeripheral();
+    shiftRegister = std::make_unique<invadersShiftRegister>();
+    p1ButtonDeck = std::make_unique<SpaceInvadersButtonDeck>();
+    p2ButtonDeck = std::make_unique<SpaceInvadersButtonDeck>(0x09);
+    dummyPeripheral = std::make_unique<DummyPeripheral>();
     audio = new InvadersAudio();
 
 
@@ -28,27 +28,20 @@ SpaceInvaders::SpaceInvaders() {
     bus->attachMemory(*workingRam, 0x2000, 0x23FF);
     bus->attachMemory(*videoRam, 0x2400, 0x3FFF); 
 
-    cpu->attachInputPeripheral(p1ButtonDeck, 0x01);
-    cpu->attachInputPeripheral(p2ButtonDeck, 0x02);
-    cpu->attachInputPeripheral(shiftRegister, 0x03);
+    cpu->attachInputPeripheral(*p1ButtonDeck, 0x01);
+    cpu->attachInputPeripheral(*p2ButtonDeck, 0x02);
+    cpu->attachInputPeripheral(*shiftRegister, 0x03);
 
-    cpu->attachOutputPeripheral(shiftRegister, 0x02);
-    cpu->attachOutputPeripheral(dummyPeripheral, 0x03);
-    cpu->attachOutputPeripheral(shiftRegister, 0x04);
-    cpu->attachOutputPeripheral(dummyPeripheral, 0x05);
-    cpu->attachOutputPeripheral(dummyPeripheral, 0x06);
+    cpu->attachOutputPeripheral(*shiftRegister, 0x02);
+    cpu->attachOutputPeripheral(*dummyPeripheral, 0x03);
+    cpu->attachOutputPeripheral(*shiftRegister, 0x04);
+    cpu->attachOutputPeripheral(*dummyPeripheral, 0x05);
+    cpu->attachOutputPeripheral(*dummyPeripheral, 0x06);
 
     screen.create(224, 256);
     spriteScreen.setTexture(screen);
     spriteScreen.setPosition(0, 0);
     
-}
-
-SpaceInvaders::~SpaceInvaders() {
-    delete shiftRegister;
-    delete p1ButtonDeck;
-    delete p2ButtonDeck;
-    delete dummyPeripheral;
 }
 
 void SpaceInvaders::Initialize() {

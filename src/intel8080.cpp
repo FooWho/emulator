@@ -39,14 +39,14 @@ void Intel8080::reset() {
     regs.pc = 0; // Program execution starts at 0x0000 on reset.
 }
 
-Intel8080 *Intel8080::attachInputPeripheral(Intel8080PeripheralDevice *device, BYTE port) {
+Intel8080 &Intel8080::attachInputPeripheral(Intel8080PeripheralDevice &device, BYTE port) {
     inPeripheralDevices[port] = device;
-    return this;
+    return *this;
 }
 
-Intel8080 *Intel8080::attachOutputPeripheral(Intel8080PeripheralDevice *device, BYTE deviceID) {
+Intel8080 &Intel8080::attachOutputPeripheral(Intel8080PeripheralDevice &device, BYTE deviceID) {
     outPeripheralDevices[deviceID] = device;
-    return this;
+    return *this;
 }
 
 void Intel8080::fetchOpcode() {
