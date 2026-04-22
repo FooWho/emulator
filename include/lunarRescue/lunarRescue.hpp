@@ -12,15 +12,15 @@
 
 class LunarRescue {
   private:
-    Bus *bus;
-    Intel8080 *cpu;
-    Ram *workingRam;
-    Ram *videoRam;
-    std::array<Rom*, 6> programRom;
-    invadersShiftRegister *shiftRegister;
-    DummyPeripheral *dummyPeripheral;
-    SpaceInvadersButtonDeck *p1ButtonDeck;
-    SpaceInvadersButtonDeck *p2ButtonDeck;
+    std::unique_ptr<Bus> bus;
+    std::unique_ptr<Intel8080> cpu;
+    std::unique_ptr<Ram> workingRam;
+    std::unique_ptr<Ram> videoRam;
+    std::array<std::unique_ptr<Rom>, 6> programRom;
+    std::unique_ptr<invadersShiftRegister> shiftRegister;
+    std::unique_ptr<DummyPeripheral> dummyPeripheral;
+    std::unique_ptr<SpaceInvadersButtonDeck> p1ButtonDeck;
+    std::unique_ptr<SpaceInvadersButtonDeck> p2ButtonDeck;
 
     sf::Texture screen;
     sf::Sprite spriteScreen; 
@@ -30,7 +30,6 @@ class LunarRescue {
 
   public:
     LunarRescue();
-    ~LunarRescue();
     void Initialize();
     void Run();
     void screenUpdate();

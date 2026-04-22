@@ -1,6 +1,8 @@
 #pragma once
 #include <array>
 #include <memory>
+#include <optional>
+#include <functional>
 #include "cpu.hpp"
 #include "intel8080PeripheralDevice.hpp"
 #include "types.hpp"
@@ -65,8 +67,8 @@ class Intel8080 : public CPU {
     WORD wordData;
 
     Bus &bus;
-    std::array<Intel8080PeripheralDevice&, 256> inPeripheralDevices;
-    std::array<Intel8080PeripheralDevice&, 256> outPeripheralDevices;
+    std::array<std::optional<std::reference_wrapper<Intel8080PeripheralDevice>>, 256> inPeripheralDevices;
+    std::array<std::optional<std::reference_wrapper<Intel8080PeripheralDevice>>, 256> outPeripheralDevices;
 
     std::array<int (Intel8080::*)(), 256> pOpcodeLookup;
 

@@ -8,63 +8,44 @@
 
 
 LunarRescue::LunarRescue() {
-    programRom[0] = new Rom(0x0800);
-    programRom[1] = new Rom(0x0800);
-    programRom[2] = new Rom(0x0800);
-    programRom[3] = new Rom(0x0800);
-    programRom[4] = new Rom(0x0800);
-    programRom[5] = new Rom(0x0800);
-    workingRam = new Ram(0x400);
-    videoRam = new Ram(0x1C00);
-    bus = new Bus();
-    cpu = new Intel8080();
-    shiftRegister = new invadersShiftRegister();
-    p1ButtonDeck = new SpaceInvadersButtonDeck();
-    p2ButtonDeck = new SpaceInvadersButtonDeck();
-    dummyPeripheral = new DummyPeripheral();
+    programRom[0] = std::make_unique<Rom>(0x0800);
+    programRom[1] = std::make_unique<Rom>(0x0800);
+    programRom[2] = std::make_unique<Rom>(0x0800);
+    programRom[3] = std::make_unique<Rom>(0x0800);
+    programRom[4] = std::make_unique<Rom>(0x0800);
+    programRom[5] = std::make_unique<Rom>(0x0800);
+    workingRam = std::make_unique<Ram>(0x400);
+    videoRam = std::make_unique<Ram>(0x1C00);
+    bus = std::make_unique<Bus>();
+    cpu = std::make_unique<Intel8080>(*bus);
+    shiftRegister = std::make_unique<invadersShiftRegister>();
+    p1ButtonDeck = std::make_unique<SpaceInvadersButtonDeck>();
+    p2ButtonDeck = std::make_unique<SpaceInvadersButtonDeck>();
+    dummyPeripheral = std::make_unique<DummyPeripheral>();
 
-    bus->attachMemory(programRom[0], 0x0000, 0x07FF);
-    bus->attachMemory(programRom[1], 0x0800, 0x0FFF);
-    bus->attachMemory(programRom[2], 0x1000, 0x17FF);
-    bus->attachMemory(programRom[3], 0x1800, 0x1FFF);
-    bus->attachMemory(workingRam, 0x2000, 0x23FF);
-    bus->attachMemory(videoRam, 0x2400, 0x3FFF);
-    bus->attachMemory(programRom[4], 0x4000, 0x47FF);
-    bus->attachMemory(programRom[5], 0x4800, 0x4FFF);
+    bus->attachMemory(*(programRom[0]), 0x0000, 0x07FF);
+    bus->attachMemory(*(programRom[1]), 0x0800, 0x0FFF);
+    bus->attachMemory(*(programRom[2]), 0x1000, 0x17FF);
+    bus->attachMemory(*(programRom[3]), 0x1800, 0x1FFF);
+    bus->attachMemory(*workingRam, 0x2000, 0x23FF);
+    bus->attachMemory(*videoRam, 0x2400, 0x3FFF);
+    bus->attachMemory(*(programRom[4]), 0x4000, 0x47FF);
+    bus->attachMemory(*(programRom[5]), 0x4800, 0x4FFF);
 
-    cpu->attachBus(bus); 
+    cpu->attachInputPeripheral(*p1ButtonDeck, 0x01);
+    cpu->attachInputPeripheral(*p2ButtonDeck, 0x02);
+    cpu->attachInputPeripheral(*shiftRegister, 0x03);
 
-    cpu->attachInputPeripheral(p1ButtonDeck, 0x01);
-    cpu->attachInputPeripheral(p2ButtonDeck, 0x02);
-    cpu->attachInputPeripheral(shiftRegister, 0x03);
-
-    cpu->attachOutputPeripheral(shiftRegister, 0x02);
-    cpu->attachOutputPeripheral(dummyPeripheral, 0x03);
-    cpu->attachOutputPeripheral(shiftRegister, 0x04);
-    cpu->attachOutputPeripheral(dummyPeripheral, 0x05);
-    cpu->attachOutputPeripheral(dummyPeripheral, 0x06);
+    cpu->attachOutputPeripheral(*shiftRegister, 0x02);
+    cpu->attachOutputPeripheral(*dummyPeripheral, 0x03);
+    cpu->attachOutputPeripheral(*shiftRegister, 0x04);
+    cpu->attachOutputPeripheral(*dummyPeripheral, 0x05);
+    cpu->attachOutputPeripheral(*dummyPeripheral, 0x06);
 
     screen.create(224, 256);
     spriteScreen.setTexture(screen);
     spriteScreen.setPosition(0, 0);
     
-}
-
-LunarRescue::~LunarRescue() {
-    delete programRom[0];
-    delete programRom[1];
-    delete programRom[2];
-    delete programRom[3];
-    delete programRom[4];
-    delete programRom[5];
-    delete workingRam;
-    delete videoRam;
-    delete shiftRegister;
-    delete p1ButtonDeck;
-    delete p2ButtonDeck;
-    delete dummyPeripheral;
-    delete bus;
-    delete cpu;
 }
 
 void LunarRescue::Initialize() {

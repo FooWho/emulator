@@ -11,8 +11,6 @@
 Intel8080::Intel8080(Bus &bus) : bus(bus) {
     reset();
     buildOpcodeTable();
-    inPeripheralDevices.fill(nullptr);
-    outPeripheralDevices.fill(nullptr);
 }
 
 void Intel8080::reset() {

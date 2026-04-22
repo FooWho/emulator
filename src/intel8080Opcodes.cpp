@@ -2621,7 +2621,7 @@ int Intel8080::opOUT_D8() {
 
     fetchByte();
     if (outPeripheralDevices[byteData]) {
-        outPeripheralDevices[byteData]->writeData(byteData, regs.a);
+        outPeripheralDevices[byteData]->get().writeData(byteData, regs.a);
     }
     return 10;
 }
@@ -2711,7 +2711,7 @@ int Intel8080::opIN_D8() {
 
     fetchByte();
     if (inPeripheralDevices[byteData]) {
-        regs.a = inPeripheralDevices[byteData]->readData(byteData);
+        regs.a = inPeripheralDevices[byteData]->get().readData(byteData);
     }
     return 10;
 }
